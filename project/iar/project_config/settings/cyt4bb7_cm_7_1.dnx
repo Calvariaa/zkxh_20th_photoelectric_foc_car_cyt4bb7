@@ -39,8 +39,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>4991479682152483142</CpuClock>
-        <SwoClock>4706366408966358096</SwoClock>
+        <CpuClock>4703255829819629652</CpuClock>
+        <SwoClock>6071772950867238731</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>

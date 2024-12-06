@@ -119,7 +119,7 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_right = // Configure the PWM_DT parameter
         .switchInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
         .switchInput = 0ul,                      /* Select the constant 0 */
         .reloadInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
-        .reloadInput = 8ul,                      /* Select the TCPWM_ALL_CNT_TR_IN[2] */
+        .reloadInput = 8ul,                      /* Select the TCPWM_ALL_CNT_TR_IN[3] */
         .startInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
         .startInput = 0ul,                       /* Select the constant 0 */
         .kill0InputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
@@ -130,15 +130,51 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_right = // Configure the PWM_DT parameter
         .countInput = 1ul,                       /* Select the constant 1 */
 };
 
-void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHASE_HSIOM_H, gpio_pin_enum __A_PHASE_PIN_L, en_hsiom_sel_t __A_PHASE_HSIOM_L, volatile en_clk_dst_t __A_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT, uint32_t __A_ADDRESS_CNT,
-                           gpio_pin_enum __B_PHASE_PIN_H, en_hsiom_sel_t __B_PHASE_HSIOM_H, gpio_pin_enum __B_PHASE_PIN_L, en_hsiom_sel_t __B_PHASE_HSIOM_L, volatile en_clk_dst_t __B_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT, uint32_t __B_ADDRESS_CNT,
-                           gpio_pin_enum __C_PHASE_PIN_H, en_hsiom_sel_t __C_PHASE_HSIOM_H, gpio_pin_enum __C_PHASE_PIN_L, en_hsiom_sel_t __C_PHASE_HSIOM_L, volatile en_clk_dst_t __C_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT, uint32_t __C_ADDRESS_CNT,
+cy_stc_tcpwm_pwm_config_t tcpwm_config_middle = // Configure the PWM_DT parameters
+    {
+        .pwmMode = CY_TCPWM_PWM_MODE_DEADTIME,
+        .clockPrescaler = CY_TCPWM_PRESCALER_DIVBY_1,
+        .debug_pause = false,
+        .countDirection = CY_TCPWM_COUNTER_COUNT_UP,
+        /* Set UPDN2 modes */ // _DOWN2
+        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
+        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_SET,
+        .underflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
+        .cc1MatchMode = CY_TCPWM_PWM_TR_CTRL2_CLEAR,
+        .deadTime = DEADTIME_LOAD,     /* Right side dead time */
+        .deadTimeComp = DEADTIME_LOAD, /* Left  side dead time */
+        .runMode = CY_TCPWM_PWM_CONTINUOUS,
+        .period = (PWM_PRIOD_LOAD - 1),
+        .period_buff = 0ul,                     /* 2000ul */
+        .enablePeriodSwap = false,              /* Auto Reload Period = OFF */
+        .enableCompare0Swap = true,             /* Auto Reload CC0 = ON */
+        .enableCompare1Swap = true,             /* Auto Reload CC1 = ON */
+        .interruptSources = CY_TCPWM_INT_ON_CC, /* Interrupt Mask for TC, CC0/CC1_MATCH (0:OFF, 1:TC, 2:CC0 MATCH, 4:CC1 MATCH, 7:all) */
+        .invertPWMOut = 0ul,
+        .invertPWMOutN = 0ul,
+        .killMode = CY_TCPWM_PWM_STOP_ON_KILL,
+        .switchInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .switchInput = 0ul,                      /* Select the constant 0 */
+        .reloadInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .reloadInput = 9ul,                      /* Select the TCPWM_ALL_CNT_TR_IN[4] */
+        .startInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .startInput = 0ul,                       /* Select the constant 0 */
+        .kill0InputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .kill0Input = 0ul,                       /* Select the constant 0 */
+        .kill1InputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .kill1Input = 0ul,                       /* Select the constant 0 */
+        .countInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .countInput = 1ul,                       /* Select the constant 1 */
+};
+void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHASE_HSIOM_H, gpio_pin_enum __A_PHASE_PIN_L, en_hsiom_sel_t __A_PHASE_HSIOM_L, volatile en_clk_dst_t __A_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT,
+                           gpio_pin_enum __B_PHASE_PIN_H, en_hsiom_sel_t __B_PHASE_HSIOM_H, gpio_pin_enum __B_PHASE_PIN_L, en_hsiom_sel_t __B_PHASE_HSIOM_L, volatile en_clk_dst_t __B_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT,
+                           gpio_pin_enum __C_PHASE_PIN_H, en_hsiom_sel_t __C_PHASE_HSIOM_H, gpio_pin_enum __C_PHASE_PIN_L, en_hsiom_sel_t __C_PHASE_HSIOM_L, volatile en_clk_dst_t __C_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
                            cy_stc_tcpwm_pwm_config_t *__cy_stc_tcpwm_pwm_config, uint32_t __trigLine
 
 )
 {
-    cy_stc_gpio_pin_config_t pwm_pin_config;            // 定义PWM引脚配置对
-    memset(&pwm_pin_config, 0, sizeof(pwm_pin_config)); // 清除PWM引脚对象参数
+    cy_stc_gpio_pin_config_t pwm_pin_config;
+    memset(&pwm_pin_config, 0, sizeof(pwm_pin_config));
 
     pwm_pin_config.driveMode = CY_GPIO_DM_STRONG; // 配置PWM输出引脚模式为强驱动模式
     // 初始化A相上桥引脚
@@ -174,15 +210,15 @@ void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHA
 
     Cy_Tcpwm_Pwm_Init(__A_PHASE_GRP_CNT, __cy_stc_tcpwm_pwm_config);
     Cy_Tcpwm_Pwm_Enable(__A_PHASE_GRP_CNT);
-    // Cy_Tcpwm_TriggerStart(__A_PHASE_GRP_CNT);
+    Cy_Tcpwm_TriggerStart(__A_PHASE_GRP_CNT);
 
     Cy_Tcpwm_Pwm_Init(__B_PHASE_GRP_CNT, __cy_stc_tcpwm_pwm_config);
     Cy_Tcpwm_Pwm_Enable(__B_PHASE_GRP_CNT);
-    // Cy_Tcpwm_TriggerStart(__B_PHASE_GRP_CNT);
+    Cy_Tcpwm_TriggerStart(__B_PHASE_GRP_CNT);
 
     Cy_Tcpwm_Pwm_Init(__C_PHASE_GRP_CNT, __cy_stc_tcpwm_pwm_config);
     Cy_Tcpwm_Pwm_Enable(__C_PHASE_GRP_CNT);
-    // Cy_Tcpwm_TriggerStart(__C_PHASE_GRP_CNT);
+    Cy_Tcpwm_TriggerStart(__C_PHASE_GRP_CNT);
 
     /* Synchronize all counters */
     Cy_TrigMux_SwTrigger(__trigLine, TRIGGER_TYPE_EDGE, 1ul); /*Output the Reload signal to TCPWM_ALL_CNT_TR_IN[2] */
@@ -197,14 +233,17 @@ void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHA
 // 使用示例     motor_duty_set(200, 300, 400);
 // 备注信息     更新比较器并且将计数器清零
 //-------------------------------------------------------------------------------------------------------------------
-void motor_duty_set(uint16 a_duty, uint16 b_duty, uint16 c_duty, uint32_t __trigLine)
+void motor_duty_set(uint16 a_duty, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT,
+                    uint16 b_duty, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT,
+                    uint16 c_duty, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
+                    uint32_t __trigLine)
 {
-    TCPWM0_GRP0_CNT24->unCC0.u32Register = (PWM_PRIOD_LOAD - a_duty) / 2;
-    TCPWM0_GRP0_CNT24->unCC1.u32Register = (PWM_PRIOD_LOAD + a_duty) / 2;
-    TCPWM0_GRP0_CNT9->unCC0.u32Register = (PWM_PRIOD_LOAD - b_duty) / 2;
-    TCPWM0_GRP0_CNT9->unCC1.u32Register = (PWM_PRIOD_LOAD + b_duty) / 2;
-    TCPWM0_GRP0_CNT11->unCC0.u32Register = (PWM_PRIOD_LOAD - c_duty) / 2;
-    TCPWM0_GRP0_CNT11->unCC1.u32Register = (PWM_PRIOD_LOAD + c_duty) / 2;
+    __A_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - a_duty) / 2;
+    __A_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + a_duty) / 2;
+    __B_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - b_duty) / 2;
+    __B_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + b_duty) / 2;
+    __C_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - c_duty) / 2;
+    __C_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + c_duty) / 2;
 
     Cy_TrigMux_SwTrigger(__trigLine, TRIGGER_TYPE_EDGE, 1ul); /*Output the Reload signal to TCPWM_ALL_CNT_TR_IN[2] */
 }
@@ -263,7 +302,10 @@ void mos_all_open_left(uint16 periodAH, uint16 periodBH, uint16 periodCH)
     motor_channel_set(1, L_A_PHASE_GRP_CNT,
                       1, L_B_PHASE_GRP_CNT,
                       1, L_C_PHASE_GRP_CNT);
-    motor_duty_set(periodAH, periodBH, periodCH, L_TRIG_OUT_MUX);
+    motor_duty_set(periodAH, L_A_PHASE_GRP_CNT,
+                   periodBH, L_B_PHASE_GRP_CNT,
+                   periodCH, L_C_PHASE_GRP_CNT,
+                   L_TRIG_OUT_MUX);
 }
 
 void mos_all_open_right(uint16 periodAH, uint16 periodBH, uint16 periodCH)
@@ -271,7 +313,21 @@ void mos_all_open_right(uint16 periodAH, uint16 periodBH, uint16 periodCH)
     motor_channel_set(1, R_A_PHASE_GRP_CNT,
                       1, R_B_PHASE_GRP_CNT,
                       1, R_C_PHASE_GRP_CNT);
-    motor_duty_set(periodAH, periodBH, periodCH, R_TRIG_OUT_MUX);
+    motor_duty_set(periodAH, R_A_PHASE_GRP_CNT,
+                   periodBH, R_B_PHASE_GRP_CNT,
+                   periodCH, R_C_PHASE_GRP_CNT,
+                   R_TRIG_OUT_MUX);
+}
+
+void mos_all_open_middle(uint16 periodAH, uint16 periodBH, uint16 periodCH)
+{
+    motor_channel_set(1, M_A_PHASE_GRP_CNT,
+                      1, M_B_PHASE_GRP_CNT,
+                      1, M_C_PHASE_GRP_CNT);
+    motor_duty_set(periodAH, M_A_PHASE_GRP_CNT,
+                   periodBH, M_B_PHASE_GRP_CNT,
+                   periodCH, M_C_PHASE_GRP_CNT,
+                   M_TRIG_OUT_MUX);
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -286,7 +342,10 @@ void mos_close_left(void)
     motor_channel_set(0, L_A_PHASE_GRP_CNT,
                       0, L_B_PHASE_GRP_CNT,
                       0, L_C_PHASE_GRP_CNT);
-    motor_duty_set(0, 0, 0, L_TRIG_OUT_MUX);
+    motor_duty_set(0, L_A_PHASE_GRP_CNT,
+                   0, L_B_PHASE_GRP_CNT,
+                   0, L_C_PHASE_GRP_CNT,
+                   L_TRIG_OUT_MUX);
 }
 
 void mos_close_right(void)
@@ -294,7 +353,21 @@ void mos_close_right(void)
     motor_channel_set(0, R_A_PHASE_GRP_CNT,
                       0, R_B_PHASE_GRP_CNT,
                       0, R_C_PHASE_GRP_CNT);
-    motor_duty_set(0, 0, 0, R_TRIG_OUT_MUX);
+    motor_duty_set(0, R_A_PHASE_GRP_CNT,
+                   0, R_B_PHASE_GRP_CNT,
+                   0, R_C_PHASE_GRP_CNT,
+                   R_TRIG_OUT_MUX);
+}
+
+void mos_close_middle(void)
+{
+    motor_channel_set(0, M_A_PHASE_GRP_CNT,
+                      0, M_B_PHASE_GRP_CNT,
+                      0, M_C_PHASE_GRP_CNT);
+    motor_duty_set(0, M_A_PHASE_GRP_CNT,
+                   0, M_B_PHASE_GRP_CNT,
+                   0, M_C_PHASE_GRP_CNT,
+                   M_TRIG_OUT_MUX);
 }
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -306,16 +379,22 @@ void mos_close_right(void)
 //-------------------------------------------------------------------------------------------------------------------
 void motor_parameter_init(void)
 {
-    motor_pwm_output_init(L_A_PHASE_PIN_H, L_A_PHASE_HSIOM_H, L_A_PHASE_PIN_L, L_A_PHASE_HSIOM_L, L_A_PHASE_CLK_DST, L_A_PHASE_GRP_CNT, L_A_ADDRESS_CNT,
-                          L_B_PHASE_PIN_H, L_B_PHASE_HSIOM_H, L_B_PHASE_PIN_L, L_B_PHASE_HSIOM_L, L_B_PHASE_CLK_DST, L_B_PHASE_GRP_CNT, L_B_ADDRESS_CNT,
-                          L_C_PHASE_PIN_H, L_C_PHASE_HSIOM_H, L_C_PHASE_PIN_L, L_C_PHASE_HSIOM_L, L_C_PHASE_CLK_DST, L_C_PHASE_GRP_CNT, L_C_ADDRESS_CNT,
+    motor_pwm_output_init(L_A_PHASE_PIN_H, L_A_PHASE_HSIOM_H, L_A_PHASE_PIN_L, L_A_PHASE_HSIOM_L, L_A_PHASE_CLK_DST, L_A_PHASE_GRP_CNT,
+                          L_B_PHASE_PIN_H, L_B_PHASE_HSIOM_H, L_B_PHASE_PIN_L, L_B_PHASE_HSIOM_L, L_B_PHASE_CLK_DST, L_B_PHASE_GRP_CNT,
+                          L_C_PHASE_PIN_H, L_C_PHASE_HSIOM_H, L_C_PHASE_PIN_L, L_C_PHASE_HSIOM_L, L_C_PHASE_CLK_DST, L_C_PHASE_GRP_CNT,
                           &tcpwm_config_left, L_TRIG_OUT_MUX
 
     );
-    motor_pwm_output_init(R_A_PHASE_PIN_H, R_A_PHASE_HSIOM_H, R_A_PHASE_PIN_L, R_A_PHASE_HSIOM_L, R_A_PHASE_CLK_DST, R_A_PHASE_GRP_CNT, R_A_ADDRESS_CNT,
-                          R_B_PHASE_PIN_H, R_B_PHASE_HSIOM_H, R_B_PHASE_PIN_L, R_B_PHASE_HSIOM_L, R_B_PHASE_CLK_DST, R_B_PHASE_GRP_CNT, R_B_ADDRESS_CNT,
-                          R_C_PHASE_PIN_H, R_C_PHASE_HSIOM_H, R_C_PHASE_PIN_L, R_C_PHASE_HSIOM_L, R_C_PHASE_CLK_DST, R_C_PHASE_GRP_CNT, R_C_ADDRESS_CNT,
+    motor_pwm_output_init(R_A_PHASE_PIN_H, R_A_PHASE_HSIOM_H, R_A_PHASE_PIN_L, R_A_PHASE_HSIOM_L, R_A_PHASE_CLK_DST, R_A_PHASE_GRP_CNT,
+                          R_B_PHASE_PIN_H, R_B_PHASE_HSIOM_H, R_B_PHASE_PIN_L, R_B_PHASE_HSIOM_L, R_B_PHASE_CLK_DST, R_B_PHASE_GRP_CNT,
+                          R_C_PHASE_PIN_H, R_C_PHASE_HSIOM_H, R_C_PHASE_PIN_L, R_C_PHASE_HSIOM_L, R_C_PHASE_CLK_DST, R_C_PHASE_GRP_CNT,
                           &tcpwm_config_right, R_TRIG_OUT_MUX
+
+    );
+    motor_pwm_output_init(M_A_PHASE_PIN_H, M_A_PHASE_HSIOM_H, M_A_PHASE_PIN_L, M_A_PHASE_HSIOM_L, M_A_PHASE_CLK_DST, M_A_PHASE_GRP_CNT,
+                          M_B_PHASE_PIN_H, M_B_PHASE_HSIOM_H, M_B_PHASE_PIN_L, M_B_PHASE_HSIOM_L, M_B_PHASE_CLK_DST, M_B_PHASE_GRP_CNT,
+                          M_C_PHASE_PIN_H, M_C_PHASE_HSIOM_H, M_C_PHASE_PIN_L, M_C_PHASE_HSIOM_L, M_C_PHASE_CLK_DST, M_C_PHASE_GRP_CNT,
+                          &tcpwm_config_middle, M_TRIG_OUT_MUX
 
     );
 }

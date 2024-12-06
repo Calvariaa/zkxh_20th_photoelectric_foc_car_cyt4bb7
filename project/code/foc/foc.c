@@ -381,7 +381,7 @@ void foc_commutation()
     data_send[7] = Park_in.u_d * 1000;
 #elif defined TESTMODE
     // test
-    set_angle += ANGLE_TO_RAD(0.8);
+    set_angle += ANGLE_TO_RAD(0.6);
     if (set_angle >= pi_2)
     {
         expect_rotations++;
@@ -394,7 +394,7 @@ void foc_commutation()
     }
 
     Park_in.u_d = 0;
-    Park_in.u_q = 2;
+    Park_in.u_q = 1;
 
     data_send[13] = theta_elec - set_angle;
     data_send[14] = Park_in.u_q;
@@ -452,6 +452,7 @@ void foc_commutation()
 
     mos_all_open_left(FOC_S.Period.AH, FOC_S.Period.BH, FOC_S.Period.CH);
     mos_all_open_right(FOC_S.Period.AH, FOC_S.Period.BH, FOC_S.Period.CH);
+    mos_all_open_middle(FOC_S.Period.AH, FOC_S.Period.BH, FOC_S.Period.CH);
 
     data_send[1] = (float)FOC_S.Period.AH;
     data_send[2] = (float)FOC_S.Period.BH;

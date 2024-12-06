@@ -38,7 +38,6 @@
 #include "foc/motor.h"
 #include "debug/vofaplus.h"
 
-
 #define LED1 (P19_0)
 int main(void)
 {
@@ -53,7 +52,9 @@ int main(void)
 
     motor_parameter_init(); // 电机参数初始化
 
-    // pit_ms_init(PIT_CH0, 1);                    // 周期中断初始化
+    pit_us_init(PIT_CH0, 100); // 周期中断初始化
+
+    interrupt_global_enable(0);
 
     // 此处编写用户代码 例如外设初始化代码等
     while (true)
@@ -61,11 +62,10 @@ int main(void)
         // 此处编写需要循环执行的代码
 
         gpio_toggle_level(LED1);
-        foc_commutation();
 
         // 此处编写需要循环执行的代码
         // mos_all_open_left(3000, 1000, 0);
-
+        // foc_commutation();
         send_vofaplus();
     }
 }
