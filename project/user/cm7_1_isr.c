@@ -35,11 +35,15 @@
 
 #include "zf_common_headfile.h"
 #include "foc/foc.h"
+#include "foc/encoder/encoder.h"
+#include "debug/vofaplus.h"
 // **************************** PIT中断函数 ****************************
+
+uint64 timer_1ms = 0u;
 void pit0_ch0_isr()
 {
-
     pit_isr_flag_clear(PIT_CH0);
+
     foc_commutation();
 }
 
@@ -51,6 +55,15 @@ void pit0_ch1_isr()
 void pit0_ch2_isr()
 {
     pit_isr_flag_clear(PIT_CH2);
+
+    // if (timer_1ms % 5 == 0)
+    //     motor_speed_out();
+
+    // if (fabsf(Park_in.u_q) >= FOC_UQ_MAX)
+    // {
+    //     if (ierror_count < 2000)
+    //         ierror_count++;
+    // }
 }
 // **************************** PIT中断函数 ****************************
 

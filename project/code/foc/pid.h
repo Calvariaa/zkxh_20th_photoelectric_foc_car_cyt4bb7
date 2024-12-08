@@ -5,7 +5,6 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MINMAX(input, low, upper) MIN(MAX(input, low), upper)
-#define FOC_UQ_MAX 6
 
 #define PID_CREATE(_kp, _ki, _kd, _low_pass, max_p, max_i, max_d, max_pid) \
     {                                                                      \
@@ -45,7 +44,7 @@ typedef struct
     float output;
     float pre_output;
 } pid_param_t;
-extern pid_param_t servo_pid;
+extern pid_param_t foc_left_pid;
 // extern pid_param_t speed_pid;
 
 // typedef struct

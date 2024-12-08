@@ -76,7 +76,7 @@ uint8       soft_spi_read_8bit                  (soft_spi_info_struct *soft_spi_
 void        soft_spi_read_8bit_array            (soft_spi_info_struct *soft_spi_obj, uint8 *data, uint32 len);
 
 uint16      soft_spi_read_16bit                 (soft_spi_info_struct *soft_spi_obj);
-void        soft_spi_read_16bit_array           (soft_spi_info_struct *soft_spi_obj, uint16 *data, uint32 len);
+void        soft__array           (soft_spi_info_struct *soft_spi_obj, uint16 *data, uint32 len);
 
 uint8       soft_spi_read_8bit_register         (soft_spi_info_struct *soft_spi_obj, const uint8 register_name);
 void        soft_spi_read_8bit_registers        (soft_spi_info_struct *soft_spi_obj, const uint8 register_name, uint8 *data, uint32 len);

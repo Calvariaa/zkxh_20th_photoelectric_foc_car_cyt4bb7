@@ -870,6 +870,7 @@ void spi_transfer_16bit (spi_index_enum spi_n, const uint16 *write_buffer, uint1
 //  使用示例      spi_init(SPI_0, SPI_MODE0, 1*1000*1000, SPI0_CLK_P2_2, SPI0_MOSI_P2_1, SPI0_MISO_P2_0, SPI0_CS0_P2_3); // 硬件SPI初始化  模式0 波特率为1Mhz
 //  备注信息
 //-------------------------------------------------------------------------------------------------------------------
+uint32_t spi_mode_enum_to_scb[4] = {CY_SCB_SPI_CPHA0_CPOL0, CY_SCB_SPI_CPHA1_CPOL0, CY_SCB_SPI_CPHA0_CPOL1, CY_SCB_SPI_CPHA1_CPOL1};
 void spi_init (spi_index_enum spi_n, spi_mode_enum mode, uint32 baud, spi_clk_pin_enum clk_pin, spi_mosi_pin_enum mosi_pin, spi_miso_pin_enum miso_pin, spi_cs_pin_enum cs_pin)
 {
     uint64_t                    targetFreq                      = 4 * baud;
@@ -909,7 +910,7 @@ void spi_init (spi_index_enum spi_n, spi_mode_enum mode, uint32 baud, spi_clk_pi
     
     spi_config.spiMode                    = CY_SCB_SPI_MASTER     ;
     spi_config.subMode                    = CY_SCB_SPI_MOTOROLA   ;
-    spi_config.sclkMode                   = CY_SCB_SPI_CPHA0_CPOL0;
+    spi_config.sclkMode                   = spi_mode_enum_to_scb[mode];
     spi_config.oversample                 = 4                     ;
     spi_config.rxDataWidth                = 8                     ;
     spi_config.txDataWidth                = 8                     ;

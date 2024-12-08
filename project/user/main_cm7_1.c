@@ -36,8 +36,11 @@
 #include "zf_common_headfile.h"
 #include "foc/move_filter.h"
 #include "foc/motor.h"
+#include "foc/foc.h"
 #include "debug/vofaplus.h"
+#include "foc/encoder/encoder.h"
 
+bool protect_flag = 0;
 #define LED1 (P19_0)
 int main(void)
 {
@@ -48,11 +51,15 @@ int main(void)
 
     gpio_init(LED1, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
 
+    encoder_init();
+
     interrupt_global_disable(); // 关闭全局中断
 
     motor_parameter_init(); // 电机参数初始化
 
-    pit_us_init(PIT_CH0, 100); // 周期中断初始化
+    pit_us_init(PIT_CH0, 50); // 周期中断初始化
+    pit_us_init(PIT_CH1, 50); // 周期中断初始化
+    pit_ms_init(PIT_CH2, 2);  // 周期中断初始化
 
     interrupt_global_enable(0);
 
@@ -66,6 +73,9 @@ int main(void)
         // 此处编写需要循环执行的代码
         // mos_all_open_left(3000, 1000, 0);
         // foc_commutation();
+        // for (uint16 i = 0; i < 4095; i++)
+        //     ;
+        // spi_write_16bit(SPI_0, 0xffff);
         send_vofaplus();
     }
 }

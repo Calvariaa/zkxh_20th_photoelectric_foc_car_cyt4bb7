@@ -37,10 +37,12 @@
 #define _MOTOR_H_
 
 #include "zf_common_typedef.h"
+#include "system_cyt4bb.h"
 
-#define FPWM (uint16)(20000)          // PWM频率
+// #define FPWM (uint16)(20000)          // PWM频率
 #define PWM_PRIOD_LOAD (uint16)(4000) // PWM周期装载值
-#define DEADTIME_LOAD (5)                      // 死区装载值
+// #define PWM_PRIOD_LOAD (uint16)(SYSTEM_CLOCK_250M / FPWM / 2) // PWM周期装载值
+#define DEADTIME_LOAD (10)                      // 死区装载值
 
 // foc left
 #define L_TRIG_OUT_MUX TRIG_OUT_MUX_5_TCPWM_ALL_CNT_TR_IN2

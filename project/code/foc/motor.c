@@ -245,7 +245,7 @@ void motor_duty_set(uint16 a_duty, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_C
     __C_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - c_duty) / 2;
     __C_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + c_duty) / 2;
 
-    Cy_TrigMux_SwTrigger(__trigLine, TRIGGER_TYPE_EDGE, 1ul); /*Output the Reload signal to TCPWM_ALL_CNT_TR_IN[2] */
+    // Cy_TrigMux_SwTrigger(__trigLine, TRIGGER_TYPE_EDGE, 1ul); /*Output the Reload signal to TCPWM_ALL_CNT_TR_IN[2] */
 }
 
 //-------------------------------------------------------------------------------------------------------------------

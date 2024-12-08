@@ -1,7 +1,8 @@
 #include "foc/pid.h"
+#include "foc/foc.h"
 
-pid_param_t servo_pid = PID_CREATE(10.0, 0., 0., 0.8, 10000, 0.5, 0, FOC_UQ_MAX);
-// pid_param_t speed_pid = PID_CREATE(5.0, 0.4, 0., 0.8, 10000, 0.5, 0, 6);
+pid_param_t foc_left_pid = PID_CREATE(10.0, 0., 0., 0.8, 10000, 0.5, 0, FOC_UQ_MAX);
+pid_param_t foc_right_pid = PID_CREATE(10.0, 0., 0., 0.8, 10000, 0.5, 0, FOC_UQ_MAX);
 
 // ≥£πÊPID
 float pid_solve(pid_param_t *pid, float error)

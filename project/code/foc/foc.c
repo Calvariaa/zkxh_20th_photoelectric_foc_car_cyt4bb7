@@ -7,11 +7,12 @@
 #include "zf_common_typedef.h"
 #include "fastmath/cos_sin.h"
 #include "foc/foc.h"
-#include "foc/as5047p/as5047p.h"
+#include "foc/encoder/encoder.h"
 #include "foc/move_filter.h"
 #include "foc/motor.h"
 #include "foc/pid.h"
 
+extern bool protect_flag;
 // double theta2;
 
 // int slow_startup_count = 0;
@@ -24,6 +25,7 @@ int32 expect_rotations = 0;
 
 extern float data_send[32];
 
+uint16 ierror_count = 0u;
 #ifdef CURRENTLOOP
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      克拉克变换
@@ -214,9 +216,9 @@ Period_Typedef PeriodCal(VectorTime_Typedef vector, uint8 N, uint16 T)
         period.CH = value2;
         break;
     default:
-        period.AH = 2500;
-        period.BH = 2500;
-        period.CH = 2500;
+        period.AH = PWM_PRIOD_LOAD / 2;
+        period.BH = PWM_PRIOD_LOAD / 2;
+        period.CH = PWM_PRIOD_LOAD / 2;
         break;
     }
 
@@ -329,7 +331,7 @@ ipark_variable Current_Close_Loop(ipark_variable ref_park, park_variable I_park)
 }
 
 // #define CURRENTLOOP
-#define TESTMODE
+// #define TESTMODE
 
 double set_angle = 0;
 clark_variable adcd_struct;
@@ -338,7 +340,7 @@ ipark_variable Park_in;
 
 void foc_commutation()
 {
-#ifndef  TESTMODE
+#ifndef TESTMODE
     theta_val = get_magnet_val();
     theta_magnet = get_magnet_angle(theta_val);
     theta_elec = get_elec_angle(theta_val);
@@ -381,7 +383,7 @@ void foc_commutation()
     data_send[7] = Park_in.u_d * 1000;
 #elif defined TESTMODE
     // test
-    set_angle += ANGLE_TO_RAD(0.6);
+    set_angle += ANGLE_TO_RAD(0.4);
     if (set_angle >= pi_2)
     {
         expect_rotations++;
@@ -394,7 +396,7 @@ void foc_commutation()
     }
 
     Park_in.u_d = 0;
-    Park_in.u_q = 1;
+    Park_in.u_q = 2;
 
     data_send[13] = theta_elec - set_angle;
     data_send[14] = Park_in.u_q;
@@ -405,15 +407,21 @@ void foc_commutation()
     Park_in.u_d = 0;
 
     // test
-    // set_angle += ANGLE_TO_RAD(0.2);
-    if (ierror_count < 20)
-        set_angle += motor_control.set_speed;
+    if (fabsf(Park_in.u_q) < FOC_UQ_MAX)
+        set_angle += ANGLE_TO_RAD(0.8);
 
-    if (ierror_count > 1000)
-    {
-        set_angle = theta_magnet;
-        expect_rotations = full_rotations;
-    }
+    // if (ierror_count < 20)
+    // {
+    //     // set_angle += motor_control.set_speed;
+    // }
+
+    // if (ierror_count > 1000)
+    // {
+    //     set_angle = theta_magnet;
+    //     expect_rotations = full_rotations;
+    // }
+
+    data_send[14] = (float)ierror_count;
     if (set_angle >= pi_2)
     {
         expect_rotations++;
@@ -427,20 +435,18 @@ void foc_commutation()
 
     move_filter_double_calc(&speed_filter, get_magnet_speed(theta_magnet, full_rotations, theta_magnet_last, full_rotations_last, 12000));
 
-    //    (int32)get_magnet_speed(theta_magnet, full_rotations, theta_magnet_last, full_rotations_last, PWM_PRIOD_LOAD);
-
     // Park_in.u_q = 2;
     if (!protect_flag)
-        Park_in.u_q = pid_solve(&servo_pid, (set_angle + expect_rotations * pi_2) - (theta_magnet + full_rotations * pi_2));
+        Park_in.u_q = -pid_solve(&foc_left_pid, (set_angle + expect_rotations * pi_2) - (theta_magnet + full_rotations * pi_2));
     else
         Park_in.u_q = 0;
-    // Park_in.u_q = pid_solve(&servo_pid, (ANGLE_TO_RAD(0)) - (theta_magnet + full_rotations * pi_2)) / 1000.f;
+    // Park_in.u_q = pid_solve(&foc_left_pid, (ANGLE_TO_RAD(0)) - (theta_magnet + full_rotations * pi_2)) / 1000.f;
 
     FOC_S.V_Clark = iPark_Calc(Park_in, -theta_elec);
 
     data_send[10] = (float)(set_angle + expect_rotations * pi_2);
     data_send[11] = (float)Park_in.u_q;
-    // data_send[12] = (float)speed_filter.data_average;
+    data_send[12] = (float)get_magnet_speed(theta_magnet, full_rotations, theta_magnet_last, full_rotations_last, PWM_PRIOD_LOAD);
 
 #endif
 
@@ -448,7 +454,7 @@ void foc_commutation()
     FOC_S.N = Electrical_Sector_Judge(FOC_S.tool); // 电角度扇区判断
 
     FOC_S.Vector = Vector_Calc(FOC_S.tool, FOC_S.N, BUS_VOLTAGE, PWM_PRIOD_LOAD); // 矢量作用时间计算
-    FOC_S.Period = PeriodCal(FOC_S.Vector, FOC_S.N, PWM_PRIOD_LOAD);              // 各桥PWM占空比计算
+    FOC_S.Period = PeriodCal(FOC_S.Vector, FOC_S.N, PWM_PRIOD_LOAD * 2);          // 各桥PWM占空比计算
 
     mos_all_open_left(FOC_S.Period.AH, FOC_S.Period.BH, FOC_S.Period.CH);
     mos_all_open_right(FOC_S.Period.AH, FOC_S.Period.BH, FOC_S.Period.CH);
