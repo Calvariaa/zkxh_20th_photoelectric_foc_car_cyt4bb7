@@ -408,7 +408,7 @@ void foc_commutation()
 
     // test
     if (fabsf(Park_in.u_q) < FOC_UQ_MAX)
-        set_angle += ANGLE_TO_RAD(0.8);
+        set_angle += ANGLE_TO_RAD(0.1);
 
     // if (ierror_count < 20)
     // {

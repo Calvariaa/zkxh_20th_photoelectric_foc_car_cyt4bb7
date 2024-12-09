@@ -50,8 +50,8 @@
 // #define degrees_330 (double)5.7595865315812876
 // #define degrees_345 (double)6.0213859193804370
 // #define degrees_360 (double)pi_2
-#define BUS_VOLTAGE 8.4 // 母线电压
-#define FOC_UQ_MAX 6
+#define BUS_VOLTAGE 12
+#define FOC_UQ_MAX BUS_VOLTAGE >> 1
 
 // clark变换输出值
 typedef struct
