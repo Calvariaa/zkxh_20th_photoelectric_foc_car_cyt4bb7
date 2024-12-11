@@ -233,9 +233,9 @@ void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHA
 // 使用示例     motor_duty_set(200, 300, 400);
 // 备注信息     更新比较器并且将计数器清零
 //-------------------------------------------------------------------------------------------------------------------
-void motor_duty_set(uint16 a_duty, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT,
-                    uint16 b_duty, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT,
-                    uint16 c_duty, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
+void motor_duty_set(uint16_t a_duty, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT,
+                    uint16_t b_duty, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT,
+                    uint16_t c_duty, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
                     uint32_t __trigLine)
 {
     __A_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - a_duty) / 2;
@@ -297,7 +297,7 @@ void motor_channel_set(uint8 a_channel, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_
 // 使用示例     mos_all_open();
 // 备注信息
 //-------------------------------------------------------------------------------------------------------------------
-void mos_all_open_left(uint16 periodAH, uint16 periodBH, uint16 periodCH)
+void mos_all_open_left(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH)
 {
     motor_channel_set(1, L_A_PHASE_GRP_CNT,
                       1, L_B_PHASE_GRP_CNT,
@@ -308,7 +308,7 @@ void mos_all_open_left(uint16 periodAH, uint16 periodBH, uint16 periodCH)
                    L_TRIG_OUT_MUX);
 }
 
-void mos_all_open_right(uint16 periodAH, uint16 periodBH, uint16 periodCH)
+void mos_all_open_right(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH)
 {
     motor_channel_set(1, R_A_PHASE_GRP_CNT,
                       1, R_B_PHASE_GRP_CNT,
@@ -319,7 +319,7 @@ void mos_all_open_right(uint16 periodAH, uint16 periodBH, uint16 periodCH)
                    R_TRIG_OUT_MUX);
 }
 
-void mos_all_open_middle(uint16 periodAH, uint16 periodBH, uint16 periodCH)
+void mos_all_open_middle(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH)
 {
     motor_channel_set(1, M_A_PHASE_GRP_CNT,
                       1, M_B_PHASE_GRP_CNT,

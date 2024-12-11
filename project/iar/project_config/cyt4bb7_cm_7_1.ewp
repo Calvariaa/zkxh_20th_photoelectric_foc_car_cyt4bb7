@@ -1157,6 +1157,12 @@
                 </file>
             </group>
             <file>
+                <name>$PROJ_DIR$\..\..\code\foc\buzzer.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\foc\buzzer.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\code\foc\foc.c</name>
             </file>
             <file>

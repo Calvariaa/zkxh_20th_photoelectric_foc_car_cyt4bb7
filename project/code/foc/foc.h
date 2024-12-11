@@ -6,6 +6,8 @@
  */
 #include "zf_common_typedef.h"
 #include "arm_math.h"
+#include "foc/buzzer.h"
+#include "foc/encoder/encoder.h"
 
 #ifndef CODE_FOC_H_
 #define CODE_FOC_H_
@@ -14,9 +16,6 @@
 #define pi_2 (double)6.283185307179586
 #define CLARK_ONEbySQRT3 (double)0.57735026918963f /* 1/sqrt(3) */
 #define CLARK_ONEbyTHREE (double)0.33333333333333f /* 1/3 */
-
-#define pi (double)3.141592653589793
-#define pi_2 (double)6.283185307179586
 
 #ifndef ANGLE_TO_RAD
 #define ANGLE_TO_RAD(x) ((x) * PI / 180.0) // 角度转换为弧度
@@ -108,23 +107,46 @@ typedef struct
 
 typedef struct
 {
+        uint16 theta_val;
+
+        double theta_elec;
+
+        double theta_magnet;
+        int32_t full_rotations;
+
+        double theta_magnet_last;
+        int32_t full_rotations_last;
+
+        double angle_prev;
+        int32_t angle_rot_dat;
+
+        double zero_reval;
+        double zero_angle;
+} encoder_t;
+
+typedef struct
+{
         // BLmotor_Typedef BLmotor;        //电机参数
         // ADC_Typedef Adc;                //adc采集
         out_variable V_Clark; // Alpha、Beta输入
-        // CLARK_Typedef I_Clrak;          //Alpha、Beta反馈
+        clark_variable I_Clrak;          //Alpha、Beta反馈
         ipark_variable Ref_Park;   // d、q目标值
         park_variable I_Park;      // d、q返回值
         ipark_variable Park_in;    // d、q输入值
         Instrument_Typedef tool;   // SVPWM算法中间量
         VectorTime_Typedef Vector; // 矢量作用时间
         // HALL_Typedef hall;              //霍尔传感器数据
-        uint8 N; // 电角度扇区
+        uint8_t N; // 电角度扇区
         // double theta;                   //电角度
         Period_Typedef Period; // 各桥定时器比较值
-        // Current_CL_Typedef Current_CL;  //电流环PID参数
-} FOC_Parm_Typedef;
+                               // Current_CL_Typedef Current_CL;  //电流环PID参数
 
-// extern FOC_Parm_Typedef FOC;
+        double set_angle;
+        uint32_t expect_rotations;
+
+        float error_sum_d;
+        float error_sum_q;
+} FOC_Parm_Typedef;
 
 #ifdef CURRENTLOOP
 clark_variable clark_cacl(adc_struct current);
@@ -137,17 +159,10 @@ VectorTime_Typedef Vector_Calc(Instrument_Typedef tool, uint8 N, uint8 Udc, uint
 uint8 Electrical_Sector_Judge(Instrument_Typedef tool);
 Instrument_Typedef Tool_Calc(out_variable clark2);
 
-void foc_commutation();
+void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder, void (*__mos_all_open_)(uint16_t , uint16_t , uint16_t ));
 
 // extern int slow_startup_count;
 extern uint16 ierror_count;
-
-extern double zero_reval;
-extern double zero_angle;
-
-extern double set_angle;
-
-extern int32 expect_rotations;
 
 extern ipark_variable Park_in;
 #endif /* CODE_FOC_H_ */

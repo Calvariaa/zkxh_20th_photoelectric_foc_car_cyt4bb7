@@ -37,24 +37,37 @@
 #include "foc/foc.h"
 #include "foc/encoder/encoder.h"
 #include "debug/vofaplus.h"
+#include "foc/move_filter.h"
+#include "foc/buzzer.h"
+#include "foc/motor.h"
 // **************************** PITÖÐ¶Ïº¯Êý ****************************
+
+extern FOC_Parm_Typedef FOC_L;
+extern FOC_Parm_Typedef FOC_R;
+
+extern encoder_t encoder_left;
+extern encoder_t encoder_right;
 
 uint64 timer_1ms = 0u;
 void pit0_ch0_isr()
 {
     pit_isr_flag_clear(PIT_CH0);
 
-    foc_commutation();
+    foc_commutation(&FOC_L, &encoder_left, mos_all_open_left);
 }
 
 void pit0_ch1_isr()
 {
     pit_isr_flag_clear(PIT_CH1);
+
+    foc_commutation(&FOC_R, &encoder_right, mos_all_open_right);
 }
 
 void pit0_ch2_isr()
 {
     pit_isr_flag_clear(PIT_CH2);
+
+    buzz_exec();
 
     // if (timer_1ms % 5 == 0)
     //     motor_speed_out();

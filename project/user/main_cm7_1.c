@@ -39,9 +39,18 @@
 #include "foc/foc.h"
 #include "debug/vofaplus.h"
 #include "foc/encoder/encoder.h"
+#include "foc/move_filter.h"
+#include "foc/buzzer.h"
 
 bool protect_flag = 0;
 #define LED1 (P19_0)
+
+extern FOC_Parm_Typedef FOC_L;
+extern FOC_Parm_Typedef FOC_R;
+
+extern encoder_t encoder_left;
+extern encoder_t encoder_right;
+
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
@@ -51,6 +60,14 @@ int main(void)
 
     gpio_init(LED1, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
 
+    buzzer_init(1);
+
+    move_filter_double_init(&current_a_filter);
+    move_filter_double_init(&current_b_filter);
+    move_filter_double_init(&current_c_filter);
+    move_filter_double_init(&iq_ref_filter);
+    move_filter_double_init(&id_ref_filter);
+    move_filter_double_init(&speed_filter);
     encoder_init();
 
     interrupt_global_disable(); // 关闭全局中断
@@ -59,9 +76,29 @@ int main(void)
 
     pit_us_init(PIT_CH0, 50); // 周期中断初始化
     pit_us_init(PIT_CH1, 50); // 周期中断初始化
-    pit_ms_init(PIT_CH2, 2);  // 周期中断初始化
+
+    pit_ms_init(PIT_CH2, 1); // 周期中断初始化
 
     interrupt_global_enable(0);
+
+    // play_music();
+
+    buzz_keep_ms(200, 0);
+    buzz_keep_ms(140, NOTE_C6);
+    buzz_keep_ms(10, 0);
+
+    buzz_keep_ms(140, NOTE_G6);
+    buzz_keep_ms(10, 0);
+
+    buzz_keep_ms(140, NOTE_C7);
+    buzz_keep_ms(10, 0);
+
+    buzz_ease_ms(180, NOTE_E6, NOTE_F6);
+    buzz_ease_ms(100, NOTE_F6, NOTE_A6);
+    buzz_keep_ms(10, 0);
+
+    buzz_keep_ms(140, NOTE_G6);
+    buzz_keep_ms(10, 0);
 
     // 此处编写用户代码 例如外设初始化代码等
     while (true)
@@ -69,13 +106,26 @@ int main(void)
         // 此处编写需要循环执行的代码
 
         gpio_toggle_level(LED1);
-
+        // buzz_keep_ms(1, NOTE_C5);
+        // foc_ud_freq = NOTE_C5;
         // 此处编写需要循环执行的代码
         // mos_all_open_left(3000, 1000, 0);
         // foc_commutation();
         // for (uint16 i = 0; i < 4095; i++)
         //     ;
         // spi_write_16bit(SPI_0, 0xffff);
+
+        data_send[1] = (float)FOC_L.Period.AH;
+        data_send[2] = (float)FOC_L.Period.BH;
+        data_send[3] = (float)FOC_L.Period.CH;
+        data_send[6] = (float)encoder_left.theta_elec;
+        data_send[7] = (float)encoder_left.full_rotations;
+        data_send[8] = (float)encoder_left.theta_magnet;
+        data_send[9] = (float)encoder_left.theta_magnet + encoder_left.full_rotations * pi_2;
+        data_send[10] = (float)(FOC_L.set_angle + FOC_L.expect_rotations * pi_2);
+        data_send[11] = (float)FOC_L.Park_in.u_q;
+        data_send[12] = (float)speed_filter.data_average;
+
         send_vofaplus();
     }
 }

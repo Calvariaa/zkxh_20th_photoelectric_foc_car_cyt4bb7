@@ -41,8 +41,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>4703255829819629652</CpuClock>
-        <SwoClock>6071772950867238731</SwoClock>
+        <CpuClock>4049073779176059440</CpuClock>
+        <SwoClock>3472317300944154936</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
@@ -98,8 +98,8 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\user\main_cm7_1.c}.79.9" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\user\main_cm7_1.c}.71.9" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\user\main_cm7_1.c}.80.1" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\user\main_cm7_1.c}.72.1" 0 0 1 "" 0 "" 0</Bp1>
         <Count>2</Count>
     </Breakpoints2>
     <TermIOLog>

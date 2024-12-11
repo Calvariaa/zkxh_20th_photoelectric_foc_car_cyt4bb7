@@ -1,8 +1,8 @@
 #include "foc/pid.h"
 #include "foc/foc.h"
 
-pid_param_t foc_left_pid = PID_CREATE(10.0, 0., 0., 0.8, 10000, 0.5, 0, FOC_UQ_MAX);
-pid_param_t foc_right_pid = PID_CREATE(10.0, 0., 0., 0.8, 10000, 0.5, 0, FOC_UQ_MAX);
+pid_param_t foc_left_pid = PID_CREATE(10.0, 0.08, 0., 0.8, 10., 0.8, 0, FOC_UQ_MAX);
+pid_param_t foc_right_pid = PID_CREATE(10.0, 0.08, 0., 0.8, 10., 0.8, 0, FOC_UQ_MAX);
 
 // ³£¹æPID
 float pid_solve(pid_param_t *pid, float error)
@@ -11,8 +11,8 @@ float pid_solve(pid_param_t *pid, float error)
     pid->out_p = pid->kp * error;
     pid->out_i += error;
 
-    if (pid->ki != 0) pid->out_i = MINMAX(pid->out_i, -pid->i_max / pid->ki, pid->i_max / pid->ki);
-
+    if (pid->ki != 0)
+        pid->out_i = MINMAX(pid->out_i, -pid->i_max, pid->i_max);
 
     return MINMAX(MINMAX(pid->out_p, -pid->p_max, pid->p_max) + pid->ki * pid->out_i + MINMAX(pid->kd * pid->out_d, -pid->d_max, pid->d_max), -pid->pid_max, pid->pid_max);
 }
