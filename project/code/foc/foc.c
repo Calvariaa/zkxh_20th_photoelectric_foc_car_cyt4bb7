@@ -207,9 +207,9 @@ Period_Typedef PeriodCal(VectorTime_Typedef vector, uint8 N, uint16 T)
         period.CH = value2;
         break;
     default:
-        period.AH = PWM_PRIOD_LOAD / 2;
-        period.BH = PWM_PRIOD_LOAD / 2;
-        period.CH = PWM_PRIOD_LOAD / 2;
+        period.AH = PWM_PRIOD_LOAD;
+        period.BH = PWM_PRIOD_LOAD;
+        period.CH = PWM_PRIOD_LOAD;
         break;
     }
 
@@ -353,7 +353,7 @@ FOC_Parm_Typedef FOC_R = {0};
 
 void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__mos_all_open_)(uint16_t , uint16_t , uint16_t ))
 {
-    __encoder_->theta_val = get_magnet_val();
+    __encoder_->theta_val = __encoder_->__get_magnet_val_();
     __encoder_->theta_magnet = get_magnet_angle(__encoder_->theta_val, __encoder_->zero_angle);
     __encoder_->theta_elec = get_elec_angle(__encoder_->theta_val, __encoder_->zero_reval);
     __encoder_->full_rotations = get_magnet_angle_rot(__encoder_->theta_magnet, __encoder_);
@@ -415,7 +415,7 @@ void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__m
 
     // test
     if (fabsf(__FOC_->Park_in.u_q) < FOC_UQ_MAX)
-        __FOC_->set_angle += ANGLE_TO_RAD(0.01);
+        __FOC_->set_angle += ANGLE_TO_RAD(0.1);
 
     // if (ierror_count < 20)
     // {

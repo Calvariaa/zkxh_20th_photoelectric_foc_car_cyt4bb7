@@ -120,6 +120,8 @@ typedef struct
         double angle_prev;
         int32_t angle_rot_dat;
 
+        uint16_t (*__get_magnet_val_)();
+
         double zero_reval;
         double zero_angle;
 } encoder_t;

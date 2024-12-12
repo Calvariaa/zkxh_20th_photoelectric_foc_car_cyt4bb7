@@ -41,6 +41,8 @@
 #include "foc/encoder/encoder.h"
 #include "foc/move_filter.h"
 #include "foc/buzzer.h"
+#include "fastmath/cos_sin.h"
+#include "arm_math.h"
 
 bool protect_flag = 0;
 #define LED1 (P19_0)
@@ -50,6 +52,8 @@ extern FOC_Parm_Typedef FOC_R;
 
 extern encoder_t encoder_left;
 extern encoder_t encoder_right;
+
+extern uint64_t timer_1ms;
 
 int main(void)
 {
@@ -83,7 +87,7 @@ int main(void)
 
     // play_music();
 
-    buzz_keep_ms(200, 0);
+    buzz_keep_ms(100, 0);
     buzz_keep_ms(140, NOTE_C6);
     buzz_keep_ms(10, 0);
 
@@ -118,13 +122,21 @@ int main(void)
         data_send[1] = (float)FOC_L.Period.AH;
         data_send[2] = (float)FOC_L.Period.BH;
         data_send[3] = (float)FOC_L.Period.CH;
-        data_send[6] = (float)encoder_left.theta_elec;
-        data_send[7] = (float)encoder_left.full_rotations;
-        data_send[8] = (float)encoder_left.theta_magnet;
-        data_send[9] = (float)encoder_left.theta_magnet + encoder_left.full_rotations * pi_2;
-        data_send[10] = (float)(FOC_L.set_angle + FOC_L.expect_rotations * pi_2);
-        data_send[11] = (float)FOC_L.Park_in.u_q;
-        data_send[12] = (float)speed_filter.data_average;
+        
+        data_send[4] = (float)FOC_R.Period.AH;
+        data_send[5] = (float)FOC_R.Period.BH;
+        data_send[6] = (float)FOC_R.Period.CH;
+
+        data_send[10] = (float)encoder_left.theta_val;
+        data_send[11] = (float)encoder_right.theta_val;
+
+        data_send[12] = (float)encoder_left.theta_elec;
+        data_send[13] = (float)encoder_left.full_rotations;
+        data_send[14] = (float)encoder_left.theta_magnet;
+        data_send[15] = (float)encoder_left.theta_magnet + encoder_left.full_rotations * pi_2;
+        data_send[16] = (float)(FOC_L.set_angle + FOC_L.expect_rotations * pi_2);
+        data_send[17] = (float)FOC_L.Park_in.u_q;
+        data_send[18] = (float)speed_filter.data_average;
 
         send_vofaplus();
     }
