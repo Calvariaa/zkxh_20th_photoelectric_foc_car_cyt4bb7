@@ -122,7 +122,7 @@ int main(void)
         data_send[1] = (float)FOC_L.Period.AH;
         data_send[2] = (float)FOC_L.Period.BH;
         data_send[3] = (float)FOC_L.Period.CH;
-        
+
         data_send[4] = (float)FOC_R.Period.AH;
         data_send[5] = (float)FOC_R.Period.BH;
         data_send[6] = (float)FOC_R.Period.CH;
@@ -131,11 +131,12 @@ int main(void)
         data_send[11] = (float)encoder_right.theta_val;
 
         data_send[12] = (float)encoder_left.theta_elec;
-        data_send[13] = (float)encoder_left.full_rotations;
-        data_send[14] = (float)encoder_left.theta_magnet;
-        data_send[15] = (float)encoder_left.theta_magnet + encoder_left.full_rotations * pi_2;
-        data_send[16] = (float)(FOC_L.set_angle + FOC_L.expect_rotations * pi_2);
-        data_send[17] = (float)FOC_L.Park_in.u_q;
+        data_send[13] = (float)encoder_right.theta_elec;
+
+        
+        data_send[16] = (float)FOC_L.Park_in.u_q;
+        data_send[17] = (float)FOC_R.Park_in.u_q;
+
         data_send[18] = (float)speed_filter.data_average;
 
         send_vofaplus();
