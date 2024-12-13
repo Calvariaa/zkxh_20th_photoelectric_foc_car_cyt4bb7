@@ -1447,57 +1447,63 @@
             </file>
         </group>
         <group>
-            <name>foc</name>
+            <name>brushless</name>
             <group>
                 <name>encoder</name>
                 <file>
-                    <name>$PROJ_DIR$\..\..\code\foc\encoder\as5047p.c</name>
+                    <name>$PROJ_DIR$\..\..\code\brushless\encoder\as5047p.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\..\code\foc\encoder\as5047p.h</name>
+                    <name>$PROJ_DIR$\..\..\code\brushless\encoder\as5047p.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\..\code\foc\encoder\encoder.c</name>
+                    <name>$PROJ_DIR$\..\..\code\brushless\encoder\encoder.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\..\code\foc\encoder\encoder.h</name>
+                    <name>$PROJ_DIR$\..\..\code\brushless\encoder\encoder.h</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\..\code\foc\encoder\mt6701ct.c</name>
+                    <name>$PROJ_DIR$\..\..\code\brushless\encoder\mt6701ct.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\..\code\foc\encoder\mt6701ct.h</name>
+                    <name>$PROJ_DIR$\..\..\code\brushless\encoder\mt6701ct.h</name>
                 </file>
             </group>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\buzzer.c</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\bldc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\buzzer.h</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\bldc.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\foc.c</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\buzzer.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\foc.h</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\buzzer.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\motor.c</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\foc.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\motor.h</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\foc.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\move_filter.c</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\motor.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\move_filter.h</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\motor.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\pid.c</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\move_filter.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\code\foc\pid.h</name>
+                <name>$PROJ_DIR$\..\..\code\brushless\move_filter.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\brushless\pid.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\brushless\pid.h</name>
             </file>
         </group>
     </group>

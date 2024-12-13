@@ -34,12 +34,13 @@
  ********************************************************************************************************************/
 
 #include "zf_common_headfile.h"
-#include "foc/foc.h"
-#include "foc/encoder/encoder.h"
+#include "brushless/foc.h"
+#include "brushless/bldc.h"
+#include "brushless/encoder/encoder.h"
 #include "debug/vofaplus.h"
-#include "foc/move_filter.h"
-#include "foc/buzzer.h"
-#include "foc/motor.h"
+#include "brushless/move_filter.h"
+#include "brushless/buzzer.h"
+#include "brushless/motor.h"
 // **************************** PITÖÐ¶Ïº¯Êý ****************************
 
 extern FOC_Parm_Typedef FOC_L;
@@ -75,6 +76,12 @@ void pit0_ch2_isr()
     pit_isr_flag_clear(PIT_CH2);
 
     timer_1ms++;
+
+    // bldc test
+    uint8_t n = 1;
+    bldc_output(n++);
+    if (n == 7)
+        n = 1;
 
     if (!START_DELAY_FLAG)
         buzz_exec();

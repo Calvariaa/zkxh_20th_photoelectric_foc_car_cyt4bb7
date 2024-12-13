@@ -34,13 +34,13 @@
  ********************************************************************************************************************/
 
 #include "zf_common_headfile.h"
-#include "foc/move_filter.h"
-#include "foc/motor.h"
-#include "foc/foc.h"
+#include "brushless/move_filter.h"
+#include "brushless/motor.h"
+#include "brushless/foc.h"
 #include "debug/vofaplus.h"
-#include "foc/encoder/encoder.h"
-#include "foc/move_filter.h"
-#include "foc/buzzer.h"
+#include "brushless/encoder/encoder.h"
+#include "brushless/move_filter.h"
+#include "brushless/buzzer.h"
 #include "fastmath/cos_sin.h"
 #include "arm_math.h"
 
