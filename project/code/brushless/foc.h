@@ -122,6 +122,8 @@ typedef struct
 
         uint16_t (*__get_magnet_val_)();
 
+        int8_t polarity;
+        int8_t turn_dir;
         double zero_reval;
         double zero_angle;
 } encoder_t;
@@ -148,6 +150,8 @@ typedef struct
 
         float error_sum_d;
         float error_sum_q;
+
+        float ud_phase;
 } FOC_Parm_Typedef;
 
 #ifdef CURRENTLOOP

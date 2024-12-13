@@ -321,20 +321,18 @@ ipark_variable Current_Close_Loop(FOC_Parm_Typedef *__FOC_, park_variable I_park
 
 #define AMPLITUDE 2.0f
 #define SAMPLE_RATE 20000.0f
-float get_ud_music(uint16 _FREQUENCY)
+float get_ud_music(FOC_Parm_Typedef *__FOC_, uint16_t _FREQUENCY)
 {
-    static float phase;
     if (_FREQUENCY == 0)
         return 0;
 
-    phase += pi_2 * _FREQUENCY / SAMPLE_RATE;
-    if (phase >= pi_2)
+    __FOC_->ud_phase += pi_2 * _FREQUENCY / SAMPLE_RATE;
+    if (__FOC_->ud_phase >= pi_2)
     {
-        phase -= pi_2;
+        __FOC_->ud_phase -= pi_2;
     }
 
-    // return sin(phase) * AMPLITUDE;
-    if (fast_sin(phase) >= 0.0f)
+    if (fast_sin(__FOC_->ud_phase) >= 0.0f)
     {
         return AMPLITUDE;
     }
@@ -342,10 +340,18 @@ float get_ud_music(uint16 _FREQUENCY)
     {
         return -AMPLITUDE;
     }
+
+    // return sin(__FOC_->ud_phase) * AMPLITUDE;
+
+    // if (__FOC_->ud_phase < PI) {
+    //     return AMPLITUDE * (__FOC_->ud_phase / pi - 0.5f);
+    // } else {
+    //     return AMPLITUDE * (1.5f - __FOC_->ud_phase / pi);
+    // }
 }
 
 // #define CURRENTLOOP
-#define TESTMODE
+// #define TESTMODE
 
 FOC_Parm_Typedef FOC_L = {0};
 FOC_Parm_Typedef FOC_R = {0};
@@ -410,11 +416,11 @@ void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__m
     __FOC_->V_Clark = iPark_Calc(__FOC_->Park_in, -__FOC_->set_angle);
 #else
 
-    __FOC_->Park_in.u_d = get_ud_music(foc_ud_freq);
+    __FOC_->Park_in.u_d = get_ud_music(__FOC_, foc_ud_freq);
 
     // test
     if (fabsf(__FOC_->Park_in.u_q) < FOC_UQ_MAX)
-        __FOC_->set_angle += ANGLE_TO_RAD(0);
+        __FOC_->set_angle += ANGLE_TO_RAD(0.08);
 
     // if (ierror_count < 20)
     // {
@@ -443,7 +449,7 @@ void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__m
 
     // __FOC_->Park_in.u_q = 2;
     if (!protect_flag)
-        __FOC_->Park_in.u_q = pid_solve(&foc_left_pid, (__FOC_->set_angle + __FOC_->expect_rotations * pi_2) - (__encoder_->theta_magnet + __encoder_->full_rotations * pi_2));
+        __FOC_->Park_in.u_q = pid_solve(&foc_left_pid, (__FOC_->set_angle + __FOC_->expect_rotations * pi_2) * __encoder_->turn_dir - (__encoder_->theta_magnet + __encoder_->full_rotations * pi_2)) * __encoder_->polarity;
     else
         __FOC_->Park_in.u_q = 0;
     // __FOC_->Park_in.u_q = pid_solve(&foc_left_pid, (ANGLE_TO_RAD(0)) - (theta_magnet + full_rotations * pi_2)) / 1000.f;

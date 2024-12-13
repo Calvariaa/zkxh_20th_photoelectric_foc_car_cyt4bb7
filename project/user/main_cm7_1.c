@@ -133,6 +133,10 @@ int main(void)
         data_send[12] = (float)encoder_left.theta_elec;
         data_send[13] = (float)encoder_right.theta_elec;
 
+        // data_send[12] = (float)(FOC_L.set_angle + FOC_L.expect_rotations * pi_2) - (encoder_left.theta_magnet + encoder_left.full_rotations * pi_2);
+        // data_send[13] = (float)(FOC_R.set_angle + FOC_R.expect_rotations * pi_2) - (encoder_right.theta_magnet + encoder_right.full_rotations * pi_2);
+        data_send[12] = (float)(FOC_L.set_angle);
+        data_send[13] = (float)(FOC_R.set_angle);
         
         data_send[16] = (float)FOC_L.Park_in.u_q;
         data_send[17] = (float)FOC_R.Park_in.u_q;
