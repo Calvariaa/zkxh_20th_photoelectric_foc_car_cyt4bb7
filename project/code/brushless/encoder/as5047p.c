@@ -40,9 +40,9 @@ static const cy_stc_scb_spi_config_t AS5047P_SCB_cfg =
 };
 
 void as5047p_spi_init(const cy_stc_scb_spi_config_t *__SCB_SPI_cfg, volatile stc_SCB_t *__SPI_TYPE, uint32 baud, en_clk_dst_t __SPI_CLOCK,
-                      uint8 __CLK_GPIO, en_hsiom_sel_t __CLK_HSIOM,
-                      uint8 __MOSI_GPIO, en_hsiom_sel_t __MOSI_HSIOM,
-                      uint8 __MISO_GPIO, en_hsiom_sel_t __MISO_HSIOM)
+                      uint8_t __CLK_GPIO, en_hsiom_sel_t __CLK_HSIOM,
+                      uint8_t __MOSI_GPIO, en_hsiom_sel_t __MOSI_HSIOM,
+                      uint8_t __MISO_GPIO, en_hsiom_sel_t __MISO_HSIOM)
 {
     uint64_t targetFreq = 8 * baud;
     uint64_t sourceFreq_fp5 = ((uint64_t)SPI_FREQ << 5ull);
@@ -71,7 +71,7 @@ void as5047p_spi_init(const cy_stc_scb_spi_config_t *__SCB_SPI_cfg, volatile stc
     Cy_SCB_SPI_Enable(__SPI_TYPE);
 }
 
-void as5047p_spi_write_16bit_register(volatile stc_SCB_t *__SPI_TYPE, const uint16_t register_name, const uint16_t data, uint8 __CLK_GPIO)
+void as5047p_spi_write_16bit_register(volatile stc_SCB_t *__SPI_TYPE, const uint16_t register_name, const uint16_t data, uint8_t __CLK_GPIO)
 {
     // 切换通信长度为16位
 
@@ -98,7 +98,7 @@ void as5047p_spi_write_16bit_register(volatile stc_SCB_t *__SPI_TYPE, const uint
     gpio_high(__CLK_GPIO);
 }
 
-uint16_t as5047p_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8 __CLK_GPIO)
+uint16_t as5047p_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8_t __CLK_GPIO)
 {
     uint16_t read_data = 0;
 
@@ -161,7 +161,7 @@ uint16_t parity(uint16_t x)
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     AS5047P 读寄存器
 // 参数说明     reg             寄存器地址
-// 返回参数     uint8           数据
+// 返回参数     uint8_t           数据
 // 使用示例     as5047p_read_register(AS5047P_CHIP_ID);
 // 备注信息     内部调用
 //-------------------------------------------------------------------------------------------------------------------
@@ -235,11 +235,11 @@ void as5047p_init()
                      L_MISO_GPIO, L_MISO_HSIOM);
     gpio_init(L_CS_GPIO, GPO, GPIO_HIGH, GPO_PUSH_PULL); // 配置CS端口
     
-    // as5047p_spi_init(&AS5047P_SCB_cfg, R_SPI_TYPE, ENC_SPI_SPEED, R_SPI_CLOCK,
-    //                  R_CLK_GPIO, R_CLK_HSIOM,
-    //                  R_MOSI_GPIO, R_MOSI_HSIOM,
-    //                  R_MISO_GPIO, R_MISO_HSIOM);
-    // gpio_init(R_CS_GPIO, GPO, GPIO_HIGH, GPO_PUSH_PULL); // 配置CS端口
+    as5047p_spi_init(&AS5047P_SCB_cfg, R_SPI_TYPE, ENC_SPI_SPEED, R_SPI_CLOCK,
+                     R_CLK_GPIO, R_CLK_HSIOM,
+                     R_MOSI_GPIO, R_MOSI_HSIOM,
+                     R_MISO_GPIO, R_MISO_HSIOM);
+    gpio_init(R_CS_GPIO, GPO, GPIO_HIGH, GPO_PUSH_PULL); // 配置CS端口
 
     // as5047p_write_register(AS5047P_SETTINGS1, 0x0021); // 1000101,设置ABI接口
     // as5047p_write_register(AS5047P_SETTINGS2, 0x0000);

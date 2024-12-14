@@ -75,17 +75,21 @@ void pit0_ch2_isr()
 {
     pit_isr_flag_clear(PIT_CH2);
 
-    timer_1ms++;
+    if (START_DELAY_FLAG)
+        return;
 
-    // bldc test
-    uint8_t n = 1;
-    bldc_output(n++);
-    if (n == 7)
-        n = 1;
+    bldc_soft_openloop();
+    // bldc_svpwm();
+}
+
+void pit0_ch3_isr()
+{
+    pit_isr_flag_clear(PIT_CH3);
+
+    timer_1ms++;
 
     if (!START_DELAY_FLAG)
         buzz_exec();
-
     if (timer_1ms == 50)
     {
         set_zero_angle(get_magnet_angle(encoder_left.__get_magnet_val_(), encoder_left.zero_angle), &encoder_left);
@@ -100,6 +104,26 @@ void pit0_ch2_isr()
     //     if (ierror_count < 2000)
     //         ierror_count++;
     // }
+}
+
+void pit0_ch4_isr()
+{
+    pit_isr_flag_clear(PIT_CH4);
+}
+
+void pit0_ch5_isr()
+{
+    pit_isr_flag_clear(PIT_CH5);
+}
+
+void pit0_ch6_isr()
+{
+    pit_isr_flag_clear(PIT_CH6);
+}
+
+void pit0_ch7_isr()
+{
+    pit_isr_flag_clear(PIT_CH7);
 }
 // **************************** PITÖÐ¶Ïº¯Êý ****************************
 

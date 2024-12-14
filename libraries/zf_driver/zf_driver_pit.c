@@ -43,8 +43,13 @@
 void pit0_ch0_isr();
 void pit0_ch1_isr();
 void pit0_ch2_isr();
+void pit0_ch3_isr();
+void pit0_ch4_isr();
+void pit0_ch5_isr();
+void pit0_ch6_isr();
+void pit0_ch7_isr();
 
-void (*pit_isr_func[3])() = {pit0_ch0_isr, pit0_ch1_isr, pit0_ch2_isr};
+void (*pit_isr_func[8])() = {pit0_ch0_isr, pit0_ch1_isr, pit0_ch2_isr, pit0_ch3_isr, pit0_ch4_isr, pit0_ch5_isr, pit0_ch6_isr, pit0_ch7_isr};
 
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -94,6 +99,11 @@ void pit_all_close (void)
     pit_disable(PIT_CH0);
     pit_disable(PIT_CH1);
     pit_disable(PIT_CH2);
+    pit_disable(PIT_CH3);
+    pit_disable(PIT_CH4);
+    pit_disable(PIT_CH5);
+    pit_disable(PIT_CH6);
+    pit_disable(PIT_CH7);
 }
 
 //-------------------------------------------------------------------------------------------------------------------

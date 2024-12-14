@@ -1,84 +1,89 @@
 #include "brushless/bldc.h"
+#include "debug/vofaplus.h"
+#include "brushless/foc.h"
 
-// 霍尔硬件换相序列
-int8_t hall_hw_order[7] = {0, 6, 2, 3, 1, 5, 4};
-
-// 霍尔硬件换相序列位置转换
-// 例：采集霍尔值为4 带入位置转换数组得出当前位置在6 对应霍尔硬件换相序列的第6个数据
-//     当前位置为6 如果我们想要驱动电机旋转则可以输出下一个位置或者上一个位置
-//     输出上一个位置则是5 带入霍尔硬件换相序列得出第5个数据值为5 则输出霍尔为5的相位
-//     输出下一个位置则是1 带入霍尔硬件换相序列得出第1个数据值为6 则输出霍尔为6的相位
-int8_t hall_hw_order_transition[7] = {0, 4, 2, 3, 6, 5, 1};
-//-------------------------------------------------------------------------------------------------------------------
-// 函数简介     BLDC六步换相输出
-// 参数说明     hall_now        当前霍尔值
-// 返回参数     void
-// 使用示例     bldc_output(1);
-// 备注信息
-//-------------------------------------------------------------------------------------------------------------------
-void bldc_output(uint8_t hall_now)
+uint8_t n = 1;
+uint16_t b = 384;
+uint64_t t = 0;
+uint16_t PRIOD = PWM_PRIOD_LOAD / 4;
+void bldc_soft_openloop()
 {
-    uint16_t output_duty = 0;
-    int8_t hall_output = 0;
-
-    output_duty = PWM_PRIOD_LOAD / 2;
-
-    // output_duty = func_limit_ab(motor_control.motor_duty - motor_control.motor_duty_offset, 0, PWM_PRIOD_LOAD / 100 * 99);
-
-    if (0 != hall_now) // 当霍尔相位有效时执行相位偏移
+    t++;
+    if (t % b == 0)
     {
-        // 用户设置参数为电机换相角度 而输出只能是固定角度 但结合延迟换相可以实现任意角度换相
-        // 单相霍尔电角度是60° 所以此处先取有多少相：X = (motor_control.motor_control_angle / 60)
-        // 当不满足完整相位时则直接算一整个相位 (motor_control.motor_control_angle % 60) == 0 ? X : X +1
-
-        hall_output = (120 / 60);
-        hall_output += ((120 % 60) > 0 ? 1 : 0);
-
-        // if (FORWARD == motor_control.motor_set_dir) // 设置电机正转时执行正转的偏移方向
-        // {
-        // 加上实际霍尔的位置 可以得出需要输出的霍尔位置是多少
-        hall_output = hall_hw_order_transition[hall_now] + hall_output;
-
-        if (6 < hall_output) // 当输出超过最大位置时 减去最大位置实现循环
-        {
-            hall_output -= 6;
-        }
-
-        hall_output = hall_hw_order[hall_output]; // 获取对应位置的霍尔编码（上面是位置偏移计算 计算完成应该根据位置查询正确相位）
-        // }
-        // else // 设置电机反转时执行反转的偏移方向
-        // {
-        //     // 减去实际霍尔的位置 可以得出需要输出的霍尔位置是多少
-        //     hall_output = hall_hw_order_transition[hall_now] - hall_output;
-
-        //     if (1 > hall_output)
-        //     {
-        //         hall_output += 6;
-        //     }
-        //     hall_output = hall_hw_order[hall_output];
-        // }
+        if (b > 128)
+            b-=2;
+        bldc_output(n++, PRIOD);
+        if (n == 7)
+            n = 1;
+    }
+    if (t > 20000 && t % 1024 == 0 && (b > 24 && b <= 128))
+    {
+        if (b > 32)
+            PRIOD = PWM_PRIOD_LOAD / 2;
+        else
+            PRIOD = PWM_PRIOD_LOAD ;
+        b--;
+    }
+    if (t > 20000 && t % 32768 == 0 && (b > 12 && b <= 24))
+    {
+        b--;
     }
 
-    // 根据计算好的输出相位调用对应的输出函数 使电机旋转至指定位置
-    switch (hall_output)
+    data_send[19] = (float)b;
+    data_send[20] = (float)t;
+}
+
+FOC_Parm_Typedef FOC_M = {0};
+void bldc_svpwm()
+{
+    FOC_M.set_angle += ANGLE_TO_RAD(0.04);
+    if (FOC_M.set_angle >= pi_2)
+    {
+        FOC_M.expect_rotations++;
+        FOC_M.set_angle -= pi_2;
+    }
+    if (FOC_M.set_angle < -pi_2)
+    {
+        FOC_M.expect_rotations--;
+        FOC_M.set_angle += pi_2;
+    }
+
+    FOC_M.Park_in.u_d = 0;
+    FOC_M.Park_in.u_q = 2;
+
+    FOC_M.V_Clark = iPark_Calc(FOC_M.Park_in, -FOC_M.set_angle);
+    
+    FOC_M.tool = Tool_Calc(FOC_M.V_Clark);         // 中间变量计算
+    FOC_M.N = Electrical_Sector_Judge(FOC_M.tool); // 电角度扇区判断
+
+    FOC_M.Vector = Vector_Calc(FOC_M.tool, FOC_M.N, BUS_VOLTAGE, PWM_PRIOD_LOAD); // 矢量作用时间计算
+    FOC_M.Period = PeriodCal(FOC_M.Vector, FOC_M.N, PWM_PRIOD_LOAD);              // 各桥PWM占空比计算
+
+    mos_all_open_middle(FOC_M.Period.AH, FOC_M.Period.BH, FOC_M.Period.CH);
+}
+
+void bldc_output(uint8_t hall_now, uint16_t output_duty)
+{
+    switch (hall_now)
     {
     case 1:
-        mos_q5q2_open_middle(output_duty);
+        mos_a_bn_open_middle(output_duty);
         break; // 1
     case 2:
-        mos_q1q4_open_middle(output_duty);
+        mos_a_cn_open_middle(output_duty);
         break; // 2
     case 3:
-        mos_q5q4_open_middle(output_duty);
+        mos_b_cn_open_middle(output_duty);
         break; // 3
     case 4:
-        mos_q3q6_open_middle(output_duty);
+        mos_b_an_open_middle(output_duty);
         break; // 4
     case 5:
-        mos_q3q2_open_middle(output_duty);
+        mos_c_an_open_middle(output_duty);
         break; // 5
     case 6:
-        mos_q1q6_open_middle(output_duty);
+        mos_c_bn_open_middle(output_duty);
         break; // 6
     default:
         mos_close_middle();

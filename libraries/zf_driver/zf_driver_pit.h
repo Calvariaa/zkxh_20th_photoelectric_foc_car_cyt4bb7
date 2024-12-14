@@ -43,6 +43,11 @@ typedef enum // Ã¶¾ÙÍ¨µÀºÅ
     PIT_CH0,
     PIT_CH1,
     PIT_CH2,
+    PIT_CH3,
+    PIT_CH4,
+    PIT_CH5,
+    PIT_CH6,
+    PIT_CH7,
 }pit_index_enum;
 
 

@@ -65,6 +65,31 @@ void pit0_ch2_isr()
 	
 	
 }
+
+void pit0_ch3_isr()
+{
+    pit_isr_flag_clear(PIT_CH3);
+}
+
+void pit0_ch4_isr()
+{
+    pit_isr_flag_clear(PIT_CH4);
+}
+
+void pit0_ch5_isr()
+{
+    pit_isr_flag_clear(PIT_CH5);
+}
+
+void pit0_ch6_isr()
+{
+    pit_isr_flag_clear(PIT_CH6);
+}
+
+void pit0_ch7_isr()
+{
+    pit_isr_flag_clear(PIT_CH7);
+}
 // **************************** PITÖÐ¶Ïº¯Êý ****************************
 
 

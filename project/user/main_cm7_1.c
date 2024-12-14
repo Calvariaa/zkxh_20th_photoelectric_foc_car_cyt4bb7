@@ -78,10 +78,11 @@ int main(void)
 
     motor_parameter_init(); // 电机参数初始化
 
-    pit_us_init(PIT_CH0, 50); // 周期中断初始化
-    pit_us_init(PIT_CH1, 50); // 周期中断初始化
+    pit_us_init(PIT_CH0, 50); // 20khz
+    pit_us_init(PIT_CH1, 50);
+    pit_us_init(PIT_CH2, 50);
 
-    pit_ms_init(PIT_CH2, 1); // 周期中断初始化
+    pit_ms_init(PIT_CH3, 1);  // 1ms
 
     interrupt_global_enable(0);
 
@@ -126,6 +127,10 @@ int main(void)
         data_send[4] = (float)FOC_R.Period.AH;
         data_send[5] = (float)FOC_R.Period.BH;
         data_send[6] = (float)FOC_R.Period.CH;
+
+        data_send[7] = (float)FOC_R.Period.AH;
+        data_send[8] = (float)FOC_R.Period.BH;
+        data_send[9] = (float)FOC_R.Period.CH;
 
         data_send[10] = (float)encoder_left.theta_val;
         data_send[11] = (float)encoder_right.theta_val;
