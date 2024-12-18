@@ -5,31 +5,33 @@
 #include "zf_driver_adc.h"
 
 uint64_t bldc_timer_50ns = 1;
-// uint8_t bldc_rotor_n = 1;
-// uint16_t bldc_time_div = 48;
-// uint16_t PRIOD = PWM_PRIOD_LOAD / 8;
-
 
 typedef enum
 {
-    MOTOR_PRESTART,
+    // MOTOR_PRESTART,
     MOTOR_START,
     MOTOR_STOP
 } MotorState;
 
 typedef struct
 {
-    uint8_t bldc_rotor_n;
-    uint16_t bldc_time_div;
-    uint16_t PRIOD;
+    uint8_t rotor_n;
+    uint16_t time_div;
+    uint16_t duty;
+    uint32 speed_buf;
+    uint32 speed;
+    uint32 speed_last;
     MotorState state;
 } MotorControl;
 
 MotorControl motor = {
-    .bldc_rotor_n = 1,
-    .bldc_time_div = 48,
-    .PRIOD = PWM_PRIOD_LOAD / 8,
-    .state = MOTOR_PRESTART,
+    .rotor_n = 1,
+    .time_div = 48,
+    .duty = PWM_PRIOD_LOAD / 8,
+    .speed_buf = 0,
+    .speed = 0,
+    .speed_last = 0,
+    .state = MOTOR_START,
 };
 
 void bldc_soft_openloop()
@@ -37,30 +39,60 @@ void bldc_soft_openloop()
     bldc_timer_50ns++;
     tcpwm_irq_middle();
 
-    if (bldc_timer_50ns % motor.bldc_time_div == 0)
+    switch (motor.state)
     {
-        bldc_output(motor.bldc_rotor_n, motor.PRIOD);
-        if (adc_global_value < 0)
-            motor.bldc_rotor_n++;
-        if (motor.bldc_rotor_n == 7)
-            motor.bldc_rotor_n = 1;
-    }
-    if (bldc_timer_50ns % 128 == 0 && motor.bldc_time_div > 1)
-    {
-        motor.bldc_time_div--;
-    }
-    if (motor.bldc_time_div == 1 && bldc_timer_50ns % 32 == 0 && motor.PRIOD < PWM_PRIOD_LOAD - 2000)
-        motor.PRIOD++;
+    case MOTOR_START:
 
-    if (bldc_timer_50ns >= 65536)
-    {
-        bldc_timer_50ns = 0;
+        if (bldc_timer_50ns % motor.time_div == 0)
+        {
+            bldc_output(motor.rotor_n, motor.duty);
+            if (adc_global_value < 0)
+            {
+                motor.speed_buf++;
+                motor.rotor_n++;
+            }
+            if (motor.rotor_n == 7)
+                motor.rotor_n = 1;
+        }
+
+        // speed measure
+        if (bldc_timer_50ns % 256 == 0)
+        {
+            motor.speed_last = motor.speed;
+            motor.speed = motor.speed_buf;
+            motor.speed_buf = 0;
+        }
+
+        if (bldc_timer_50ns % 128 == 0 && motor.time_div > 1)
+        {
+            motor.time_div--;
+        }
+        if (motor.time_div == 1 && bldc_timer_50ns % 32 == 0 && motor.duty < PWM_PRIOD_LOAD - 2000)
+            motor.duty++;
+
+        if (bldc_timer_50ns >= 65536)
+        {
+            bldc_timer_50ns = 0;
+        }
+
+        if (motor.speed_last + 30 < motor.speed)
+        {
+            motor.state = MOTOR_STOP;
+        }
+        break;
+
+    case MOTOR_STOP:
+        break;
+
+    default:
+        break;
     }
 
-    data_send[19] = (float)motor.bldc_time_div;
+    data_send[19] = (float)motor.time_div;
     data_send[20] = (float)bldc_timer_50ns;
-    data_send[21] = (float)motor.PRIOD;
+    data_send[21] = (float)motor.duty;
     data_send[22] = (float)adc_global_value < 0;
+    data_send[23] = (float)motor.speed;
 }
 /*
 
@@ -74,17 +106,17 @@ void bldc_soft_openloop()
     case MOTOR_PRESTART:
         if (bldc_timer_50ns % bldc_timer_50ns == 0)
         {
-            bldc_output(motor.bldc_rotor_n, motor.PRIOD);
-                motor.bldc_rotor_n++;
-            if (motor.bldc_rotor_n == 7)
-                motor.bldc_rotor_n = 1;
+            bldc_output(motor.rotor_n, motor.duty);
+                motor.rotor_n++;
+            if (motor.rotor_n == 7)
+                motor.rotor_n = 1;
         }
         if (bldc_timer_50ns % 128 == 0 && bldc_timer_50ns > 1)
         {
             bldc_timer_50ns--;
         }
-        if (bldc_timer_50ns == 1 && bldc_timer_50ns % 32 == 0 && motor.PRIOD < PWM_PRIOD_LOAD - 2000)
-            motor.PRIOD++;
+        if (bldc_timer_50ns == 1 && bldc_timer_50ns % 32 == 0 && motor.duty < PWM_PRIOD_LOAD - 2000)
+            motor.duty++;
         if (bldc_timer_50ns >= 65536)
         {
             bldc_timer_50ns = 0;
@@ -98,11 +130,11 @@ void bldc_soft_openloop()
     case MOTOR_START:
         if (bldc_timer_50ns % bldc_timer_50ns == 0)
         {
-            bldc_output(motor.bldc_rotor_n, motor.PRIOD);
+            bldc_output(motor.rotor_n, motor.duty);
             if (adc_global_value < 0)
-                motor.bldc_rotor_n++;
-            if (motor.bldc_rotor_n == 7)
-                motor.bldc_rotor_n = 1;
+                motor.rotor_n++;
+            if (motor.rotor_n == 7)
+                motor.rotor_n = 1;
         }
         if ()
         {
@@ -117,7 +149,7 @@ void bldc_soft_openloop()
 
     data_send[19] = (float)bldc_timer_50ns;
     data_send[20] = (float)bldc_timer_50ns;
-    data_send[21] = (float)motor.PRIOD;
+    data_send[21] = (float)motor.duty;
     data_send[22] = (float)adc_global_value < 0;
 }
 */
