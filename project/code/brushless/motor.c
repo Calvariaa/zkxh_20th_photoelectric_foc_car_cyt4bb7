@@ -46,6 +46,9 @@
 #include "move_filter.h"
 #include "brushless/motor.h"
 #include "debug/vofaplus.h"
+#include "brushless/bldc.h"
+#include "brushless/adc.h"
+#include "zf_driver_adc.h"
 
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     电机PWM通道初始化
@@ -63,10 +66,10 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_left = // Configure the PWM_DT parameters
         .debug_pause = false,
         .countDirection = CY_TCPWM_COUNTER_COUNT_UP,
         /* Set UPDN2 modes */ // _DOWN2
-        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
-        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_SET,
         .underflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
+        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
         .cc1MatchMode = CY_TCPWM_PWM_TR_CTRL2_CLEAR,
+        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
         .deadTime = DEADTIME_LOAD,     /* Right side dead time */
         .deadTimeComp = DEADTIME_LOAD, /* Left  side dead time */
         .runMode = CY_TCPWM_PWM_CONTINUOUS,
@@ -91,6 +94,7 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_left = // Configure the PWM_DT parameters
         .kill1Input = 0ul,                       /* Select the constant 0 */
         .countInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
         .countInput = 1ul,                       /* Select the constant 1 */
+        .trigger1EventCfg = CY_TCPWM_COUNTER_OVERFLOW,
 };
 
 cy_stc_tcpwm_pwm_config_t tcpwm_config_right = // Configure the PWM_DT parameters
@@ -100,10 +104,10 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_right = // Configure the PWM_DT parameter
         .debug_pause = false,
         .countDirection = CY_TCPWM_COUNTER_COUNT_UP,
         /* Set UPDN2 modes */ // _DOWN2
-        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
-        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_SET,
         .underflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
+        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
         .cc1MatchMode = CY_TCPWM_PWM_TR_CTRL2_CLEAR,
+        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
         .deadTime = DEADTIME_LOAD,     /* Right side dead time */
         .deadTimeComp = DEADTIME_LOAD, /* Left  side dead time */
         .runMode = CY_TCPWM_PWM_CONTINUOUS,
@@ -128,6 +132,7 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_right = // Configure the PWM_DT parameter
         .kill1Input = 0ul,                       /* Select the constant 0 */
         .countInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
         .countInput = 1ul,                       /* Select the constant 1 */
+        .trigger1EventCfg = CY_TCPWM_COUNTER_OVERFLOW,
 };
 
 cy_stc_tcpwm_pwm_config_t tcpwm_config_middle = // Configure the PWM_DT parameters
@@ -137,10 +142,10 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_middle = // Configure the PWM_DT paramete
         .debug_pause = false,
         .countDirection = CY_TCPWM_COUNTER_COUNT_UP,
         /* Set UPDN2 modes */ // _DOWN2
-        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
-        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_SET,
         .underflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
+        .cc0MatchMode = CY_TCPWM_PWM_TR_CTRL2_SET,
         .cc1MatchMode = CY_TCPWM_PWM_TR_CTRL2_CLEAR,
+        .overflowMode = CY_TCPWM_PWM_TR_CTRL2_NO_CHANGE,
         .deadTime = DEADTIME_LOAD,     /* Right side dead time */
         .deadTimeComp = DEADTIME_LOAD, /* Left  side dead time */
         .runMode = CY_TCPWM_PWM_CONTINUOUS,
@@ -165,7 +170,9 @@ cy_stc_tcpwm_pwm_config_t tcpwm_config_middle = // Configure the PWM_DT paramete
         .kill1Input = 0ul,                       /* Select the constant 0 */
         .countInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
         .countInput = 1ul,                       /* Select the constant 1 */
+        .trigger1EventCfg = CY_TCPWM_COUNTER_OVERFLOW,
 };
+
 void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHASE_HSIOM_H, gpio_pin_enum __A_PHASE_PIN_L, en_hsiom_sel_t __A_PHASE_HSIOM_L, volatile en_clk_dst_t __A_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT,
                            gpio_pin_enum __B_PHASE_PIN_H, en_hsiom_sel_t __B_PHASE_HSIOM_H, gpio_pin_enum __B_PHASE_PIN_L, en_hsiom_sel_t __B_PHASE_HSIOM_L, volatile en_clk_dst_t __B_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT,
                            gpio_pin_enum __C_PHASE_PIN_H, en_hsiom_sel_t __C_PHASE_HSIOM_H, gpio_pin_enum __C_PHASE_PIN_L, en_hsiom_sel_t __C_PHASE_HSIOM_L, volatile en_clk_dst_t __C_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
@@ -238,12 +245,12 @@ void motor_duty_set(uint16_t a_duty, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP
                     uint16_t c_duty, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
                     uint32_t __trigLine)
 {
-    __A_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - a_duty) / 2;
-    __A_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + a_duty) / 2;
-    __B_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - b_duty) / 2;
-    __B_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + b_duty) / 2;
-    __C_PHASE_GRP_CNT->unCC0.u32Register = (PWM_PRIOD_LOAD - c_duty) / 2;
-    __C_PHASE_GRP_CNT->unCC1.u32Register = (PWM_PRIOD_LOAD + c_duty) / 2;
+    Cy_Tcpwm_Pwm_SetCompare0(__A_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - a_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare1(__A_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + a_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare0(__B_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - b_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare1(__B_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + b_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare0(__C_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - c_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare1(__C_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + c_duty) / 2);
 
     // Cy_TrigMux_SwTrigger(__trigLine, TRIGGER_TYPE_EDGE, 1ul); /*Output the Reload signal to TCPWM_ALL_CNT_TR_IN[2] */
 }
@@ -337,11 +344,11 @@ void mos_all_open_middle(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH
 // 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)
 // 返回参数     void
 // 使用示例     mos_q1q4_open(200);
-// 备注信息     
+// 备注信息
 //-------------------------------------------------------------------------------------------------------------------
 void mos_a_bn_open_middle(uint16_t duty)
 {
-    
+
     motor_channel_set(1, M_A_PHASE_GRP_CNT,
                       1, M_B_PHASE_GRP_CNT,
                       0, M_C_PHASE_GRP_CNT);
@@ -352,10 +359,10 @@ void mos_a_bn_open_middle(uint16_t duty)
 }
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     开启A相以及C相下桥MOS 关闭C相上桥以及B相MOS A相输出占空比波形
-// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)        
+// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)
 // 返回参数     void
 // 使用示例     mos_q1q6_open(200);
-// 备注信息     
+// 备注信息
 //-------------------------------------------------------------------------------------------------------------------
 void mos_a_cn_open_middle(uint16_t duty)
 {
@@ -369,10 +376,10 @@ void mos_a_cn_open_middle(uint16_t duty)
 }
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     开启B相以及A相下桥MOS 关闭A相上桥以及C相MOS B相输出占空比波形
-// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)        
+// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)
 // 返回参数     void
 // 使用示例     mos_q3q2_open(200);
-// 备注信息     
+// 备注信息
 //-------------------------------------------------------------------------------------------------------------------
 void mos_b_an_open_middle(uint16_t duty)
 {
@@ -386,10 +393,10 @@ void mos_b_an_open_middle(uint16_t duty)
 }
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     开启B相以及C相下桥MOS 关闭C相上桥以及A相MOS B相输出占空比波形
-// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)        
+// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)
 // 返回参数     void
 // 使用示例     mos_q3q6_open(200);
-// 备注信息     
+// 备注信息
 //-------------------------------------------------------------------------------------------------------------------
 void mos_b_cn_open_middle(uint16_t duty)
 {
@@ -403,10 +410,10 @@ void mos_b_cn_open_middle(uint16_t duty)
 }
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     开启C相以及A相下桥MOS 关闭A相上桥以及B相MOS C相输出占空比波形
-// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)        
+// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)
 // 返回参数     void
 // 使用示例     mos_q5q2_open(200);
-// 备注信息     
+// 备注信息
 //-------------------------------------------------------------------------------------------------------------------
 void mos_c_an_open_middle(uint16_t duty)
 {
@@ -420,10 +427,10 @@ void mos_c_an_open_middle(uint16_t duty)
 }
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     开启C相以及B相下桥MOS 关闭B相上桥以及A相MOS C相输出占空比波形
-// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)        
+// 参数说明     duty        占空比信息 PWM_PRIOD_LOAD (motor.h头文件有宏定义)
 // 返回参数     void
 // 使用示例     mos_q5q4_open(200);
-// 备注信息     
+// 备注信息
 //-------------------------------------------------------------------------------------------------------------------
 void mos_c_bn_open_middle(uint16_t duty)
 {
@@ -483,8 +490,10 @@ void mos_close_middle(void)
 // 使用示例     motor_parameter_init();
 // 备注信息     此处将完成电机控制通道初始化、转速输出通道初始化、基本控制参数配置
 //-------------------------------------------------------------------------------------------------------------------
-void motor_parameter_init(void)
+void motor_parameter_init()
 {
+    // motor_pwm_interrupt_init();
+
     motor_pwm_output_init(L_A_PHASE_PIN_H, L_A_PHASE_HSIOM_H, L_A_PHASE_PIN_L, L_A_PHASE_HSIOM_L, L_A_PHASE_CLK_DST, L_A_PHASE_GRP_CNT,
                           L_B_PHASE_PIN_H, L_B_PHASE_HSIOM_H, L_B_PHASE_PIN_L, L_B_PHASE_HSIOM_L, L_B_PHASE_CLK_DST, L_B_PHASE_GRP_CNT,
                           L_C_PHASE_PIN_H, L_C_PHASE_HSIOM_H, L_C_PHASE_PIN_L, L_C_PHASE_HSIOM_L, L_C_PHASE_CLK_DST, L_C_PHASE_GRP_CNT,

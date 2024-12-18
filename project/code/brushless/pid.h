@@ -44,7 +44,7 @@ typedef struct
     float output;
     float pre_output;
 } pid_param_t;
-extern pid_param_t foc_left_pid;
+extern pid_param_t foc_left_pid, foc_right_pid;
 // extern pid_param_t speed_pid;
 
 // typedef struct

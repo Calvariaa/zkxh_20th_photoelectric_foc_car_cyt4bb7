@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "C:\Users\Calvaria\Documents\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.general.xcl" --backend -f "C:\Users\Calvaria\Documents\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.general.xcl" --backend -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "C:\Users\Calvaria\Documents\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.general.xcl" "--debug_file=%~1" --backend -f "C:\Users\Calvaria\Documents\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.general.xcl" "--debug_file=%~1" --backend -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_0_plus.Debug.driver.xcl" 
 
 @echo off 
 :end

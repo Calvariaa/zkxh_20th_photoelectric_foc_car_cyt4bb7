@@ -1,68 +1,5 @@
 <?xml version="1.0"?>
 <settings>
-    <Jet>
-        <OnlineReset>Software</OnlineReset>
-        <JetConnSerialNo>SEEKFREE CMSIS-DAP V2:SF-3077534613209</JetConnSerialNo>
-        <JetConnFoundProbes>SEEKFREE CMSIS-DAP V1:SF-3077534613209:SEEKFREE CMSIS-DAP V2:SF-3077534613209:</JetConnFoundProbes>
-        <DisableInterrupts>0</DisableInterrupts>
-        <LeaveRunning>0</LeaveRunning>
-        <MultiCoreRunAll>0</MultiCoreRunAll>
-        <CpuHaltOnBreakpointSet>0</CpuHaltOnBreakpointSet>
-    </Jet>
-    <PlDriver>
-        <FirstRun>0</FirstRun>
-        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.2\arm\config\debugger\Infineon\CYT4BB_M0+.ddf</MemConfigValue>
-    </PlDriver>
-    <DebugChecksum>
-        <Checksum>3736654831</Checksum>
-    </DebugChecksum>
-    <Exceptions>
-        <StopOnUncaught>_ 0</StopOnUncaught>
-        <StopOnThrow>_ 0</StopOnThrow>
-    </Exceptions>
-    <Disassembly>
-        <MixedMode>1</MixedMode>
-        <InstrCount>0</InstrCount>
-    </Disassembly>
-    <Trace1>
-        <Enabled>0</Enabled>
-        <ShowSource>1</ShowSource>
-    </Trace1>
-    <ETMTraceWindow>
-        <PortWidth>4</PortWidth>
-        <PortMode>0</PortMode>
-        <CaptureDataValues>0</CaptureDataValues>
-        <CaptureDataAddresses>0</CaptureDataAddresses>
-        <CaptureDataRange>0</CaptureDataRange>
-        <DataFirst>0</DataFirst>
-        <DataLast>4294967295</DataLast>
-        <StopWhen>0</StopWhen>
-        <StallCPU>0</StallCPU>
-        <NoPCCapture>0</NoPCCapture>
-    </ETMTraceWindow>
-    <Trace2>
-        <Enabled>0</Enabled>
-        <ShowSource>0</ShowSource>
-    </Trace2>
-    <SWOTraceWindow>
-        <ForcedPcSampling>0</ForcedPcSampling>
-        <ForcedInterruptLogs>0</ForcedInterruptLogs>
-        <ForcedItmLogs>0</ForcedItmLogs>
-        <EventCPI>0</EventCPI>
-        <EventEXC>0</EventEXC>
-        <EventFOLD>0</EventFOLD>
-        <EventLSU>0</EventLSU>
-        <EventSLEEP>0</EventSLEEP>
-    </SWOTraceWindow>
-    <TerminalIO>
-        <InputSource>1</InputSource>
-        <InputMode>10</InputMode>
-        <Filename>$PROJ_DIR$\TermIOInput.txt</Filename>
-        <InputEcho>1</InputEcho>
-        <ShowReset>0</ShowReset>
-        <InputEncoding>2</InputEncoding>
-        <OutputEncoding>2</OutputEncoding>
-    </TerminalIO>
     <Stack>
         <FillEnabled>0</FillEnabled>
         <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
@@ -74,27 +11,40 @@
         <LimitSize>0</LimitSize>
         <ByteLimit>50</ByteLimit>
     </Stack>
-    <DriverProfiling>
-        <Enabled>0</Enabled>
-        <Mode>2</Mode>
-        <Graph>0</Graph>
-        <Symbiont>0</Symbiont>
-        <Exclusions />
-    </DriverProfiling>
-    <CallStackLog>
-        <Enabled>0</Enabled>
-    </CallStackLog>
-    <CallStackStripe>
-        <ShowTiming>1</ShowTiming>
-    </CallStackStripe>
-    <CallStack>
-        <ShowArgs>0</ShowArgs>
-    </CallStack>
+    <PlDriver>
+        <FirstRun>0</FirstRun>
+        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.2\arm\config\debugger\Infineon\CYT4BB_M0+.ddf</MemConfigValue>
+    </PlDriver>
+    <Jet>
+        <JetConnSerialNo>SEEKFREE CMSIS-DAP V2:SF-3077534613209</JetConnSerialNo>
+        <JetConnFoundProbes>SEEKFREE CMSIS-DAP V1:SF-3077534613209:SEEKFREE CMSIS-DAP V2:SF-3077534613209:</JetConnFoundProbes>
+        <DisableInterrupts>0</DisableInterrupts>
+        <LeaveRunning>0</LeaveRunning>
+        <MultiCoreRunAll>0</MultiCoreRunAll>
+        <CpuHaltOnBreakpointSet>0</CpuHaltOnBreakpointSet>
+    </Jet>
+    <ArmDriver>
+        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
+        <EnableCache>1</EnableCache>
+    </ArmDriver>
+    <TerminalIO>
+        <InputSource>1</InputSource>
+        <InputMode>10</InputMode>
+        <Filename>$PROJ_DIR$\TermIOInput.txt</Filename>
+        <InputEcho>1</InputEcho>
+        <ShowReset>0</ShowReset>
+        <InputEncoding>2</InputEncoding>
+        <OutputEncoding>2</OutputEncoding>
+    </TerminalIO>
+    <Exceptions>
+        <StopOnUncaught>_ 0</StopOnUncaught>
+        <StopOnThrow>_ 0</StopOnThrow>
+    </Exceptions>
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>4703255829819629652</CpuClock>
-        <SwoClock>6071772950867238731</SwoClock>
+        <CpuClock>4995127642704335939</CpuClock>
+        <SwoClock>4847373230410779457</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
@@ -103,10 +53,6 @@
         <PowerForcePC>1</PowerForcePC>
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
-    <ArmDriver>
-        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
-        <EnableCache>1</EnableCache>
-    </ArmDriver>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>

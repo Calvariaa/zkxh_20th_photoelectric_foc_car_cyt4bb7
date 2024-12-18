@@ -119,6 +119,7 @@
 void motor_parameter_init(void);
 void mos_all_open_left(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
 void mos_all_open_right(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
+void mos_all_open_middle(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
 
 void mos_a_bn_open_middle(uint16_t duty);
 void mos_a_cn_open_middle(uint16_t duty);

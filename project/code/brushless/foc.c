@@ -10,7 +10,6 @@
 #include "brushless/encoder/encoder.h"
 #include "brushless/move_filter.h"
 #include "brushless/motor.h"
-#include "brushless/pid.h"
 
 extern bool protect_flag;
 
@@ -224,7 +223,7 @@ Period_Typedef PeriodCal(VectorTime_Typedef vector, uint8 N, uint16 T)
 //   @return     d、q输入值
 //   @since
 //-------------------------------------------------------------------------------------------------------------------
-ipark_variable Current_Close_Loop(FOC_Parm_Typedef *__FOC_, park_variable I_park)
+ipark_variable Current_Close_Loop(FOC_Parm_Typedef *__foc_, park_variable I_park)
 {
     float error_d, error_q;
 
@@ -252,111 +251,110 @@ ipark_variable Current_Close_Loop(FOC_Parm_Typedef *__FOC_, park_variable I_park
     //      ki_foc_id = 0;
     //      kp_foc_iq = 0;
     //      ki_foc_iq = 0;
-    //     __FOC_->error_sum_d=0;
-    //     __FOC_->error_sum_q=0;
+    //     __foc_->error_sum_d=0;
+    //     __foc_->error_sum_q=0;
     // }
-    error_d = __FOC_->Ref_Park.u_d - I_park.id_ref;
-    error_q = __FOC_->Ref_Park.u_q - I_park.iq_ref;
+    error_d = __foc_->Ref_Park.u_d - I_park.id_ref;
+    error_q = __foc_->Ref_Park.u_q - I_park.iq_ref;
 
     // look5 = error_d * 10000;
     // look6 = error_q * 10000; // look1-5都是用于上位机查看波形
 
     // look4 = (error_q)*10000;
     // look3 =I_park.id_ref*10000;
-    __FOC_->error_sum_d = __FOC_->error_sum_d + error_d;
-    __FOC_->error_sum_q = __FOC_->error_sum_q + error_q;
+    __foc_->error_sum_d = __foc_->error_sum_d + error_d;
+    __foc_->error_sum_q = __foc_->error_sum_q + error_q;
 
-    if (__FOC_->error_sum_d > 70)
-        __FOC_->error_sum_d = 70; // 积分限幅
-    if (__FOC_->error_sum_d < -70)
-        __FOC_->error_sum_d = -70; // 积分限幅
-    if (__FOC_->error_sum_q > 70)
-        __FOC_->error_sum_q = 70; // 积分限幅
-    if (__FOC_->error_sum_q < -70)
-        __FOC_->error_sum_q = -70; // 积分限幅
-    //  look5 =__FOC_->error_sum_d*100;
-    // look6 =__FOC_->error_sum_q*100;
-    __FOC_->Park_in.u_d = kp_foc_id * error_d + ki_foc_id * __FOC_->error_sum_d;
-    __FOC_->Park_in.u_q = kp_foc_iq * error_q + ki_foc_iq * __FOC_->error_sum_q;
-    if (__FOC_->Park_in.u_d >= 4)
+    if (__foc_->error_sum_d > 70)
+        __foc_->error_sum_d = 70; // 积分限幅
+    if (__foc_->error_sum_d < -70)
+        __foc_->error_sum_d = -70; // 积分限幅
+    if (__foc_->error_sum_q > 70)
+        __foc_->error_sum_q = 70; // 积分限幅
+    if (__foc_->error_sum_q < -70)
+        __foc_->error_sum_q = -70; // 积分限幅
+    //  look5 =__foc_->error_sum_d*100;
+    // look6 =__foc_->error_sum_q*100;
+    __foc_->Park_in.u_d = kp_foc_id * error_d + ki_foc_id * __foc_->error_sum_d;
+    __foc_->Park_in.u_q = kp_foc_iq * error_q + ki_foc_iq * __foc_->error_sum_q;
+    if (__foc_->Park_in.u_d >= 4)
     {
-        __FOC_->Park_in.u_d = 4;
+        __foc_->Park_in.u_d = 4;
     }
-    if (__FOC_->Park_in.u_d <= 0 - 4)
+    if (__foc_->Park_in.u_d <= 0 - 4)
     {
-        __FOC_->Park_in.u_d = 0 - 4;
+        __foc_->Park_in.u_d = 0 - 4;
     }
-    if (__FOC_->Park_in.u_q <= 0 - 6)
+    if (__foc_->Park_in.u_q <= 0 - 6)
     {
-        __FOC_->Park_in.u_q = 0 - 6;
+        __foc_->Park_in.u_q = 0 - 6;
     }
-    if (__FOC_->Park_in.u_q >= 6)
+    if (__foc_->Park_in.u_q >= 6)
     {
-        __FOC_->Park_in.u_q = 6;
+        __foc_->Park_in.u_q = 6;
     }
 
-    // if(__FOC_->Park_in.u_q>=6.5)
+    // if(__foc_->Park_in.u_q>=6.5)
     //{
-    //     __FOC_->Park_in.u_q=6.5;
+    //     __foc_->Park_in.u_q=6.5;
     // }
-    // if(__FOC_->Park_in.u_d>=1)
+    // if(__foc_->Park_in.u_d>=1)
     //{
-    //     __FOC_->Park_in.u_d=1;
+    //     __foc_->Park_in.u_d=1;
     // }
-    // if(__FOC_->Park_in.u_q<=0-6.5)
+    // if(__foc_->Park_in.u_q<=0-6.5)
     //{
-    //     __FOC_->Park_in.u_q=0-6.5;
+    //     __foc_->Park_in.u_q=0-6.5;
     // }
-    // if(__FOC_->Park_in.u_d<=0-1)
+    // if(__foc_->Park_in.u_d<=0-1)
     //{
-    //     __FOC_->Park_in.u_d=0-1;
+    //     __foc_->Park_in.u_d=0-1;
     // }
     // look1 = I_park.id_ref*1000;
 
     // look3 =I_park.iq_ref*1000;
-    // __FOC_->Park_in.u_d=1;
-    // __FOC_->Park_in.u_q=0;
-    return __FOC_->Park_in;
+    // __foc_->Park_in.u_d=1;
+    // __foc_->Park_in.u_q=0;
+    return __foc_->Park_in;
 }
 
-#define AMPLITUDE 2.0f
 #define SAMPLE_RATE 20000.0f
-float get_ud_music(FOC_Parm_Typedef *__FOC_, uint16_t _FREQUENCY)
+float get_ud_freq(FOC_Parm_Typedef *__foc_, uint16_t _frequency, float _amplitude)
 {
-    if (_FREQUENCY == 0)
+    if (_frequency == 0)
         return 0;
 
-    __FOC_->ud_phase += pi_2 * _FREQUENCY / SAMPLE_RATE;
-    if (__FOC_->ud_phase >= pi_2)
+    __foc_->ud_phase += pi_2 * _frequency / SAMPLE_RATE;
+    if (__foc_->ud_phase >= pi_2)
     {
-        __FOC_->ud_phase -= pi_2;
+        __foc_->ud_phase -= pi_2;
     }
 
-    if (fast_sin(__FOC_->ud_phase) >= 0.0f)
+    if (fast_sin(__foc_->ud_phase) >= 0.0f)
     {
-        return AMPLITUDE;
+        return _amplitude;
     }
     else
     {
-        return -AMPLITUDE;
+        return -_amplitude;
     }
 
-    // return sin(__FOC_->ud_phase) * AMPLITUDE;
+    // return sin(__foc_->ud_phase) * AMPLITUDE;
 
-    // if (__FOC_->ud_phase < PI) {
-    //     return AMPLITUDE * (__FOC_->ud_phase / pi - 0.5f);
+    // if (__foc_->ud_phase < PI) {
+    //     return AMPLITUDE * (__foc_->ud_phase / pi - 0.5f);
     // } else {
-    //     return AMPLITUDE * (1.5f - __FOC_->ud_phase / pi);
+    //     return AMPLITUDE * (1.5f - __foc_->ud_phase / pi);
     // }
 }
 
 // #define CURRENTLOOP
 // #define TESTMODE
 
-FOC_Parm_Typedef FOC_L = {0};
-FOC_Parm_Typedef FOC_R = {0};
+FOC_Parm_Typedef foc_left = {0};
+FOC_Parm_Typedef foc_right = {0};
 
-void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__mos_all_open_)(uint16_t, uint16_t, uint16_t))
+void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_t *__pid_, void (*__mos_all_open_)(uint16_t, uint16_t, uint16_t))
 {
     __encoder_->theta_val = __encoder_->__get_magnet_val_();
     __encoder_->theta_magnet = get_magnet_angle(__encoder_->theta_val, __encoder_->zero_angle);
@@ -371,56 +369,56 @@ void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__m
     data_send[3] = (float)adc_information.current_c;
 
     /*----------*/
-    __FOC_->I_Clrak = clark_cacl(adc_information);
+    __foc_->I_Clrak = clark_cacl(adc_information);
     /*----------*/
-    __FOC_->I_Park = park_cacl(__FOC_->I_Clrak, theta);
+    __foc_->I_Park = park_cacl(__foc_->I_Clrak, theta);
 
-    data_send[4] = (float)__FOC_->I_Park.id_ref * 10000;
-    data_send[5] = (float)__FOC_->I_Park.iq_ref * 10000;
+    data_send[4] = (float)__foc_->I_Park.id_ref * 10000;
+    data_send[5] = (float)__foc_->I_Park.iq_ref * 10000;
 
     // look5 =  adc_information.current_a *1000;
     //  look6 =  adc_information.current_b *1000;
-    // data_send[3]=(int16) __FOC_->I_Park.id_ref*1000;
-    // data_send[4]=(int16)  __FOC_->I_Park.iq_ref*1000;
-    __FOC_->Ref_Park.u_d = 0;
-    __FOC_->Ref_Park.u_q = 0.3; // 期望值
+    // data_send[3]=(int16) __foc_->I_Park.id_ref*1000;
+    // data_send[4]=(int16)  __foc_->I_Park.iq_ref*1000;
+    __foc_->Ref_Park.u_d = 0;
+    __foc_->Ref_Park.u_q = 0.3; // 期望值
     if (timer_1ms >= 100)
     {
-        __FOC_->Ref_Park.u_q = 0.2; // 期望值//0.01
+        __foc_->Ref_Park.u_q = 0.2; // 期望值//0.01
     }
 
-    Current_Close_Loop(&__FOC_, __FOC_->I_Park);
+    Current_Close_Loop(&__foc_, __foc_->I_Park);
 
-    data_send[6] = __FOC_->Park_in.u_q * 1000;
-    data_send[7] = __FOC_->Park_in.u_d * 1000;
+    data_send[6] = __foc_->Park_in.u_q * 1000;
+    data_send[7] = __foc_->Park_in.u_d * 1000;
 #elif defined TESTMODE
     // test
-    // __FOC_->set_angle += ANGLE_TO_RAD(0.4);
-    if (__FOC_->set_angle >= pi_2)
+    // __foc_->set_angle += ANGLE_TO_RAD(0.4);
+    if (__foc_->set_angle >= pi_2)
     {
-        __FOC_->expect_rotations++;
-        __FOC_->set_angle -= pi_2;
+        __foc_->expect_rotations++;
+        __foc_->set_angle -= pi_2;
     }
-    if (__FOC_->set_angle < -pi_2)
+    if (__foc_->set_angle < -pi_2)
     {
-        __FOC_->expect_rotations--;
-        __FOC_->set_angle += pi_2;
+        __foc_->expect_rotations--;
+        __foc_->set_angle += pi_2;
     }
 
-    __FOC_->Park_in.u_d = get_ud_music(foc_ud_freq);
-    __FOC_->Park_in.u_q = 0;
+    __foc_->Park_in.u_d = get_ud_freq(foc_ud_freq);
+    __foc_->Park_in.u_q = 0;
 
-    data_send[13] = __encoder_->theta_elec - __FOC_->set_angle;
-    data_send[14] = __FOC_->Park_in.u_q;
+    data_send[13] = __encoder_->theta_elec - __foc_->set_angle;
+    data_send[14] = __foc_->Park_in.u_q;
 
-    __FOC_->V_Clark = iPark_Calc(__FOC_->Park_in, -__FOC_->set_angle);
+    __foc_->V_Clark = iPark_Calc(__foc_->Park_in, -__foc_->set_angle);
 #else
 
-    __FOC_->Park_in.u_d = get_ud_music(__FOC_, foc_ud_freq);
+    __foc_->Park_in.u_d = get_ud_freq(__foc_, foc_ud_freq, 2.0);
 
     // test
-    if (fabsf(__FOC_->Park_in.u_q) < FOC_UQ_MAX)
-        __FOC_->set_angle += ANGLE_TO_RAD(0.08);
+    if (fabsf(__foc_->Park_in.u_q) < FOC_UQ_MAX)
+        __foc_->set_angle += ANGLE_TO_RAD(0.);
 
     // if (ierror_count < 20)
     // {
@@ -434,37 +432,36 @@ void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder_, void (*__m
     // }
 
     data_send[14] = (float)ierror_count;
-    if (__FOC_->set_angle >= pi_2)
+    if (__foc_->set_angle >= pi_2)
     {
-        __FOC_->expect_rotations++;
-        __FOC_->set_angle -= pi_2;
+        __foc_->expect_rotations++;
+        __foc_->set_angle -= pi_2;
     }
-    if (__FOC_->set_angle < -pi_2)
+    if (__foc_->set_angle < -pi_2)
     {
-        __FOC_->expect_rotations--;
-        __FOC_->set_angle += pi_2;
+        __foc_->expect_rotations--;
+        __foc_->set_angle += pi_2;
     }
 
-    move_filter_double_calc(&speed_filter, get_magnet_speed(__encoder_->theta_magnet, __encoder_->full_rotations, __encoder_->theta_magnet_last, __encoder_->full_rotations_last, PWM_PRIOD_LOAD));
+    // move_filter_double_calc(&speed_filter, get_magnet_speed(__encoder_->theta_magnet, __encoder_->full_rotations, __encoder_->theta_magnet_last, __encoder_->full_rotations_last, PWM_PRIOD_LOAD));
 
-    // __FOC_->Park_in.u_q = 2;
+    // __foc_->Park_in.u_q = 2;
     if (!protect_flag)
-        __FOC_->Park_in.u_q = pid_solve(&foc_left_pid, (__FOC_->set_angle + __FOC_->expect_rotations * pi_2) * __encoder_->turn_dir - (__encoder_->theta_magnet + __encoder_->full_rotations * pi_2)) * __encoder_->polarity;
+        __foc_->Park_in.u_q = pid_solve(__pid_, (__foc_->set_angle + __foc_->expect_rotations * pi_2) * __encoder_->turn_dir - (__encoder_->theta_magnet + __encoder_->full_rotations * pi_2)) * __encoder_->polarity;
     else
-        __FOC_->Park_in.u_q = 0;
-    // __FOC_->Park_in.u_q = pid_solve(&foc_left_pid, (ANGLE_TO_RAD(0)) - (theta_magnet + full_rotations * pi_2)) / 1000.f;
+        __foc_->Park_in.u_q = 0;
 
-    __FOC_->V_Clark = iPark_Calc(__FOC_->Park_in, __encoder_->theta_elec);
+    __foc_->V_Clark = iPark_Calc(__foc_->Park_in, __encoder_->theta_elec);
 
 #endif
 
-    __FOC_->tool = Tool_Calc(__FOC_->V_Clark);         // 中间变量计算
-    __FOC_->N = Electrical_Sector_Judge(__FOC_->tool); // 电角度扇区判断
+    __foc_->tool = Tool_Calc(__foc_->V_Clark);         // 中间变量计算
+    __foc_->N = Electrical_Sector_Judge(__foc_->tool); // 电角度扇区判断
 
-    __FOC_->Vector = Vector_Calc(__FOC_->tool, __FOC_->N, BUS_VOLTAGE, PWM_PRIOD_LOAD); // 矢量作用时间计算
-    __FOC_->Period = PeriodCal(__FOC_->Vector, __FOC_->N, PWM_PRIOD_LOAD);              // 各桥PWM占空比计算
+    __foc_->Vector = Vector_Calc(__foc_->tool, __foc_->N, BUS_VOLTAGE, PWM_PRIOD_LOAD); // 矢量作用时间计算
+    __foc_->Period = PeriodCal(__foc_->Vector, __foc_->N, PWM_PRIOD_LOAD);              // 各桥PWM占空比计算
 
-    __mos_all_open_(__FOC_->Period.AH, __FOC_->Period.BH, __FOC_->Period.CH);
+    __mos_all_open_(__foc_->Period.AH, __foc_->Period.BH, __foc_->Period.CH);
 
     __encoder_->theta_magnet_last = __encoder_->theta_magnet;
     __encoder_->full_rotations_last = __encoder_->full_rotations;

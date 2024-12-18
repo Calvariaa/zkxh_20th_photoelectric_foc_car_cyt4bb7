@@ -1,8 +1,8 @@
 #include "brushless/pid.h"
 #include "brushless/foc.h"
 
-pid_param_t foc_left_pid = PID_CREATE(5.0, 0.0008, 0., 0.8, 10., 0.8, 0, FOC_UQ_MAX);
-pid_param_t foc_right_pid = PID_CREATE(5.0, 0.0008, 0., 0.8, 10., 0.8, 0, FOC_UQ_MAX);
+pid_param_t foc_left_pid = PID_CREATE(2.0, 0.0008, 0., 0.8, 10., 0.8, 0, FOC_UQ_MAX);
+pid_param_t foc_right_pid = PID_CREATE(2.0, 0.0008, 0., 0.8, 10., 0.8, 0, FOC_UQ_MAX);
 
 // ≥£πÊPID
 float pid_solve(pid_param_t *pid, float error)

@@ -1116,24 +1116,6 @@
     <group>
         <name>code</name>
         <group>
-            <name>debug</name>
-            <file>
-                <name>$PROJ_DIR$\..\..\code\debug\vofaplus.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\code\debug\vofaplus.h</name>
-            </file>
-        </group>
-        <group>
-            <name>fastmath</name>
-            <file>
-                <name>$PROJ_DIR$\..\..\code\fastmath\cos_sin.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\code\fastmath\cos_sin.h</name>
-            </file>
-        </group>
-        <group>
             <name>brushless</name>
             <group>
                 <name>encoder</name>
@@ -1156,6 +1138,12 @@
                     <name>$PROJ_DIR$\..\..\code\brushless\encoder\mt6701ct.h</name>
                 </file>
             </group>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\brushless\adc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\brushless\adc.h</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\..\code\brushless\bldc.c</name>
             </file>
@@ -1191,6 +1179,24 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\code\brushless\pid.h</name>
+            </file>
+        </group>
+        <group>
+            <name>debug</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\debug\vofaplus.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\debug\vofaplus.h</name>
+            </file>
+        </group>
+        <group>
+            <name>fastmath</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\fastmath\cos_sin.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\fastmath\cos_sin.h</name>
             </file>
         </group>
     </group>

@@ -1,7 +1,7 @@
 #ifndef DEBUG_VOFAPLUS_H_
 #define DEBUG_VOFAPLUS_H_
 
-#define DATA_SEND_SIZE 20
+#define DATA_SEND_SIZE 32
 
 #include "zf_common_typedef.h"
 

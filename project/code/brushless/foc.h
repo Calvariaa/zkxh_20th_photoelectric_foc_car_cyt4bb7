@@ -8,6 +8,7 @@
 #include "arm_math.h"
 #include "brushless/buzzer.h"
 #include "brushless/encoder/encoder.h"
+#include "brushless/pid.h"
 
 #ifndef CODE_FOC_H_
 #define CODE_FOC_H_
@@ -165,7 +166,8 @@ VectorTime_Typedef Vector_Calc(Instrument_Typedef tool, uint8 N, uint8 Udc, uint
 uint8 Electrical_Sector_Judge(Instrument_Typedef tool);
 Instrument_Typedef Tool_Calc(out_variable clark2);
 
-void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder, void (*__mos_all_open_)(uint16_t , uint16_t , uint16_t ));
+float get_ud_freq(FOC_Parm_Typedef *__foc_, uint16_t _frequency, float _amplitude);
+void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder, pid_param_t *__pid_, void (*__mos_all_open_)(uint16_t , uint16_t , uint16_t ));
 
 // extern int slow_startup_count;
 extern uint16 ierror_count;

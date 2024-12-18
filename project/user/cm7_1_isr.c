@@ -41,10 +41,11 @@
 #include "brushless/move_filter.h"
 #include "brushless/buzzer.h"
 #include "brushless/motor.h"
+#include "brushless/pid.h"
 // **************************** PIT中断函数 ****************************
 
-extern FOC_Parm_Typedef FOC_L;
-extern FOC_Parm_Typedef FOC_R;
+extern FOC_Parm_Typedef foc_left;
+extern FOC_Parm_Typedef foc_right;
 
 extern encoder_t encoder_left;
 extern encoder_t encoder_right;
@@ -58,7 +59,7 @@ void pit0_ch0_isr()
     if (START_DELAY_FLAG)
         return;
 
-    foc_commutation(&FOC_L, &encoder_left, mos_all_open_left);
+    foc_commutation(&foc_left, &encoder_left, &foc_left_pid, mos_all_open_left);
 }
 
 void pit0_ch1_isr()
@@ -68,7 +69,7 @@ void pit0_ch1_isr()
     if (START_DELAY_FLAG)
         return;
 
-    foc_commutation(&FOC_R, &encoder_right, mos_all_open_right);
+    foc_commutation(&foc_right, &encoder_right, &foc_right_pid, mos_all_open_right);
 }
 
 void pit0_ch2_isr()
@@ -308,7 +309,6 @@ void uart3_isr(void)
 
 void uart4_isr(void)
 {
-
     if (Cy_SCB_GetRxInterruptMask(get_scb_module(UART_4)) & CY_SCB_UART_RX_NOT_EMPTY) // 串口4接收中断
     {
         Cy_SCB_ClearRxInterrupt(get_scb_module(UART_4), CY_SCB_UART_RX_NOT_EMPTY); // 清除接收中断标志位

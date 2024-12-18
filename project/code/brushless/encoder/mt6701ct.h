@@ -18,7 +18,8 @@
 #define MT6701CT_ANGLEUNC 0x3FFE //
 #define MT6701CT_ANGLECOM 0x3FFF // 存放具有动态角度误差补偿角度信息的寄存器地址
 
-uint16_t mt6701ct_get_magnet_val();
+uint16_t mt6701ct_get_magnet_val_left();
+uint16_t mt6701ct_get_magnet_val_right();
 void mt6701ct_init();
 
 #endif /* _MT6701CT_H */
