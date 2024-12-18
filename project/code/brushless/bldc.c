@@ -4,52 +4,132 @@
 #include "brushless/buzzer.h"
 #include "zf_driver_adc.h"
 
-uint8_t n = 1;
-uint16_t b = 48;
-uint64_t t = 1;
-uint16_t PRIOD = PWM_PRIOD_LOAD / 8;
+uint64_t bldc_timer_50ns = 1;
+// uint8_t bldc_rotor_n = 1;
+// uint16_t bldc_time_div = 48;
+// uint16_t PRIOD = PWM_PRIOD_LOAD / 8;
 
-#define BLDC_TEST
+
+typedef enum
+{
+    MOTOR_PRESTART,
+    MOTOR_START,
+    MOTOR_STOP
+} MotorState;
+
+typedef struct
+{
+    uint8_t bldc_rotor_n;
+    uint16_t bldc_time_div;
+    uint16_t PRIOD;
+    MotorState state;
+} MotorControl;
+
+MotorControl motor = {
+    .bldc_rotor_n = 1,
+    .bldc_time_div = 48,
+    .PRIOD = PWM_PRIOD_LOAD / 8,
+    .state = MOTOR_PRESTART,
+};
 
 void bldc_soft_openloop()
 {
-    t++;
+    bldc_timer_50ns++;
     tcpwm_irq_middle();
 
-    if (t % b == 0)
+    if (bldc_timer_50ns % motor.bldc_time_div == 0)
     {
-        bldc_output(n, PRIOD);
+        bldc_output(motor.bldc_rotor_n, motor.PRIOD);
         if (adc_global_value < 0)
-            n++;
-        if (n == 7)
-            n = 1;
+            motor.bldc_rotor_n++;
+        if (motor.bldc_rotor_n == 7)
+            motor.bldc_rotor_n = 1;
     }
-    if (t % 128 == 0 && b > 1)
+    if (bldc_timer_50ns % 128 == 0 && motor.bldc_time_div > 1)
     {
-        b--;
+        motor.bldc_time_div--;
     }
-    if (b == 1 && t % 32 == 0 && PRIOD < PWM_PRIOD_LOAD - 2000)
-        PRIOD++;
+    if (motor.bldc_time_div == 1 && bldc_timer_50ns % 32 == 0 && motor.PRIOD < PWM_PRIOD_LOAD - 2000)
+        motor.PRIOD++;
 
-    if (t >= 65536)
+    if (bldc_timer_50ns >= 65536)
     {
-        t = 0;
+        bldc_timer_50ns = 0;
     }
 
-    data_send[19] = (float)b;
-    data_send[20] = (float)t;
-    data_send[21] = (float)PRIOD;
+    data_send[19] = (float)motor.bldc_time_div;
+    data_send[20] = (float)bldc_timer_50ns;
+    data_send[21] = (float)motor.PRIOD;
     data_send[22] = (float)adc_global_value < 0;
 }
+/*
+
+void bldc_soft_openloop()
+{
+    bldc_timer_50ns++;
+    tcpwm_irq_middle();
+
+    switch (motor.state)
+    {
+    case MOTOR_PRESTART:
+        if (bldc_timer_50ns % bldc_timer_50ns == 0)
+        {
+            bldc_output(motor.bldc_rotor_n, motor.PRIOD);
+                motor.bldc_rotor_n++;
+            if (motor.bldc_rotor_n == 7)
+                motor.bldc_rotor_n = 1;
+        }
+        if (bldc_timer_50ns % 128 == 0 && bldc_timer_50ns > 1)
+        {
+            bldc_timer_50ns--;
+        }
+        if (bldc_timer_50ns == 1 && bldc_timer_50ns % 32 == 0 && motor.PRIOD < PWM_PRIOD_LOAD - 2000)
+            motor.PRIOD++;
+        if (bldc_timer_50ns >= 65536)
+        {
+            bldc_timer_50ns = 0;
+        }
+        if ()
+        {
+            motor.state = MOTOR_START;
+        }
+        break;
+
+    case MOTOR_START:
+        if (bldc_timer_50ns % bldc_timer_50ns == 0)
+        {
+            bldc_output(motor.bldc_rotor_n, motor.PRIOD);
+            if (adc_global_value < 0)
+                motor.bldc_rotor_n++;
+            if (motor.bldc_rotor_n == 7)
+                motor.bldc_rotor_n = 1;
+        }
+        if ()
+        {
+            motor.state = MOTOR_STOP;
+        }
+        break;
+
+    case MOTOR_STOP:
+        // Add motor stop logic here
+        break;
+    }
+
+    data_send[19] = (float)bldc_timer_50ns;
+    data_send[20] = (float)bldc_timer_50ns;
+    data_send[21] = (float)motor.PRIOD;
+    data_send[22] = (float)adc_global_value < 0;
+}
+*/
 
 float bldc_accel = 0.6;
 FOC_Parm_Typedef FOC_M = {0};
 void bldc_svpwm()
 {
-    t++;
-    if (t % 1024 == 0)
+    bldc_timer_50ns++;
+    if (bldc_timer_50ns % 1024 == 0)
     {
-        t = 0;
+        bldc_timer_50ns = 0;
         if (bldc_accel < 4)
         {
             FOC_M.Park_in.u_q = 4;
