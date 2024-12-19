@@ -4,7 +4,7 @@
 #include "brushless/buzzer.h"
 #include "zf_driver_adc.h"
 
-uint64_t bldc_timer_50ns = 1;
+uint64_t bldc_timer_50ns = 0;
 
 typedef enum
 {
@@ -18,9 +18,10 @@ typedef struct
     uint8_t rotor_n;
     uint16_t time_div;
     uint16_t duty;
-    uint32 speed_buf;
-    uint32 speed;
-    uint32 speed_last;
+    int32_t speed_buf;
+    int32_t speed;
+    int32_t speed_diff;
+    int32_t speed_list[32];
     MotorState state;
 } MotorControl;
 
@@ -30,11 +31,12 @@ MotorControl motor = {
     .duty = PWM_PRIOD_LOAD / 8,
     .speed_buf = 0,
     .speed = 0,
-    .speed_last = 0,
+    .speed_diff = 0,
+    .speed_list = {0},
     .state = MOTOR_START,
 };
 
-void bldc_soft_openloop()
+void bldc_commutation()
 {
     bldc_timer_50ns++;
     tcpwm_irq_middle();
@@ -58,16 +60,27 @@ void bldc_soft_openloop()
         // speed measure
         if (bldc_timer_50ns % 256 == 0)
         {
-            motor.speed_last = motor.speed;
+            // motor.speed_last = motor.speed;
+            for (uint8_t i = 0; i < 31; i++)
+            {
+                motor.speed_list[i] = motor.speed_list[i + 1];
+            }
+            motor.speed_list[31] = motor.speed;
             motor.speed = motor.speed_buf;
             motor.speed_buf = 0;
+
+            motor.speed_diff = 0;
+            for (uint8_t i = 0; i < 31; i++)
+            {
+                motor.speed_diff += motor.speed_list[i + 1] - motor.speed_list[i];
+            }
         }
 
-        if (bldc_timer_50ns % 128 == 0 && motor.time_div > 1)
+        if (bldc_timer_50ns % 32 == 0 && motor.time_div > 1)
         {
             motor.time_div--;
         }
-        if (motor.time_div == 1 && bldc_timer_50ns % 32 == 0 && motor.duty < PWM_PRIOD_LOAD - 2000)
+        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD - 2000)
             motor.duty++;
 
         if (bldc_timer_50ns >= 65536)
@@ -75,13 +88,31 @@ void bldc_soft_openloop()
             bldc_timer_50ns = 0;
         }
 
-        if (motor.speed_last + 30 < motor.speed)
+        if (motor.speed_diff < -30)
         {
+            bldc_timer_50ns = 0;
+            motor.duty = 0;
             motor.state = MOTOR_STOP;
         }
+
         break;
 
     case MOTOR_STOP:
+        bldc_timer_50ns++;
+        mos_close_middle();
+
+        // if (bldc_timer_50ns > 20 * 1000 * 2) // 2s
+        // {
+        //     motor.rotor_n = 1;
+        //     motor.time_div = 48;
+        //     motor.duty = PWM_PRIOD_LOAD / 8;
+        //     motor.speed_buf = 0;
+        //     motor.speed = 0;
+        //     motor.speed_diff = 0;
+        //     memset(motor.speed_list, 0, sizeof(motor.speed_list));
+        //     motor.state = MOTOR_START;
+        // }
+
         break;
 
     default:
@@ -93,10 +124,11 @@ void bldc_soft_openloop()
     data_send[21] = (float)motor.duty;
     data_send[22] = (float)adc_global_value < 0;
     data_send[23] = (float)motor.speed;
+    data_send[24] = (float)motor.speed_diff;
 }
 /*
 
-void bldc_soft_openloop()
+void bldc_commutation()
 {
     bldc_timer_50ns++;
     tcpwm_irq_middle();

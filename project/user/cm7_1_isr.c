@@ -79,7 +79,7 @@ void pit0_ch2_isr()
     if (START_DELAY_FLAG)
         return;
 
-    bldc_soft_openloop();
+    bldc_commutation();
     // bldc_svpwm();
 }
 

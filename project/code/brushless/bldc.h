@@ -7,7 +7,7 @@
 #include "brushless/motor.h"
 #include "brushless/adc.h"
 
-void bldc_soft_openloop();
+void bldc_commutation();
 void bldc_output(uint8_t hall_now, uint16_t output_duty);
 void bldc_svpwm();
 

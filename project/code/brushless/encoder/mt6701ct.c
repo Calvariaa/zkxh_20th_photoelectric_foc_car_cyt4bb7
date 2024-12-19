@@ -71,7 +71,7 @@ void mt6701ct_spi_init(const cy_stc_scb_spi_config_t *__SCB_SPI_cfg, volatile st
     Cy_SCB_SPI_Enable(__SPI_TYPE);
 }
 
-uint16_t mt6701ct_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8 __CLK_GPIO)
+uint16_t mt6701ct_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8 __CS_GPIO)
 {
     uint16_t read_data = 0;
 
@@ -83,7 +83,7 @@ uint16_t mt6701ct_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8 __C
     __SPI_TYPE->unTX_CTRL.u32Register |= 0x0000000F;
     __SPI_TYPE->unRX_CTRL.u32Register &= 0xffffffe0;
     __SPI_TYPE->unRX_CTRL.u32Register |= 0x0000000F;
-    // gpio_low(__CLK_GPIO);
+    // gpio_low(__CS_GPIO);
     // Cy_SCB_WriteTxFifo(__SPI_TYPE, 0xffff); // 发送寄存器地址
     // // 等待发送到数据
     // while (Cy_SCB_IsTxComplete(__SPI_TYPE) == 0)
@@ -91,11 +91,11 @@ uint16_t mt6701ct_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8 __C
     // // 等待接收到数据
     // while (Cy_SCB_SPI_GetNumInRxFifo(__SPI_TYPE) == 0)
     //     ;
-    // gpio_high(__CLK_GPIO);
+    // gpio_high(__CS_GPIO);
 
     // Cy_SCB_SPI_ClearRxFifo(__SPI_TYPE); // 清除接收缓冲区
 
-    gpio_low(__CLK_GPIO);
+    gpio_low(__CS_GPIO);
     Cy_SCB_WriteTxFifo(__SPI_TYPE, 0); // 发送寄存器地址
 
     // 等待发送到数据
@@ -105,7 +105,7 @@ uint16_t mt6701ct_spi_read_16bit_angle(volatile stc_SCB_t *__SPI_TYPE, uint8 __C
     while (Cy_SCB_SPI_GetNumInRxFifo(__SPI_TYPE) == 0)
         ;
     read_data = (uint16)(__SPI_TYPE->unRX_FIFO_RD.u32Register);
-    gpio_high(__CLK_GPIO);
+    gpio_high(__CS_GPIO);
     // Cy_SCB_SPI_ClearRxFifo(__SPI_TYPE); // 清除接收缓冲区
 
     return read_data;
