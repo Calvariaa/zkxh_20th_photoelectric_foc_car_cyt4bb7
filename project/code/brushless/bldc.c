@@ -36,10 +36,51 @@ MotorControl motor = {
     .state = MOTOR_START,
 };
 
+void bldc_output(uint8_t hall_now, uint16_t output_duty)
+{
+    switch (hall_now)
+    {
+    case 1:
+        // 开启A相以及B相下桥MOS 关闭B相上桥以及C相MOS
+        mos_a_bn_open_middle(output_duty);
+        adc_global_value = (adc_cbmf_value - adc_abmf_value / 2);
+        break;
+    case 2:
+        mos_a_cn_open_middle(output_duty);
+        adc_global_value = -(adc_bbmf_value - adc_abmf_value / 2);
+        break;
+    case 3:
+        mos_b_cn_open_middle(output_duty);
+        adc_global_value = (adc_abmf_value - adc_bbmf_value / 2);
+        break;
+    case 4:
+        mos_b_an_open_middle(output_duty);
+        adc_global_value = -(adc_cbmf_value - adc_bbmf_value / 2);
+        break;
+    case 5:
+        mos_c_an_open_middle(output_duty);
+        adc_global_value = (adc_bbmf_value - adc_cbmf_value / 2);
+        break;
+    case 6:
+        mos_c_bn_open_middle(output_duty);
+        adc_global_value = -(adc_abmf_value - adc_cbmf_value / 2);
+        break;
+    default:
+        mos_close_middle();
+        break;
+    }
+    data_send[26] = adc_abmf_value;
+    data_send[27] = adc_bbmf_value;
+    data_send[28] = adc_cbmf_value;
+    data_send[29] = adc_global_value;
+}
+
+int8_t bldc_test1 = 1;
 void bldc_commutation()
 {
     bldc_timer_50ns++;
-    tcpwm_irq_middle();
+    // adc_global_value_last = adc_global_value;
+    bldc_adc_convert();
 
     switch (motor.state)
     {
@@ -48,10 +89,14 @@ void bldc_commutation()
         if (bldc_timer_50ns % motor.time_div == 0)
         {
             bldc_output(motor.rotor_n, motor.duty);
+            // if ((adc_global_value_last < 0 && adc_global_value >= 0) || (adc_global_value_last > 0 && adc_global_value <= 0))
             if (adc_global_value < 0)
             {
+                bldc_test1 = !bldc_test1;
+
                 motor.speed_buf++;
                 motor.rotor_n++;
+                // gpio_toggle_level(P20_1);
             }
             if (motor.rotor_n == 7)
                 motor.rotor_n = 1;
@@ -80,7 +125,7 @@ void bldc_commutation()
         {
             motor.time_div--;
         }
-        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD - 2000)
+        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 2)
             motor.duty++;
 
         if (bldc_timer_50ns >= 65536)
@@ -122,16 +167,21 @@ void bldc_commutation()
     data_send[19] = (float)motor.time_div;
     data_send[20] = (float)bldc_timer_50ns;
     data_send[21] = (float)motor.duty;
-    data_send[22] = (float)adc_global_value < 0;
-    data_send[23] = (float)motor.speed;
-    data_send[24] = (float)motor.speed_diff;
+
+    data_send[22] = (float)adc_global_value;
+    data_send[23] = (float)bldc_test1;
+
+    data_send_add(adc_abmf_value, adc_global_value, bldc_test1);
+
+    data_send[24] = (float)motor.speed;
+    data_send[25] = (float)motor.speed_diff;
 }
 /*
 
 void bldc_commutation()
 {
     bldc_timer_50ns++;
-    tcpwm_irq_middle();
+    bldc_adc_convert();
 
     switch (motor.state)
     {
@@ -184,7 +234,6 @@ void bldc_commutation()
     data_send[21] = (float)motor.duty;
     data_send[22] = (float)adc_global_value < 0;
 }
-*/
 
 float bldc_accel = 0.6;
 FOC_Parm_Typedef FOC_M = {0};
@@ -232,48 +281,4 @@ void bldc_svpwm()
     data_send[19] = (float)FOC_M.Park_in.u_q;
     data_send[20] = (float)bldc_accel;
 }
-
-void bldc_output(uint8_t hall_now, uint16_t output_duty)
-{
-    switch (hall_now)
-    {
-    case 1:
-        mos_a_bn_open_middle(output_duty);
-        adc_mid_value = (adc_abmf_value + adc_bbmf_value) / 2;
-        adc_global_value = adc_cbmf_value - adc_mid_value;
-        break;
-    case 2:
-        mos_a_cn_open_middle(output_duty);
-        adc_mid_value = (adc_abmf_value + adc_cbmf_value) / 2;
-        adc_global_value = adc_bbmf_value - adc_mid_value;
-        break;
-    case 3:
-        mos_b_cn_open_middle(output_duty);
-        adc_mid_value = (adc_cbmf_value + adc_bbmf_value) / 2;
-        adc_global_value = adc_abmf_value - adc_mid_value;
-        break;
-    case 4:
-        mos_b_an_open_middle(output_duty);
-        adc_mid_value = (adc_abmf_value + adc_bbmf_value) / 2;
-        adc_global_value = adc_cbmf_value - adc_mid_value;
-        break;
-    case 5:
-        mos_c_an_open_middle(output_duty);
-        adc_mid_value = (adc_abmf_value + adc_cbmf_value) / 2;
-        adc_global_value = adc_bbmf_value - adc_mid_value;
-        break;
-    case 6:
-        mos_c_bn_open_middle(output_duty);
-        adc_mid_value = (adc_cbmf_value + adc_bbmf_value) / 2;
-        adc_global_value = adc_abmf_value - adc_mid_value;
-        break;
-    default:
-        mos_close_middle();
-        break;
-    }
-    data_send[25] = adc_abmf_value;
-    data_send[26] = adc_bbmf_value;
-    data_send[27] = adc_cbmf_value;
-    data_send[28] = adc_mid_value;
-    data_send[29] = adc_global_value;
-}
+*/

@@ -13,12 +13,10 @@
 extern int16_t adc_abmf_value;
 extern int16_t adc_bbmf_value;
 extern int16_t adc_cbmf_value;
-extern int16_t adc_sum_value;
-extern int16_t adc_mid_value;
 extern int16_t adc_global_value_last;
 extern int16_t adc_global_value;
 
 void motor_bldc_adc_init();
-void tcpwm_irq_middle();
+void bldc_adc_convert();
 
 #endif /* _ADC_H */

@@ -40,10 +40,11 @@
 #include "system_cyt4bb.h"
 
 // #define FPWM (uint16_t)(20000)          // PWM频率
-#define PWM_PRIOD_LOAD (uint16_t)(4000) // PWM周期装载值
-// #define PWM_PRIOD_LOAD (uint16_t)(SYSTEM_CLOCK_250M / FPWM / 2) // PWM周期装载值
+#define PWM_PRIOD_LOAD (uint16_t)(3000) // PWM周期装载值
+// #define PWM_PRIOD_LOAD (uint16_t)(80000000UL / FPWM / 2) // PWM周期装载值
 #define DEADTIME_LOAD (10) // 死区装载值
 
+#define TCPWM_COUNT_USE_ISR CPUIntIdx4_IRQn
 // foc left
 #define L_TRIG_OUT_MUX TRIG_OUT_MUX_5_TCPWM_ALL_CNT_TR_IN2
 
@@ -67,6 +68,10 @@
 #define L_C_PHASE_HSIOM_L (P7_6_TCPWM0_LINE_COMPL17)
 #define L_C_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS17)
 #define L_C_PHASE_GRP_CNT (TCPWM0_GRP0_CNT17)
+
+#define L_COUNTER_IRQn (tcpwm_0_interrupts_18_IRQn)
+#define L_COUNTER_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS18)
+#define L_COUNTER_PHASE_GRP_CNT (TCPWM0_GRP0_CNT18)
 
 // foc right
 #define R_TRIG_OUT_MUX TRIG_OUT_MUX_5_TCPWM_ALL_CNT_TR_IN3
@@ -92,6 +97,10 @@
 #define R_C_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS46)
 #define R_C_PHASE_GRP_CNT (TCPWM0_GRP0_CNT46)
 
+#define R_COUNTER_IRQn (tcpwm_0_interrupts_47_IRQn)
+#define R_COUNTER_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS47)
+#define R_COUNTER_PHASE_GRP_CNT (TCPWM0_GRP0_CNT47)
+
 // brushless
 #define M_TRIG_OUT_MUX TRIG_OUT_MUX_5_TCPWM_ALL_CNT_TR_IN4
 
@@ -116,6 +125,10 @@
 #define M_C_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS11)
 #define M_C_PHASE_GRP_CNT (TCPWM0_GRP0_CNT11)
 
+#define M_COUNTER_IRQn (tcpwm_0_interrupts_10_IRQn)
+#define M_COUNTER_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS10)
+#define M_COUNTER_PHASE_GRP_CNT (TCPWM0_GRP0_CNT10)
+
 void motor_parameter_init(void);
 void mos_all_open_left(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
 void mos_all_open_right(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
@@ -131,4 +144,8 @@ void mos_c_bn_open_middle(uint16_t duty);
 void mos_close_left(void);
 void mos_close_right(void);
 void mos_close_middle(void);
+
+void L_tcpwm_irq();
+void R_tcpwm_irq();
+void M_tcpwm_irq();
 #endif

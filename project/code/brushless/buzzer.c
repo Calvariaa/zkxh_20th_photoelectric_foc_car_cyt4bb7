@@ -5,9 +5,9 @@ static uint32_t buzzer_period = 0; // 按键的扫描周期(ms)
 bool buzzer_on_flag = true;
 
 buzz_t buzzer_list[BUZZER_QUEUE_SIZE];
-uint8_t buzzer_number = 0;
-uint8_t buzzer_head = 0;
-uint8_t buzzer_tail = 0;
+uint32_t buzzer_number = 0;
+uint32_t buzzer_head = 0;
+uint32_t buzzer_tail = 0;
 
 void buzzer_init(int16_t t)
 {

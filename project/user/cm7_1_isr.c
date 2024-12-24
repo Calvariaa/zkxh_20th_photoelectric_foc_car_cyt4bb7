@@ -52,9 +52,10 @@ extern encoder_t encoder_right;
 
 uint64 timer_1ms = 0u;
 #define START_DELAY_FLAG (timer_1ms < 100)
-void pit0_ch0_isr()
+
+void L_tcpwm_irq()
 {
-    pit_isr_flag_clear(PIT_CH0);
+    Cy_Tcpwm_Counter_ClearTC_Intr(L_COUNTER_PHASE_GRP_CNT);
 
     if (START_DELAY_FLAG)
         return;
@@ -62,9 +63,9 @@ void pit0_ch0_isr()
     foc_commutation(&foc_left, &encoder_left, &foc_left_pid, mos_all_open_left);
 }
 
-void pit0_ch1_isr()
+void R_tcpwm_irq()
 {
-    pit_isr_flag_clear(PIT_CH1);
+    Cy_Tcpwm_Counter_ClearTC_Intr(R_COUNTER_PHASE_GRP_CNT);
 
     if (START_DELAY_FLAG)
         return;
@@ -72,21 +73,19 @@ void pit0_ch1_isr()
     foc_commutation(&foc_right, &encoder_right, &foc_right_pid, mos_all_open_right);
 }
 
-void pit0_ch2_isr()
+void M_tcpwm_irq()
 {
-    pit_isr_flag_clear(PIT_CH2);
+    Cy_Tcpwm_Counter_ClearTC_Intr(M_COUNTER_PHASE_GRP_CNT);
 
     if (START_DELAY_FLAG)
         return;
 
     bldc_commutation();
-    // bldc_svpwm();
 }
 
-void pit0_ch3_isr()
+void pit0_ch0_isr()
 {
-    pit_isr_flag_clear(PIT_CH3);
-
+    pit_isr_flag_clear(PIT_CH0);
     timer_1ms++;
 
     if (!START_DELAY_FLAG)
@@ -105,6 +104,21 @@ void pit0_ch3_isr()
     //     if (ierror_count < 2000)
     //         ierror_count++;
     // }
+}
+
+void pit0_ch1_isr()
+{
+    pit_isr_flag_clear(PIT_CH1);
+}
+
+void pit0_ch2_isr()
+{
+    pit_isr_flag_clear(PIT_CH2);
+}
+
+void pit0_ch3_isr()
+{
+    pit_isr_flag_clear(PIT_CH3);
 }
 
 void pit0_ch4_isr()

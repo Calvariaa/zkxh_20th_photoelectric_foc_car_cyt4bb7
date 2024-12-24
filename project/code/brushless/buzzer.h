@@ -123,7 +123,6 @@ typedef struct
 #define BUZZER_EASE_DIVISOR 16
 
 extern buzz_t buzzer_list[BUZZER_QUEUE_SIZE];
-extern uint8_t buzzer_number;
 
 void buzzer_init(int16_t t);
 void buzz_exec();

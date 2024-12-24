@@ -318,7 +318,7 @@ ipark_variable Current_Close_Loop(FOC_Parm_Typedef *__foc_, park_variable I_park
     return __foc_->Park_in;
 }
 
-#define SAMPLE_RATE 20000.0f
+#define SAMPLE_RATE (80000000.f / PWM_PRIOD_LOAD)
 float get_ud_freq(FOC_Parm_Typedef *__foc_, uint16_t _frequency, float _amplitude)
 {
     if (_frequency == 0)

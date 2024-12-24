@@ -57,6 +57,11 @@ extern encoder_t encoder_right;
 
 extern uint64_t timer_1ms;
 
+void my_ipc_callback_cm71(uint32_t receive_data)
+{
+    data_send[30] = (float)receive_data;
+}
+
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
@@ -64,7 +69,7 @@ int main(void)
 
     // 此处编写用户代码 例如外设初始化代码等
 
-    gpio_init(LED1, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
+    gpio_init(LED1, GPO, GPIO_LOW, GPO_PUSH_PULL);    // 初始化 LED1 输出 默认高电平 推挽输出模式
     gpio_init(TESTPIN, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
 
     buzzer_init(1);
@@ -77,15 +82,16 @@ int main(void)
     // move_filter_double_init(&speed_filter);
     encoder_init();
 
-    interrupt_global_disable(); // 关闭全局中断
+    // 关闭全局中断
+    interrupt_global_disable();
 
-    motor_parameter_init(); // 电机参数初始化
+    // IPC初始化
+    ipc_communicate_init(IPC_PORT_1, my_ipc_callback_cm71);
+
+    // 电机参数初始化
+    motor_parameter_init();
 
     motor_bldc_adc_init();
-
-    // gpio_init(P20_1, GPI, 0, GPI_PULL_DOWN);
-    // gpio_init(P20_3, GPI, 0, GPI_PULL_DOWN);
-    // gpio_init(P21_6, GPI, 0, GPI_PULL_DOWN);
 
     cy_stc_gpio_pin_config_t gpio_pin_config = {0};
     gpio_pin_config.driveMode = CY_GPIO_DM_PULLUP;
@@ -93,11 +99,11 @@ int main(void)
     Cy_GPIO_Pin_Init(get_port(P20_3), (P20_3 % 8), &gpio_pin_config);
     Cy_GPIO_Pin_Init(get_port(P21_6), (P21_6 % 8), &gpio_pin_config);
 
-    pit_us_init(PIT_CH0, 50); // 20khz
-    pit_us_init(PIT_CH1, 50);
-    pit_us_init(PIT_CH2, 50);
+    // pit_us_init(PIT_CH0, 50); // 20khz
+    // pit_us_init(PIT_CH1, 50);
+    // pit_us_init(PIT_CH2, 50);
 
-    pit_ms_init(PIT_CH3, 1); // 1ms
+    pit_ms_init(PIT_CH0, 1); // 1ms
 
     interrupt_global_enable(0);
 
@@ -165,6 +171,7 @@ int main(void)
         // data_send[28] = (float)adc_convert(ADC1_CH31_P15_3);
 
         send_vofaplus();
+        // send_vofaplus_queue();
     }
 }
 
