@@ -1428,6 +1428,15 @@
     </configuration>
     <group>
         <name>code</name>
+        <group>
+            <name>debug</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\debug\vofaplus.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\debug\vofaplus.h</name>
+            </file>
+        </group>
     </group>
     <group>
         <name>doc</name>

@@ -47,6 +47,10 @@
 extern FOC_Parm_Typedef foc_left;
 extern FOC_Parm_Typedef foc_right;
 
+extern buzz_t buzz_left;
+extern buzz_t buzz_right;
+extern buzz_t buzz_middle;
+
 extern encoder_t encoder_left;
 extern encoder_t encoder_right;
 
@@ -60,6 +64,18 @@ void L_tcpwm_irq()
     if (START_DELAY_FLAG)
         return;
 
+    foc_left.foc_ud_freq = buzz_left.buzzer_freq;
+
+    // static uint16_t i = 0;
+    // static uint8_t j = 1;
+    // foc_left.foc_ud_freq = 20000;
+    // foc_left.foc_ud_amp = (float)tetrisa[i++] / 32767.f * 4.f;
+    // // if (j++ % 2 == 0)
+    // // {
+    // //     if (i < 80806)
+    // //         i++;
+    // //     j = 1;
+    // // }
     foc_commutation(&foc_left, &encoder_left, &foc_left_pid, mos_all_open_left);
 }
 
@@ -70,6 +86,18 @@ void R_tcpwm_irq()
     if (START_DELAY_FLAG)
         return;
 
+    foc_right.foc_ud_freq = buzz_right.buzzer_freq;
+
+    // static uint16_t i = 0;
+    // static uint8_t j = 1;
+    // foc_right.foc_ud_freq = 20000;
+    // foc_right.foc_ud_amp = (float)tetrisa[i++] / 32767.f * 4.f;
+    // // if (j++ % 2 == 0)
+    // // {
+    // //     if (i < 80806)
+    // //         i++;
+    // //     j = 1;
+    // // }
     foc_commutation(&foc_right, &encoder_right, &foc_right_pid, mos_all_open_right);
 }
 
@@ -83,13 +111,29 @@ void M_tcpwm_irq()
     bldc_commutation();
 }
 
+void M2_tcpwm_irq()
+{
+    Cy_Tcpwm_Counter_ClearTC_Intr(M2_COUNTER_PHASE_GRP_CNT);
+
+    if (START_DELAY_FLAG)
+        return;
+
+    adc_test_mid[0] = adc_mean_filter_convert(ADC0_CH24_P08_1, 1);
+    adc_test_mid[1] = adc_mean_filter_convert(ADC0_CH25_P08_2, 1);
+    adc_test_mid[2] = adc_mean_filter_convert(ADC0_CH26_P08_3, 1);
+}
+
 void pit0_ch0_isr()
 {
     pit_isr_flag_clear(PIT_CH0);
     timer_1ms++;
 
     if (!START_DELAY_FLAG)
-        buzz_exec();
+    {
+        buzz_exec(&buzz_left);
+        buzz_exec(&buzz_right);
+        buzz_exec(&buzz_middle);
+    }
     if (timer_1ms == 50)
     {
         set_zero_angle(get_magnet_angle(encoder_left.__get_magnet_val_(), encoder_left.zero_angle), &encoder_left);

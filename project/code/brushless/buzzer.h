@@ -106,11 +106,27 @@
 // #define BUZZ_(x) gpio_set_level(BUZZER_PIN, (x))
 #define BUZZ_DUTY(x) (pwm_init(BUZZER_PWM, (uint32_t)(x)))
 
+#define BUZZER_QUEUE_SIZE 1024
+#define BUZZER_EASE_DIVISOR 16
+
 typedef struct
 {
     int32_t time;
     uint32_t freq;
+} melody_t;
+
+typedef struct
+{
+    melody_t buzzer_list[BUZZER_QUEUE_SIZE];
+    uint32_t buzzer_number;
+    uint32_t buzzer_head;
+    uint32_t buzzer_tail;
+    uint16_t buzzer_freq;
 } buzz_t;
+
+extern buzz_t buzz_left;
+extern buzz_t buzz_right;
+extern buzz_t buzz_middle;
 
 #define CREATE_BUZZ(_time, _freq) \
     {                             \
@@ -118,17 +134,12 @@ typedef struct
         .freq = _freq,            \
     }
 
-// —≠ª∑∂”¡–
-#define BUZZER_QUEUE_SIZE 1024
-#define BUZZER_EASE_DIVISOR 16
-
-extern buzz_t buzzer_list[BUZZER_QUEUE_SIZE];
 
 void buzzer_init(int16_t t);
-void buzz_exec();
+void buzz_exec(buzz_t *__buzz_);
 
-void buzz_keep_ms(int16_t t, uint16_t freq);
-void buzz_ease_ms(int16_t t, uint16_t bfreq1, uint16_t bfreq2);
+void buzz_keep_ms(int16_t t, uint16_t freq, buzz_t *__buzz_);
+void buzz_ease_ms(int16_t t, uint16_t bfreq1, uint16_t bfreq2, buzz_t *__buzz_);
 
 typedef struct note_t
 {
@@ -136,7 +147,8 @@ typedef struct note_t
     float divider;
 } note;
 void play_music();
+void play_cxk();
 
-extern uint16_t foc_ud_freq;
+extern uint16_t buzzer_freq;
 extern const note melody[];
 #endif /* BUZZER_H */

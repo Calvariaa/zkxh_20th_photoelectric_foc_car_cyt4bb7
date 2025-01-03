@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <settings>
     <Jet>
-        <PrevWtdReset>System</PrevWtdReset>
-        <OnlineReset>Software</OnlineReset>
         <JetConnSerialNo>SEEKFREE CMSIS-DAP V2:SF-3077534613209</JetConnSerialNo>
         <JetConnFoundProbes>SEEKFREE CMSIS-DAP V1:SF-3077534613209:SEEKFREE CMSIS-DAP V2:SF-3077534613209:</JetConnFoundProbes>
         <DisableInterrupts>0</DisableInterrupts>
@@ -41,8 +39,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>4703255829819629652</CpuClock>
-        <SwoClock>6071772950867238731</SwoClock>
+        <CpuClock>4995127642704335939</CpuClock>
+        <SwoClock>4847373230410779457</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
@@ -52,59 +50,19 @@
         <PowerConnectPC>1</PowerConnectPC>
     </SWOManager>
     <ArmDriver>
-        <EnableCache>1</EnableCache>
         <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
+        <EnableCache>1</EnableCache>
     </ArmDriver>
-    <DebugChecksum>
-        <Checksum>990358754</Checksum>
-    </DebugChecksum>
-    <Disassembly>
-        <MixedMode>1</MixedMode>
-    </Disassembly>
-    <CallStack>
-        <ShowArgs>0</ShowArgs>
-    </CallStack>
-    <Trace1>
-        <Enabled>0</Enabled>
-        <ShowSource>1</ShowSource>
-    </Trace1>
-    <ETMTraceWindow>
-        <PortWidth>4</PortWidth>
-        <PortMode>0</PortMode>
-        <CaptureDataValues>0</CaptureDataValues>
-        <CaptureDataAddresses>0</CaptureDataAddresses>
-        <CaptureDataRange>0</CaptureDataRange>
-        <DataFirst>0</DataFirst>
-        <DataLast>4294967295</DataLast>
-        <StopWhen>0</StopWhen>
-        <StallCPU>0</StallCPU>
-        <NoPCCapture>0</NoPCCapture>
-    </ETMTraceWindow>
-    <Trace2>
-        <Enabled>0</Enabled>
-        <ShowSource>0</ShowSource>
-    </Trace2>
-    <SWOTraceWindow>
-        <ForcedPcSampling>0</ForcedPcSampling>
-        <ForcedInterruptLogs>0</ForcedInterruptLogs>
-        <ForcedItmLogs>0</ForcedItmLogs>
-        <EventCPI>0</EventCPI>
-        <EventEXC>0</EventEXC>
-        <EventFOLD>0</EventFOLD>
-        <EventLSU>0</EventLSU>
-        <EventSLEEP>0</EventSLEEP>
-    </SWOTraceWindow>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\code\brushless\motor.c}.539.1" 0 0 1 "" 0 "" 0</Bp0>
-        <Count>1</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
     </TermIOLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Count>0</Count>
+    </Breakpoints2>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>

@@ -46,7 +46,6 @@
 #include "arm_math.h"
 
 bool protect_flag = 0;
-#define LED1 (P19_0)
 #define TESTPIN (P20_1)
 
 extern FOC_Parm_Typedef foc_left;
@@ -57,11 +56,6 @@ extern encoder_t encoder_right;
 
 extern uint64_t timer_1ms;
 
-void my_ipc_callback_cm71(uint32_t receive_data)
-{
-    data_send[30] = (float)receive_data;
-}
-
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
@@ -69,7 +63,6 @@ int main(void)
 
     // 此处编写用户代码 例如外设初始化代码等
 
-    gpio_init(LED1, GPO, GPIO_LOW, GPO_PUSH_PULL);    // 初始化 LED1 输出 默认高电平 推挽输出模式
     gpio_init(TESTPIN, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
 
     buzzer_init(1);
@@ -85,13 +78,17 @@ int main(void)
     // 关闭全局中断
     interrupt_global_disable();
 
-    // IPC初始化
-    ipc_communicate_init(IPC_PORT_1, my_ipc_callback_cm71);
+    // init ipc
+    // init_ipc_cm71();
 
     // 电机参数初始化
     motor_parameter_init();
 
     motor_bldc_adc_init();
+
+    adc_init(ADC_ABMF, ADC_12BIT);
+    adc_init(ADC_BBMF, ADC_12BIT);
+    adc_init(ADC_CBMF, ADC_12BIT);
 
     cy_stc_gpio_pin_config_t gpio_pin_config = {0};
     gpio_pin_config.driveMode = CY_GPIO_DM_PULLUP;
@@ -109,69 +106,106 @@ int main(void)
 
     // play_music();
 
-    buzz_keep_ms(100, 0);
-    buzz_keep_ms(140, NOTE_C6);
-    buzz_keep_ms(10, 0);
+    /*
+        buzz_keep_ms(100, 0, &buzz_left);
+        buzz_keep_ms(140, NOTE_C6, &buzz_left);
+        buzz_keep_ms(10, 0, &buzz_left);
 
-    buzz_keep_ms(140, NOTE_G6);
-    buzz_keep_ms(10, 0);
+        buzz_keep_ms(140, NOTE_G6, &buzz_left);
+        buzz_keep_ms(10, 0, &buzz_left);
 
-    buzz_keep_ms(140, NOTE_C7);
-    buzz_keep_ms(10, 0);
+        buzz_keep_ms(140, NOTE_C7, &buzz_left);
+        buzz_keep_ms(10, 0, &buzz_left);
 
-    buzz_ease_ms(180, NOTE_E6, NOTE_F6);
-    buzz_ease_ms(100, NOTE_F6, NOTE_A6);
-    buzz_keep_ms(10, 0);
+        buzz_ease_ms(180, NOTE_E6, NOTE_F6, &buzz_left);
+        buzz_ease_ms(100, NOTE_F6, NOTE_A6, &buzz_left);
+        buzz_keep_ms(10, 0, &buzz_left);
 
-    buzz_keep_ms(140, NOTE_G6);
-    buzz_keep_ms(10, 0);
+        buzz_keep_ms(140, NOTE_G6, &buzz_left);
+        buzz_keep_ms(10, 0, &buzz_left);
+
+
+
+        buzz_keep_ms(100, 0, &buzz_right);
+        buzz_keep_ms(140, NOTE_C6, &buzz_right);
+        buzz_keep_ms(10, 0, &buzz_right);
+
+        buzz_keep_ms(140, NOTE_G6, &buzz_right);
+        buzz_keep_ms(10, 0, &buzz_right);
+
+        buzz_keep_ms(140, NOTE_C7, &buzz_right);
+        buzz_keep_ms(10, 0, &buzz_right);
+
+        buzz_ease_ms(180, NOTE_E6, NOTE_F6, &buzz_right);
+        buzz_ease_ms(100, NOTE_F6, NOTE_A6, &buzz_right);
+        buzz_keep_ms(10, 0, &buzz_right);
+
+        buzz_keep_ms(140, NOTE_G6, &buzz_right);
+        buzz_keep_ms(10, 0, &buzz_right);
+    */
+    //
+    // buzz_keep_ms(240, NOTE_C6, &buzz_left);
+    // buzz_keep_ms(240, NOTE_E6, &buzz_right);
+    // buzz_keep_ms(10, 0, &buzz_left);
+    // buzz_keep_ms(10, 0, &buzz_right);
+
+    // buzz_keep_ms(240, NOTE_E6, &buzz_left);
+    // buzz_keep_ms(240, NOTE_G6, &buzz_right);
+    // buzz_keep_ms(10, 0, &buzz_left);
+    // buzz_keep_ms(10, 0, &buzz_right);
+
+    // buzz_keep_ms(240, NOTE_G6, &buzz_left);
+    // buzz_keep_ms(240, NOTE_C7, &buzz_right);
+    // buzz_keep_ms(10, 0, &buzz_left);
+    buzz_keep_ms(10, 0, &buzz_right);
 
     // 此处编写用户代码 例如外设初始化代码等
     while (true)
     {
-        // 此处编写需要循环执行的代码
 
-        gpio_toggle_level(LED1);
-        // buzz_keep_ms(1, NOTE_C5);
-        // foc_ud_freq = NOTE_C5;
-        // 此处编写需要循环执行的代码
-        // mos_all_open_left(3000, 1000, 0);
-        // foc_commutation();
-        // for (uint16 i = 0; i < 4095; i++)
-        //     ;
-        // spi_write_16bit(SPI_0, 0xffff);
+        send_vofaplus_queue();
+        continue;
 
-        data_send[1] = (float)foc_left.Period.AH;
-        data_send[2] = (float)foc_left.Period.BH;
-        data_send[3] = (float)foc_left.Period.CH;
+        data_send(1, (float)foc_left.Period.AH);
+        data_send(2, (float)foc_left.Period.BH);
+        data_send(3, (float)foc_left.Period.CH);
 
-        data_send[4] = (float)foc_right.Period.AH;
-        data_send[5] = (float)foc_right.Period.BH;
-        data_send[6] = (float)foc_right.Period.CH;
+        data_send(4, (float)foc_right.Period.AH);
+        data_send(5, (float)foc_right.Period.BH);
+        data_send(6, (float)foc_right.Period.CH);
 
-        data_send[10] = (float)encoder_left.theta_val;
-        data_send[11] = (float)encoder_right.theta_val;
+        data_send(10, (float)encoder_left.theta_val);
+        data_send(11, (float)encoder_right.theta_val);
 
-        data_send[12] = (float)encoder_left.theta_elec;
-        data_send[13] = (float)encoder_right.theta_elec;
+        data_send(12, (float)fast_sin(encoder_left.theta_elec));
+        // data_send(13, (float)arm_sin_f32(encoder_left.theta_elec));
+        // data_send(12, encoder_left.theta_elec;
+        // data_send(13, encoder_right.theta_elec;
 
-        // data_send[12] = (float)(foc_left.set_angle + foc_left.expect_rotations * pi_2) - (encoder_left.theta_magnet + encoder_left.full_rotations * pi_2);
-        // data_send[13] = (float)(foc_right.set_angle + foc_right.expect_rotations * pi_2) - (encoder_right.theta_magnet + encoder_right.full_rotations * pi_2);
-        data_send[14] = (float)(foc_left.set_angle);
-        data_send[15] = (float)(foc_right.set_angle);
+        // data_send(12, (foc_left.set_angle + foc_left.expect_rotations * pi_2) - (encoder_left.theta_magnet + encoder_left.full_rotations * pi_2);
+        // data_send(13, (foc_right.set_angle + foc_right.expect_rotations * pi_2) - (encoder_right.theta_magnet + encoder_right.full_rotations * pi_2);
+        data_send(14, (float)foc_left.set_angle);
+        data_send(15, (float)foc_right.set_angle);
 
-        data_send[16] = (float)foc_left.Park_in.u_q;
-        data_send[17] = (float)foc_right.Park_in.u_q;
+        data_send(16, (float)foc_left.Park_in.u_q);
+        data_send(17, (float)foc_right.Park_in.u_q);
 
-        // data_send[18] = (float)speed_filter.data_average;
+        // data_send(18, speed_filter.data_average;
 
-        // data_send[25] = (float)adc_convert(ADC1_CH28_P15_0) - adc_convert(ADC1_CH31_P15_3);
-        // data_send[26] = (float)adc_convert(ADC1_CH29_P15_1) - adc_convert(ADC1_CH31_P15_3);
-        // data_send[27] = (float)adc_convert(ADC1_CH30_P15_2) - adc_convert(ADC1_CH31_P15_3);
-        // data_send[28] = (float)adc_convert(ADC1_CH31_P15_3);
+        // data_send(25, adc_convert(ADC1_CH28_P15_0) - adc_convert(ADC1_CH31_P15_3);
+        // data_send(26, adc_convert(ADC1_CH29_P15_1) - adc_convert(ADC1_CH31_P15_3);
+        // data_send(27, adc_convert(ADC1_CH30_P15_2) - adc_convert(ADC1_CH31_P15_3);
+        // data_send(28, adc_convert(ADC1_CH31_P15_3);
 
-        send_vofaplus();
-        // send_vofaplus_queue();
+        data_send(30, (float)adc_test_mid[0]);
+        data_send(31, (float)adc_test_mid[1]);
+        data_send(32, (float)adc_test_mid[2]);
+        data_send(33, (adc_test_mid[0] + adc_test_mid[1] + adc_test_mid[2] - 2048 * 3));
+
+        data_send_clear();
+
+
+
     }
 }
 

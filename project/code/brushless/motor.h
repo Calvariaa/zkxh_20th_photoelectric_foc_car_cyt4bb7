@@ -129,6 +129,10 @@
 #define M_COUNTER_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS10)
 #define M_COUNTER_PHASE_GRP_CNT (TCPWM0_GRP0_CNT10)
 
+#define M2_COUNTER_IRQn (tcpwm_0_interrupts_12_IRQn)
+#define M2_COUNTER_PHASE_CLK_DST (PCLK_TCPWM0_CLOCKS12)
+#define M2_COUNTER_PHASE_GRP_CNT (TCPWM0_GRP0_CNT12)
+
 void motor_parameter_init(void);
 void mos_all_open_left(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
 void mos_all_open_right(uint16_t periodAH, uint16_t periodBH, uint16_t periodCH);
@@ -148,4 +152,5 @@ void mos_close_middle(void);
 void L_tcpwm_irq();
 void R_tcpwm_irq();
 void M_tcpwm_irq();
+void M2_tcpwm_irq();
 #endif

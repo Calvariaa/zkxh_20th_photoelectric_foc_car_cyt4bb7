@@ -9,6 +9,7 @@ uint64_t bldc_timer_50ns = 0;
 typedef enum
 {
     // MOTOR_PRESTART,
+    // MOTOR_BUZZ,
     MOTOR_START,
     MOTOR_STOP
 } MotorState;
@@ -69,10 +70,10 @@ void bldc_output(uint8_t hall_now, uint16_t output_duty)
         mos_close_middle();
         break;
     }
-    data_send[26] = adc_abmf_value;
-    data_send[27] = adc_bbmf_value;
-    data_send[28] = adc_cbmf_value;
-    data_send[29] = adc_global_value;
+    data_send(26, adc_abmf_value);
+    data_send(27, adc_bbmf_value);
+    data_send(28, adc_cbmf_value);
+    data_send(29, adc_global_value);
 }
 
 int8_t bldc_test1 = 1;
@@ -125,38 +126,38 @@ void bldc_commutation()
         {
             motor.time_div--;
         }
-        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 2)
-            motor.duty++;
+        // if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 1.8)
+        //     motor.duty++;
 
         if (bldc_timer_50ns >= 65536)
         {
             bldc_timer_50ns = 0;
         }
 
-        if (motor.speed_diff < -30)
+        if (motor.speed_diff < -10)
         {
             bldc_timer_50ns = 0;
             motor.duty = 0;
             motor.state = MOTOR_STOP;
         }
-
-        break;
+        else
+            break;
 
     case MOTOR_STOP:
         bldc_timer_50ns++;
         mos_close_middle();
 
-        // if (bldc_timer_50ns > 20 * 1000 * 2) // 2s
-        // {
-        //     motor.rotor_n = 1;
-        //     motor.time_div = 48;
-        //     motor.duty = PWM_PRIOD_LOAD / 8;
-        //     motor.speed_buf = 0;
-        //     motor.speed = 0;
-        //     motor.speed_diff = 0;
-        //     memset(motor.speed_list, 0, sizeof(motor.speed_list));
-        //     motor.state = MOTOR_START;
-        // }
+        if (bldc_timer_50ns > 20 * 1000 * 2) // 2s
+        {
+            motor.rotor_n = 1;
+            motor.time_div = 48;
+            motor.duty = PWM_PRIOD_LOAD / 8;
+            motor.speed_buf = 0;
+            motor.speed = 0;
+            motor.speed_diff = 0;
+            memset(motor.speed_list, 0, sizeof(motor.speed_list));
+            motor.state = MOTOR_START;
+        }
 
         break;
 
@@ -164,17 +165,18 @@ void bldc_commutation()
         break;
     }
 
-    data_send[19] = (float)motor.time_div;
-    data_send[20] = (float)bldc_timer_50ns;
-    data_send[21] = (float)motor.duty;
+    data_send(19, motor.time_div);
+    data_send(20, bldc_timer_50ns);
+    data_send(21, motor.duty);
 
-    data_send[22] = (float)adc_global_value;
-    data_send[23] = (float)bldc_test1;
+    data_send(22, adc_global_value);
+    data_send(23, bldc_test1);
 
-    data_send_add(adc_abmf_value, adc_global_value, bldc_test1);
+    // data_send_add(adc_abmf_value, adc_global_value, bldc_test1);
+    data_send_add(adc_abmf_value, adc_bbmf_value, adc_cbmf_value, motor.rotor_n);
 
-    data_send[24] = (float)motor.speed;
-    data_send[25] = (float)motor.speed_diff;
+    data_send(24, motor.speed);
+    data_send(25, motor.speed_diff);
 }
 /*
 
@@ -229,10 +231,10 @@ void bldc_commutation()
         break;
     }
 
-    data_send[19] = (float)bldc_timer_50ns;
-    data_send[20] = (float)bldc_timer_50ns;
-    data_send[21] = (float)motor.duty;
-    data_send[22] = (float)adc_global_value < 0;
+    data_send(19, bldc_timer_50ns);
+    data_send(20, bldc_timer_50ns);
+    data_send(21, motor.duty);
+    data_send(22, adc_global_value < 0);
 }
 
 float bldc_accel = 0.6;
@@ -278,7 +280,7 @@ void bldc_svpwm()
     FOC_M.Period = PeriodCal(FOC_M.Vector, FOC_M.N, PWM_PRIOD_LOAD);              // 各桥PWM占空比计算
 
     mos_all_open_middle(FOC_M.Period.AH, FOC_M.Period.BH, FOC_M.Period.CH);
-    data_send[19] = (float)FOC_M.Park_in.u_q;
-    data_send[20] = (float)bldc_accel;
+    data_send(19, FOC_M.Park_in.u_q);
+    data_send(20, bldc_accel);
 }
 */

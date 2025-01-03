@@ -13,6 +13,8 @@
 int16_t adc_abmf_value = 0;
 int16_t adc_bbmf_value = 0;
 int16_t adc_cbmf_value = 0;
+
+int16_t adc_test_mid[3] = {0};
 int16_t adc_global_value_last = 0;
 int16_t adc_global_value = 0;
 
@@ -21,6 +23,10 @@ void motor_bldc_adc_init()
     adc_init(ADC_ABMF, ADC_12BIT);
     adc_init(ADC_BBMF, ADC_12BIT);
     adc_init(ADC_CBMF, ADC_12BIT);
+    
+    adc_init(ADC0_CH24_P08_1, ADC_12BIT);
+    adc_init(ADC0_CH25_P08_2, ADC_12BIT);
+    adc_init(ADC0_CH26_P08_3, ADC_12BIT);
     // adc_init(ADC_MID, ADC_12BIT);
 }
 

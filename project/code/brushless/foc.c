@@ -10,10 +10,9 @@
 #include "brushless/encoder/encoder.h"
 #include "brushless/move_filter.h"
 #include "brushless/motor.h"
+#include "debug/vofaplus.h"
 
 extern bool protect_flag;
-
-extern float data_send[32];
 
 uint16 ierror_count = 0u;
 #ifdef CURRENTLOOP
@@ -363,34 +362,58 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
 
 #ifdef CURRENTLOOP
 
-    adc_read();
-    data_send[1] = (float)adc_information.current_a;
-    data_send[2] = (float)adc_information.current_b;
-    data_send[3] = (float)adc_information.current_c;
+    // get adc conv
 
     /*----------*/
     __foc_->I_Clrak = clark_cacl(adc_information);
     /*----------*/
     __foc_->I_Park = park_cacl(__foc_->I_Clrak, theta);
 
-    data_send[4] = (float)__foc_->I_Park.id_ref * 10000;
-    data_send[5] = (float)__foc_->I_Park.iq_ref * 10000;
+    data_send(4, __foc_->I_Park.id_ref * 10000);
+    data_send(5, __foc_->I_Park.iq_ref * 10000);
 
     // look5 =  adc_information.current_a *1000;
     //  look6 =  adc_information.current_b *1000;
-    // data_send[3]=(int16) __foc_->I_Park.id_ref*1000;
-    // data_send[4]=(int16)  __foc_->I_Park.iq_ref*1000;
-    __foc_->Ref_Park.u_d = 0;
-    __foc_->Ref_Park.u_q = 0.3; // 期望值
-    if (timer_1ms >= 100)
+    // data_send(3]=(int16) __foc_->I_Park.id_ref*1000);
+    // data_send(4]=(int16)  __foc_->I_Park.iq_ref*1000);
+
+    if (fabsf(__foc_->Park_in.u_q) < FOC_UQ_MAX)
+        __foc_->set_angle += ANGLE_TO_RAD(0.01);
+
+    // if (ierror_count < 20)
+    // {
+    //     // set_angle += motor_control.set_speed;
+    // }
+
+    // if (ierror_count > 1000)
+    // {
+    //     set_angle = theta_magnet;
+    //     expect_rotations = full_rotations;
+    // }
+
+    data_send(14, ierror_count);
+    if (__foc_->set_angle >= pi_2)
     {
-        __foc_->Ref_Park.u_q = 0.2; // 期望值//0.01
+        __foc_->expect_rotations++;
+        __foc_->set_angle -= pi_2;
     }
+    if (__foc_->set_angle < -pi_2)
+    {
+        __foc_->expect_rotations--;
+        __foc_->set_angle += pi_2;
+    }
+
+    __foc_->Ref_Park.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, __foc_->foc_ud_amp);
+
+    if (!protect_flag)
+        __foc_->Ref_Park.u_q = pid_solve(__pid_, (__foc_->set_angle + __foc_->expect_rotations * pi_2) * __encoder_->turn_dir - (__encoder_->theta_magnet + __encoder_->full_rotations * pi_2)) * __encoder_->polarity;
+    else
+        __foc_->Ref_Park.u_q = 0;
 
     Current_Close_Loop(&__foc_, __foc_->I_Park);
 
-    data_send[6] = __foc_->Park_in.u_q * 1000;
-    data_send[7] = __foc_->Park_in.u_d * 1000;
+    data_send(6, __foc_->Park_in.u_q * 1000);
+    data_send(7,  __foc_->Park_in.u_d * 1000);
 #elif defined TESTMODE
     // test
     // __foc_->set_angle += ANGLE_TO_RAD(0.4);
@@ -408,17 +431,24 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
     __foc_->Park_in.u_d = get_ud_freq(foc_ud_freq);
     __foc_->Park_in.u_q = 0;
 
-    data_send[13] = __encoder_->theta_elec - __foc_->set_angle;
-    data_send[14] = __foc_->Park_in.u_q;
+    data_send(13, __encoder_->theta_elec - __foc_->set_angle);
+    data_send(14, __foc_->Park_in.u_q);
 
     __foc_->V_Clark = iPark_Calc(__foc_->Park_in, -__foc_->set_angle);
 #else
 
-    __foc_->Park_in.u_d = get_ud_freq(__foc_, foc_ud_freq, 2.0);
+    // __foc_->Park_in.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, 1.0);
+
+    __foc_->Park_in.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, __foc_->foc_ud_amp);
+
+    // if (j++ % 50)
+    // {
+    //     j = 0;
+    // }
 
     // test
     if (fabsf(__foc_->Park_in.u_q) < FOC_UQ_MAX)
-        __foc_->set_angle += ANGLE_TO_RAD(0.);
+        __foc_->set_angle += ANGLE_TO_RAD(0.01);
 
     // if (ierror_count < 20)
     // {
@@ -431,7 +461,7 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
     //     expect_rotations = full_rotations;
     // }
 
-    data_send[14] = (float)ierror_count;
+    data_send(14, ierror_count);
     if (__foc_->set_angle >= pi_2)
     {
         __foc_->expect_rotations++;

@@ -222,6 +222,19 @@ cy_stc_tcpwm_counter_config_t tcpwm_counter_config_middle =
         .reloadInput = 9ul,                      /* Select the TCPWM_ALL_CNT_TR_IN[2] */
         .trigger0EventCfg = CY_TCPWM_COUNTER_CC0_MATCH,
 };
+cy_stc_tcpwm_counter_config_t tcpwm_counter_config_middle2 =
+    {
+        .period = (PWM_PRIOD_LOAD - 1),
+        .clockPrescaler = CY_TCPWM_PRESCALER_DIVBY_1,
+        .runMode = CY_TCPWM_COUNTER_CONTINUOUS,
+        .countDirection = CY_TCPWM_COUNTER_COUNT_UP,
+        .compareOrCapture = CY_TCPWM_COUNTER_MODE_COMPARE,
+        .countInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .countInput = 1ul,                      /* Select the constant 1 */
+        .reloadInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .reloadInput = 9ul,                      /* Select the TCPWM_ALL_CNT_TR_IN[2] */
+        .trigger0EventCfg = CY_TCPWM_COUNTER_OVERFLOW,
+};
 
 void motor_pwm_output_init(gpio_pin_enum __A_PHASE_PIN_H, en_hsiom_sel_t __A_PHASE_HSIOM_H, gpio_pin_enum __A_PHASE_PIN_L, en_hsiom_sel_t __A_PHASE_HSIOM_L, volatile en_clk_dst_t __A_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP_CNT,
                            gpio_pin_enum __B_PHASE_PIN_H, en_hsiom_sel_t __B_PHASE_HSIOM_H, gpio_pin_enum __B_PHASE_PIN_L, en_hsiom_sel_t __B_PHASE_HSIOM_L, volatile en_clk_dst_t __B_PHASE_CLK_DST, volatile stc_TCPWM_GRP_CNT_t *__B_PHASE_GRP_CNT,
@@ -575,6 +588,7 @@ void motor_parameter_init()
     motor_pwm_counter_init(L_COUNTER_IRQn, L_COUNTER_PHASE_CLK_DST, L_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_left, L_tcpwm_irq);
     motor_pwm_counter_init(R_COUNTER_IRQn, R_COUNTER_PHASE_CLK_DST, R_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_right, R_tcpwm_irq);
     motor_pwm_counter_init(M_COUNTER_IRQn, M_COUNTER_PHASE_CLK_DST, M_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_middle, M_tcpwm_irq);
+    // motor_pwm_counter_init(M2_COUNTER_IRQn, M2_COUNTER_PHASE_CLK_DST, M2_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_middle2, M2_tcpwm_irq);
 
     /* Synchronize all counters */
     Cy_TrigMux_SwTrigger(L_TRIG_OUT_MUX, TRIGGER_TYPE_EDGE, 1ul);

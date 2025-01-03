@@ -2,8 +2,7 @@
 #include "encoder.h"
 #include "as5047p.h"
 #include "mt6701ct.h"
-
-extern float data_send[32];
+#include "debug/vofaplus.h"
 
 uint16_t get_magnet_val_left();
 uint16_t get_magnet_val_right();

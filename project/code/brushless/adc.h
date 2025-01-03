@@ -16,6 +16,8 @@ extern int16_t adc_cbmf_value;
 extern int16_t adc_global_value_last;
 extern int16_t adc_global_value;
 
+extern int16_t adc_test_mid[3];
+
 void motor_bldc_adc_init();
 void bldc_adc_convert();
 

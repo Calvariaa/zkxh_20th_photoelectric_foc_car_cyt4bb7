@@ -153,6 +153,9 @@ typedef struct
         float error_sum_q;
 
         float ud_phase;
+
+        uint16_t foc_ud_freq;
+        uint8_t foc_ud_amp;
 } FOC_Parm_Typedef;
 
 #ifdef CURRENTLOOP
