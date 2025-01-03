@@ -229,8 +229,8 @@ cy_stc_tcpwm_counter_config_t tcpwm_counter_config_middle2 =
         .runMode = CY_TCPWM_COUNTER_CONTINUOUS,
         .countDirection = CY_TCPWM_COUNTER_COUNT_UP,
         .compareOrCapture = CY_TCPWM_COUNTER_MODE_COMPARE,
-        .countInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
-        .countInput = 1ul,                      /* Select the constant 1 */
+        .countInputMode = CY_TCPWM_INPUT_LEVEL,  /* NO_EDGE_DET: No edge detection, use trigger as is */
+        .countInput = 1ul,                       /* Select the constant 1 */
         .reloadInputMode = CY_TCPWM_INPUT_LEVEL, /* NO_EDGE_DET: No edge detection, use trigger as is */
         .reloadInput = 9ul,                      /* Select the TCPWM_ALL_CNT_TR_IN[2] */
         .trigger0EventCfg = CY_TCPWM_COUNTER_OVERFLOW,
@@ -318,12 +318,17 @@ void motor_duty_set(uint16_t a_duty, volatile stc_TCPWM_GRP_CNT_t *__A_PHASE_GRP
                     uint16_t c_duty, volatile stc_TCPWM_GRP_CNT_t *__C_PHASE_GRP_CNT,
                     uint32_t __trigLine)
 {
-    Cy_Tcpwm_Pwm_SetCompare0(__A_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - a_duty) / 2);
-    Cy_Tcpwm_Pwm_SetCompare1(__A_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + a_duty) / 2);
-    Cy_Tcpwm_Pwm_SetCompare0(__B_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - b_duty) / 2);
-    Cy_Tcpwm_Pwm_SetCompare1(__B_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + b_duty) / 2);
-    Cy_Tcpwm_Pwm_SetCompare0(__C_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - c_duty) / 2);
-    Cy_Tcpwm_Pwm_SetCompare1(__C_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + c_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare0_Buff(__A_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - a_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare1_Buff(__A_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + a_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare0_Buff(__B_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - b_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare1_Buff(__B_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + b_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare0_Buff(__C_PHASE_GRP_CNT, (PWM_PRIOD_LOAD - c_duty) / 2);
+    Cy_Tcpwm_Pwm_SetCompare1_Buff(__C_PHASE_GRP_CNT, (PWM_PRIOD_LOAD + c_duty) / 2);
+
+    // 启动比较器交换 将在下次计数溢出时交换缓冲器和比较器的值
+    __A_PHASE_GRP_CNT->unTR_CMD.u32Register |= 0x11;
+    __B_PHASE_GRP_CNT->unTR_CMD.u32Register |= 0x11;
+    __C_PHASE_GRP_CNT->unTR_CMD.u32Register |= 0x11;
 
     // Cy_TrigMux_SwTrigger(__trigLine, TRIGGER_TYPE_EDGE, 1ul); /*Output the Reload signal to TCPWM_ALL_CNT_TR_IN[2] */
 }
@@ -556,7 +561,6 @@ void mos_close_middle(void)
                    M_TRIG_OUT_MUX);
 }
 
-
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     电机参数初始化
 // 参数说明     void
@@ -582,8 +586,7 @@ void motor_parameter_init()
     motor_pwm_output_init(M_A_PHASE_PIN_H, M_A_PHASE_HSIOM_H, M_A_PHASE_PIN_L, M_A_PHASE_HSIOM_L, M_A_PHASE_CLK_DST, M_A_PHASE_GRP_CNT,
                           M_B_PHASE_PIN_H, M_B_PHASE_HSIOM_H, M_B_PHASE_PIN_L, M_B_PHASE_HSIOM_L, M_B_PHASE_CLK_DST, M_B_PHASE_GRP_CNT,
                           M_C_PHASE_PIN_H, M_C_PHASE_HSIOM_H, M_C_PHASE_PIN_L, M_C_PHASE_HSIOM_L, M_C_PHASE_CLK_DST, M_C_PHASE_GRP_CNT,
-                          &tcpwm_config_middle
-    );
+                          &tcpwm_config_middle);
 
     motor_pwm_counter_init(L_COUNTER_IRQn, L_COUNTER_PHASE_CLK_DST, L_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_left, L_tcpwm_irq);
     motor_pwm_counter_init(R_COUNTER_IRQn, R_COUNTER_PHASE_CLK_DST, R_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_right, R_tcpwm_irq);

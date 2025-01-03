@@ -163,8 +163,8 @@ int main(void)
     while (true)
     {
 
-        send_vofaplus_queue();
-        continue;
+        // send_vofaplus_queue();
+        // continue;
 
         data_send(1, (float)foc_left.Period.AH);
         data_send(2, (float)foc_left.Period.BH);
@@ -202,8 +202,10 @@ int main(void)
         data_send(32, (float)adc_test_mid[2]);
         data_send(33, (adc_test_mid[0] + adc_test_mid[1] + adc_test_mid[2] - 2048 * 3));
 
-        data_send_clear();
+        // data_send_clear();
 
+        
+        send_vofaplus();
 
 
     }

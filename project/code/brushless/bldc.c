@@ -44,27 +44,27 @@ void bldc_output(uint8_t hall_now, uint16_t output_duty)
     case 1:
         // 开启A相以及B相下桥MOS 关闭B相上桥以及C相MOS
         mos_a_bn_open_middle(output_duty);
-        adc_global_value = (adc_cbmf_value - adc_abmf_value / 2);
+        adc_global_value = (adc_cbmf_value - (adc_abmf_value + adc_bbmf_value) / 2);
         break;
     case 2:
         mos_a_cn_open_middle(output_duty);
-        adc_global_value = -(adc_bbmf_value - adc_abmf_value / 2);
+        adc_global_value = -(adc_bbmf_value - (adc_abmf_value + adc_cbmf_value) / 2);
         break;
     case 3:
         mos_b_cn_open_middle(output_duty);
-        adc_global_value = (adc_abmf_value - adc_bbmf_value / 2);
+        adc_global_value = (adc_abmf_value - (adc_bbmf_value + adc_cbmf_value) / 2);
         break;
     case 4:
         mos_b_an_open_middle(output_duty);
-        adc_global_value = -(adc_cbmf_value - adc_bbmf_value / 2);
+        adc_global_value = -(adc_cbmf_value - (adc_bbmf_value + adc_abmf_value) / 2);
         break;
     case 5:
         mos_c_an_open_middle(output_duty);
-        adc_global_value = (adc_bbmf_value - adc_cbmf_value / 2);
+        adc_global_value = (adc_bbmf_value - (adc_cbmf_value + adc_abmf_value) / 2);
         break;
     case 6:
         mos_c_bn_open_middle(output_duty);
-        adc_global_value = -(adc_abmf_value - adc_cbmf_value / 2);
+        adc_global_value = -(adc_abmf_value - (adc_cbmf_value + adc_bbmf_value) / 2);
         break;
     default:
         mos_close_middle();
@@ -126,8 +126,8 @@ void bldc_commutation()
         {
             motor.time_div--;
         }
-        // if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 1.8)
-        //     motor.duty++;
+        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 1.8)
+            motor.duty++;
 
         if (bldc_timer_50ns >= 65536)
         {
