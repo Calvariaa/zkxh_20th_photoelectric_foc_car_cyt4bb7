@@ -126,8 +126,8 @@ void bldc_commutation()
         {
             motor.time_div--;
         }
-        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 1.8)
-            motor.duty++;
+        // if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 1.8)
+        //     motor.duty++;
 
         if (bldc_timer_50ns >= 65536)
         {
