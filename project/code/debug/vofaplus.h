@@ -15,4 +15,5 @@ void send_vofaplus_queue();
 void data_send_add(int16_t _data1, int16_t _data2, int16_t _data3, int16_t _data4);
 void data_send(uint16_t num, float data);
 void data_send_clear();
+
 #endif /* DEBUG_VOFAPLUS_H_ */

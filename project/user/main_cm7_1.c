@@ -184,12 +184,14 @@ int main(void)
 
         // data_send(12, (foc_left.set_angle + foc_left.expect_rotations * pi_2) - (encoder_left.theta_magnet + encoder_left.full_rotations * pi_2);
         // data_send(13, (foc_right.set_angle + foc_right.expect_rotations * pi_2) - (encoder_right.theta_magnet + encoder_right.full_rotations * pi_2);
+
+        // data_send(14, ierror_count);
+
         data_send(14, (float)foc_left.set_angle);
         data_send(15, (float)foc_right.set_angle);
 
         data_send(16, (float)foc_left.Park_in.u_q);
         data_send(17, (float)foc_right.Park_in.u_q);
-
         // data_send(18, speed_filter.data_average;
 
         // data_send(25, adc_convert(ADC1_CH28_P15_0) - adc_convert(ADC1_CH31_P15_3);
@@ -197,17 +199,18 @@ int main(void)
         // data_send(27, adc_convert(ADC1_CH30_P15_2) - adc_convert(ADC1_CH31_P15_3);
         // data_send(28, adc_convert(ADC1_CH31_P15_3);
 
+        data_send(26, adc_abmf_value);
+        data_send(27, adc_bbmf_value);
+        data_send(28, adc_cbmf_value);
+        data_send(29, adc_global_value);
+
         data_send(30, (float)adc_test_mid[0]);
         data_send(31, (float)adc_test_mid[1]);
         data_send(32, (float)adc_test_mid[2]);
         data_send(33, (adc_test_mid[0] + adc_test_mid[1] + adc_test_mid[2] - 2048 * 3));
 
-        // data_send_clear();
-
-        
-        send_vofaplus();
-
-
+        data_send_clear();
+        // send_vofaplus();
     }
 }
 

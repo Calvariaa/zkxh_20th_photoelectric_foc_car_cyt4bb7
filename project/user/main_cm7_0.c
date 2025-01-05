@@ -36,40 +36,15 @@
 #include "zf_common_headfile.h"
 #include "debug/vofaplus.h"
 
-#define LED1 (P19_0)
-
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
     debug_info_init();             // 调试串口信息初始化
     // 此处编写用户代码 例如外设初始化代码等
 
-    // init ipc
-    // init_ipc_cm70();
-
-    gpio_init(LED1, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
     // 此处编写用户代码 例如外设初始化代码等
     while (true)
     {
-        // 此处编写需要循环执行的代码
-
-        // 此处编写需要循环执行的代码
-
-        gpio_toggle_level(LED1);
-
-        // buzz_keep_ms(1, NOTE_C5);
-        // foc_ud_freq = NOTE_C5;
-        // 此处编写需要循环执行的代码
-        // mos_all_open_left(3000, 1000, 0);
-        // foc_commutation();
-        // for (uint16 i = 0; i < 4095; i++)
-        //     ;
-        // spi_write_16bit(SPI_0, 0xffff);
-
-        // send_vofaplus();
-        // send_vofaplus_queue();
-
-        // 此处编写需要循环执行的代码
     }
 }
 

@@ -44,15 +44,17 @@ int main(void)
     Cy_SysEnableApplCore(CORE_CM7_1, CY_CORTEX_M7_1_APPL_ADDR); // 启动M7核心1
     // 此处编写用户初始化代码
 
+    gpio_init(P19_0, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
+
     interrupt_global_enable(0); // 开启全局中断
 
-    // 此处编写用户初始化代码
     while (true)
     {
-        // 此处编写需要循环执行的代码
 
-        SCB_CleanInvalidateDCache_by_Addr(&data_send, sizeof(data_send));
-        // 此处编写需要循环执行的代码
+        // gpio_toggle_level(P19_0);
+
+        send_vofaplus();
+        // send_vofaplus_queue();
     }
 }
 

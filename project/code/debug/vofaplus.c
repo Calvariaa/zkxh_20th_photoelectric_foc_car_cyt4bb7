@@ -4,14 +4,14 @@
 
 #if CY_CPU_CORTEX_M0P
 #pragma location = 0x28001000
-__no_init float _data_send[DATA_SEND_SIZE];
+float _data_send[DATA_SEND_SIZE];
 #else
 #if defined(CY_CORE_CM7_0)
 #pragma location = 0x28001000
 __no_init float _data_send[DATA_SEND_SIZE];
 #elif defined(CY_CORE_CM7_1)
 #pragma location = 0x28001000
-float _data_send[DATA_SEND_SIZE];
+__no_init float _data_send[DATA_SEND_SIZE];
 #else
 #error "No core selected"
 #endif
@@ -21,11 +21,26 @@ int16_t data_send_list[DATA_SEND_QUEUE_SIZE][4] = {0};
 
 void send_vofaplus()
 {
-
-    SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
-    for (int8_t i = 0; i <= DATA_SEND_SIZE; i++)
-        printf("%f,", _data_send[i]);
-    printf("-1.0\r\n");
+    if (_data_send[0] == 1)
+    {
+#if (!CY_CPU_CORTEX_M0P)
+        SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
+#endif
+        for (int8_t i = 0; i <= DATA_SEND_SIZE; i++)
+            printf("%f,", _data_send[i]);
+        printf("-1.0\r\n");
+        _data_send[0] = 0;
+    }
+    else
+    {
+#if (!CY_CPU_CORTEX_M0P)
+        SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
+#endif
+        for (int8_t i = 0; i <= DATA_SEND_SIZE; i++)
+            printf("%f,", _data_send[i]);
+        printf("-1.0\r\n");
+        _data_send[0] = 0;
+    }
 }
 
 uint32_t data_send_number = 0;
@@ -47,14 +62,18 @@ void send_vofaplus_queue()
 
 void data_send_clear()
 {
+#if (!CY_CPU_CORTEX_M0P)
     SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
+#endif
 }
 
 void data_send(uint16_t num, float data)
 {
     _data_send[num] = data;
 
-    // SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
+#if (!CY_CPU_CORTEX_M0P)
+// SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
+#endif
 }
 
 void data_send_add(int16_t _data1, int16_t _data2, int16_t _data3, int16_t _data4)

@@ -12,7 +12,7 @@ typedef enum
     // MOTOR_BUZZ,
     MOTOR_START,
     MOTOR_STOP
-} MotorState;
+} motor_state_t;
 
 typedef struct
 {
@@ -23,10 +23,10 @@ typedef struct
     int32_t speed;
     int32_t speed_diff;
     int32_t speed_list[32];
-    MotorState state;
-} MotorControl;
+    motor_state_t state;
+} motor_t;
 
-MotorControl motor = {
+motor_t motor = {
     .rotor_n = 1,
     .time_div = 48,
     .duty = PWM_PRIOD_LOAD / 8,
@@ -70,13 +70,8 @@ void bldc_output(uint8_t hall_now, uint16_t output_duty)
         mos_close_middle();
         break;
     }
-    data_send(26, adc_abmf_value);
-    data_send(27, adc_bbmf_value);
-    data_send(28, adc_cbmf_value);
-    data_send(29, adc_global_value);
 }
 
-int8_t bldc_test1 = 1;
 void bldc_commutation()
 {
     bldc_timer_50ns++;
@@ -93,8 +88,6 @@ void bldc_commutation()
             // if ((adc_global_value_last < 0 && adc_global_value >= 0) || (adc_global_value_last > 0 && adc_global_value <= 0))
             if (adc_global_value < 0)
             {
-                bldc_test1 = !bldc_test1;
-
                 motor.speed_buf++;
                 motor.rotor_n++;
                 // gpio_toggle_level(P20_1);
@@ -166,76 +159,19 @@ void bldc_commutation()
     }
 
     data_send(19, motor.time_div);
-    data_send(20, bldc_timer_50ns);
     data_send(21, motor.duty);
 
     data_send(22, adc_global_value);
-    data_send(23, bldc_test1);
-
-    // data_send_add(adc_abmf_value, adc_global_value, bldc_test1);
-    data_send_add(adc_abmf_value, adc_bbmf_value, adc_cbmf_value, motor.rotor_n);
 
     data_send(24, motor.speed);
     data_send(25, motor.speed_diff);
+
+    // data_send(20, bldc_timer_50ns);
+
+    // data_send_add(adc_abmf_value, adc_global_value, bldc_test1);
+    // data_send_add(adc_abmf_value, adc_bbmf_value, adc_cbmf_value, motor.rotor_n);
 }
 /*
-
-void bldc_commutation()
-{
-    bldc_timer_50ns++;
-    bldc_adc_convert();
-
-    switch (motor.state)
-    {
-    case MOTOR_PRESTART:
-        if (bldc_timer_50ns % bldc_timer_50ns == 0)
-        {
-            bldc_output(motor.rotor_n, motor.duty);
-                motor.rotor_n++;
-            if (motor.rotor_n == 7)
-                motor.rotor_n = 1;
-        }
-        if (bldc_timer_50ns % 128 == 0 && bldc_timer_50ns > 1)
-        {
-            bldc_timer_50ns--;
-        }
-        if (bldc_timer_50ns == 1 && bldc_timer_50ns % 32 == 0 && motor.duty < PWM_PRIOD_LOAD - 2000)
-            motor.duty++;
-        if (bldc_timer_50ns >= 65536)
-        {
-            bldc_timer_50ns = 0;
-        }
-        if ()
-        {
-            motor.state = MOTOR_START;
-        }
-        break;
-
-    case MOTOR_START:
-        if (bldc_timer_50ns % bldc_timer_50ns == 0)
-        {
-            bldc_output(motor.rotor_n, motor.duty);
-            if (adc_global_value < 0)
-                motor.rotor_n++;
-            if (motor.rotor_n == 7)
-                motor.rotor_n = 1;
-        }
-        if ()
-        {
-            motor.state = MOTOR_STOP;
-        }
-        break;
-
-    case MOTOR_STOP:
-        // Add motor stop logic here
-        break;
-    }
-
-    data_send(19, bldc_timer_50ns);
-    data_send(20, bldc_timer_50ns);
-    data_send(21, motor.duty);
-    data_send(22, adc_global_value < 0);
-}
 
 float bldc_accel = 0.6;
 FOC_Parm_Typedef FOC_M = {0};
@@ -280,7 +216,7 @@ void bldc_svpwm()
     FOC_M.Period = PeriodCal(FOC_M.Vector, FOC_M.N, PWM_PRIOD_LOAD);              // 各桥PWM占空比计算
 
     mos_all_open_middle(FOC_M.Period.AH, FOC_M.Period.BH, FOC_M.Period.CH);
-    data_send(19, FOC_M.Park_in.u_q);
-    data_send(20, bldc_accel);
+    // data_send(19, FOC_M.Park_in.u_q);
+    // data_send(20, bldc_accel);
 }
 */
