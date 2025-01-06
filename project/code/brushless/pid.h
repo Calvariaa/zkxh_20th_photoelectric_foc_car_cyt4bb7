@@ -45,29 +45,6 @@ typedef struct
     float pre_output;
 } pid_param_t;
 extern pid_param_t foc_left_pid, foc_right_pid;
-// extern pid_param_t speed_pid;
-
-// typedef struct
-// {
-//     float total_encoder;
-//     float target_encoder;
-//     float encoder_raw;
-//     float encoder_speed; // Measured speed
-//     float target_speed;
-//     int32 duty; // Motor PWM duty
-
-//     enum
-//     {
-//         MODE_NORMAL,
-//         MODE_BANGBANG,
-//         MODE_SOFT,
-//         MODE_POSLOOP,
-//     } motor_mode;
-
-//     pid_param_t pid;       // Motor PID param
-//     pid_param_t brake_pid; // Motor PID param
-// } motor_param_t;
-// extern motor_param_t motor_l, motor_r;
 
 float pid_solve(pid_param_t *pid, float error);
 

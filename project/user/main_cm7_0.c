@@ -35,16 +35,27 @@
 
 #include "zf_common_headfile.h"
 #include "debug/vofaplus.h"
+#include "car_control/gyro.h"
 
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
     debug_info_init();             // 调试串口信息初始化
-    // 此处编写用户代码 例如外设初始化代码等
+                                   // 此处编写用户代码 例如外设初始化代码等
 
-    // 此处编写用户代码 例如外设初始化代码等
+    interrupt_global_disable();
+
+    gyro_init();
+
+    pit_us_init(PIT_CH0, 100); // 0.1ms
+    interrupt_global_enable(0);
     while (true)
     {
+        data_send(1, (float)imu_data.gyro_x);
+        data_send(2, (float)imu_data.gyro_y);
+        data_send(3, (float)imu_data.gyro_z);
+
+        data_send_clear();
     }
 }
 

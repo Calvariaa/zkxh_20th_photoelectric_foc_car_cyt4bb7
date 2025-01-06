@@ -31,6 +31,7 @@
 * 修改记录
 * 日期              作者                备注
 * 2024-1-9       pudding            first version
+* 2024-3-6       pudding            修复与串口的时钟冲突问题
 ********************************************************************************************************************/
 
 #include "scb/cy_scb_spi.h"
@@ -44,8 +45,8 @@
 
 #define SPI_FREQ       CY_INITIAL_TARGET_PERI_FREQ                             // 串口模块时钟 默认80M
 
-volatile stc_SCB_t*        spi_module[3] = {SCB7, SCB8, SCB9};
-spi_cs_pin_enum             cs_pin_save[3];
+volatile stc_SCB_t*        spi_module[4] = {SCB7, SCB8, SCB9, SCB6};
+spi_cs_pin_enum             cs_pin_save[4];
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介       SPI获取时钟引脚号
 // 参数说明       clk_pin     时钟引脚 参照 zf_driver_spi.h 内 spi_clk_pin_enum 枚举体定义
@@ -62,6 +63,7 @@ static gpio_pin_enum spi_get_clk_pin (spi_clk_pin_enum clk_pin)
         case SPI0_CLK_P02_2: temp_clk_pin = P02_2; break;
         case SPI1_CLK_P12_2: temp_clk_pin = P12_2; break;
         case SPI2_CLK_P15_2: temp_clk_pin = P15_2; break;
+        case SPI3_CLK_P03_2: temp_clk_pin = P03_2; break;
     }
     
     return temp_clk_pin;
@@ -83,6 +85,7 @@ static gpio_pin_enum spi_get_mosi_pin (spi_mosi_pin_enum mosi_pin)
         case SPI0_MOSI_P02_1: temp_mosi_pin = P02_1; break;
         case SPI1_MOSI_P12_1: temp_mosi_pin = P12_1; break;
         case SPI2_MOSI_P15_1: temp_mosi_pin = P15_1; break;
+        case SPI3_MOSI_P03_1: temp_mosi_pin = P03_1; break;
     }
     
     return temp_mosi_pin;
@@ -104,6 +107,7 @@ static gpio_pin_enum spi_get_miso_pin (spi_miso_pin_enum miso_pin)
         case SPI0_MISO_P02_0: temp_miso_pin = P02_0; break;
         case SPI1_MISO_P12_0: temp_miso_pin = P12_0; break;
         case SPI2_MISO_P15_0: temp_miso_pin = P15_0; break;
+        case SPI3_MISO_P03_0: temp_miso_pin = P03_0; break;
     }
     
     return temp_miso_pin;
@@ -127,6 +131,8 @@ static gpio_pin_enum spi_get_cs_pin (spi_cs_pin_enum cs_pin)
         case SPI1_CS1_P12_4: temp_cs_pin = P12_4; break;
         case SPI2_CS0_P15_3: temp_cs_pin = P15_3; break;
         case SPI2_CS3_P05_1: temp_cs_pin = P05_1; break;
+        case SPI3_CS0_P03_3: temp_cs_pin = P03_3; break;
+        case SPI3_CS1_P03_4: temp_cs_pin = P03_4; break;
     }
     return temp_cs_pin;
 }
@@ -147,6 +153,7 @@ static en_hsiom_sel_t spi_get_clk_hsiom (spi_clk_pin_enum clk_pin)
         case SPI0_CLK_P02_2: temp_clk_hsiom = P2_2_SCB7_SPI_CLK; break;     
         case SPI1_CLK_P12_2: temp_clk_hsiom = P12_2_SCB8_SPI_CLK; break;    
         case SPI2_CLK_P15_2: temp_clk_hsiom = P15_2_SCB9_SPI_CLK; break;    
+        case SPI3_CLK_P03_2: temp_clk_hsiom = P3_2_SCB6_SPI_CLK; break;    
     }
     
     return temp_clk_hsiom;
@@ -168,6 +175,7 @@ static en_hsiom_sel_t spi_get_mosi_hsiom (spi_mosi_pin_enum mosi_pin)
         case SPI0_MOSI_P02_1: temp_mosi_hsiom =  P2_1_SCB7_SPI_MOSI; break;      
         case SPI1_MOSI_P12_1: temp_mosi_hsiom =  P12_1_SCB8_SPI_MOSI; break;     
         case SPI2_MOSI_P15_1: temp_mosi_hsiom =  P15_1_SCB9_SPI_MOSI; break;     
+        case SPI3_MOSI_P03_1: temp_mosi_hsiom =  P3_1_SCB6_SPI_MOSI; break;     
     }
     
     return temp_mosi_hsiom;
@@ -188,7 +196,8 @@ static en_hsiom_sel_t spi_get_miso_hsiom (spi_miso_pin_enum miso_pin)
     {
         case SPI0_MISO_P02_0: temp_miso_hsiom =  P2_0_SCB7_SPI_MISO; break;       
         case SPI1_MISO_P12_0: temp_miso_hsiom =  P12_0_SCB8_SPI_MISO; break;     
-        case SPI2_MISO_P15_0: temp_miso_hsiom =  P15_0_SCB9_SPI_MISO; break;     
+        case SPI2_MISO_P15_0: temp_miso_hsiom =  P15_0_SCB9_SPI_MISO; break;  
+        case SPI3_MISO_P03_0: temp_miso_hsiom =  P3_0_SCB6_SPI_MISO; break;     
     }
     
     return temp_miso_hsiom;
@@ -211,7 +220,9 @@ static en_hsiom_sel_t spi_get_cs_hsiom (spi_cs_pin_enum cs_pin)
         case SPI1_CS0_P12_3: temp_cs_hsiom =  P12_3_SCB8_SPI_SELECT0; break;     
         case SPI1_CS1_P12_4: temp_cs_hsiom =  P12_4_SCB8_SPI_SELECT1; break;     
         case SPI2_CS0_P15_3: temp_cs_hsiom =  P15_3_SCB9_SPI_SELECT0; break;     
-        case SPI2_CS3_P05_1: temp_cs_hsiom =  P5_1_SCB9_SPI_SELECT3; break;      
+        case SPI2_CS3_P05_1: temp_cs_hsiom =  P5_1_SCB9_SPI_SELECT3; break;
+        case SPI3_CS0_P03_3: temp_cs_hsiom =  P3_3_SCB6_SPI_SELECT0; break;
+        case SPI3_CS1_P03_4: temp_cs_hsiom =  P3_4_SCB6_SPI_SELECT1; break;
     }
     return temp_cs_hsiom;
 }
@@ -530,6 +541,7 @@ uint8 spi_read_8bit (spi_index_enum spi_n)
     }
     
     Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                                   // 发送空数据
+    while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                         // 等待数据发送完成
     while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		        // 等待接收到数据
     
     read_data = (uint8)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);		// 读取数据
@@ -564,6 +576,7 @@ void spi_read_8bit_array (spi_index_enum spi_n, uint8 *data, uint32 len)
     
     do{
         Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                               // 发送空数据
+        while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                     // 等待数据发送完成
         while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		// 等待接收到数据
         *data ++ = (uint8)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);	// 读取数据
         len -= 1;
@@ -597,6 +610,7 @@ uint16 spi_read_16bit (spi_index_enum spi_n)
     }
     
     Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                                   // 发送空数据
+    while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                         // 等待数据发送完成
     while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		        // 等待接收到数据
     read_data = (uint16)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);		// 读取数据
     
@@ -630,6 +644,7 @@ void spi_read_16bit_array (spi_index_enum spi_n, uint16 *data, uint32 len)
     
     do{
         Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                               // 发送空数据
+        while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                     // 等待数据发送完成
         while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		// 等待接收到数据
         *data ++ = (uint16)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);	// 读取数据
         len -= 1;
@@ -667,6 +682,9 @@ uint8 spi_read_8bit_register (spi_index_enum spi_n, const uint8 register_name)
     Cy_SCB_SPI_ClearRxFifo(spi_module[spi_n]);					// 清除接收缓冲区
     
     Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                                   // 发送空数据
+    
+    while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                         // 等待数据发送完成
+    
     while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		        // 等待接收到数据
     read_data = (uint8)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);		// 读取数据
     
@@ -704,6 +722,7 @@ void spi_read_8bit_registers (spi_index_enum spi_n, const uint8 register_name, u
     
     do{
         Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                               // 发送空数据
+        while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                     // 等待数据发送完成
         while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		// 等待接收到数据
         *data ++ = (uint8)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);	// 读取数据
         len -= 1;
@@ -735,12 +754,19 @@ uint16 spi_read_16bit_register (spi_index_enum spi_n, const uint16 register_name
     }
     
     Cy_SCB_WriteTxFifo(spi_module[spi_n], register_name);                       // 发送寄存器地址
+    
+    while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                         // 等待数据发送完成
+    
     while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		        // 等待接收到数据    
     
     Cy_SCB_SPI_ClearRxFifo(spi_module[spi_n]);					// 清除接收缓冲区
     
     Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                                   // 发送空数据
+    
+    while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                         // 等待数据发送完成
+    
     while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		        // 等待接收到数据
+    
     read_data = (uint16)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);		// 读取数据
     
     if(cs_pin_save[spi_n] != SPI_CS_NULL)					// 若CS不为空 则拉高CS
@@ -772,12 +798,14 @@ void spi_read_16bit_registers (spi_index_enum spi_n, const uint16 register_name,
     }
     
     Cy_SCB_WriteTxFifo(spi_module[spi_n], register_name);                       // 发送寄存器地址
+    while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                         // 等待数据发送完成
     while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		        // 等待接收到数据  
     
     Cy_SCB_SPI_ClearRxFifo(spi_module[spi_n]);					// 清除接收缓冲区
     
     do{
         Cy_SCB_WriteTxFifo(spi_module[spi_n], 0);                               // 发送空数据
+        while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                     // 等待数据发送完成
         while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		// 等待接收到数据
         *data ++ = (uint16)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);	// 读取数据
         len -= 1;
@@ -812,6 +840,7 @@ void spi_transfer_8bit (spi_index_enum spi_n, const uint8 *write_buffer, uint8 *
     
     do{
         Cy_SCB_WriteTxFifo(spi_module[spi_n], *write_buffer ++);                // 发送数据
+        while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                     // 等待数据发送完成
         while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		// 等待接收到数据  
         *read_buffer ++ = (uint8)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);	// 读取数据
         len -= 1;
@@ -846,6 +875,7 @@ void spi_transfer_16bit (spi_index_enum spi_n, const uint16 *write_buffer, uint1
     
     do{
         Cy_SCB_WriteTxFifo(spi_module[spi_n], *write_buffer ++);                // 发送数据
+        while(Cy_SCB_IsTxComplete(spi_module[spi_n]) == 0);                     // 等待数据发送完成
         while(Cy_SCB_SPI_GetNumInRxFifo(spi_module[spi_n]) == 0);		// 等待接收到数据  
         *read_buffer ++ = (uint16)(spi_module[spi_n]->unRX_FIFO_RD.u32Register);// 读取数据
         len -= 1;
@@ -870,7 +900,6 @@ void spi_transfer_16bit (spi_index_enum spi_n, const uint16 *write_buffer, uint1
 //  使用示例      spi_init(SPI_0, SPI_MODE0, 1*1000*1000, SPI0_CLK_P2_2, SPI0_MOSI_P2_1, SPI0_MISO_P2_0, SPI0_CS0_P2_3); // 硬件SPI初始化  模式0 波特率为1Mhz
 //  备注信息
 //-------------------------------------------------------------------------------------------------------------------
-uint32_t spi_mode_enum_to_scb[4] = {CY_SCB_SPI_CPHA0_CPOL0, CY_SCB_SPI_CPHA1_CPOL0, CY_SCB_SPI_CPHA0_CPOL1, CY_SCB_SPI_CPHA1_CPOL1};
 void spi_init (spi_index_enum spi_n, spi_mode_enum mode, uint32 baud, spi_clk_pin_enum clk_pin, spi_mosi_pin_enum mosi_pin, spi_miso_pin_enum miso_pin, spi_cs_pin_enum cs_pin)
 {
     uint64_t                    targetFreq                      = 4 * baud;
@@ -904,13 +933,20 @@ void spi_init (spi_index_enum spi_n, spi_mode_enum mode, uint32 baud, spi_clk_pi
         Cy_GPIO_Pin_Init(get_port(spi_get_cs_pin(cs_pin)), (spi_get_cs_pin(cs_pin) % 8), &spi_pin_cfg);
     }
     
-    Cy_SysClk_PeriphAssignDivider((en_clk_dst_t)((uint32)PCLK_SCB7_CLOCK + (uint32)spi_n), CY_SYSCLK_DIV_24_5_BIT, 1ul);
-    Cy_SysClk_PeriphSetFracDivider(Cy_SysClk_GetClockGroup((en_clk_dst_t)((uint32)PCLK_SCB7_CLOCK + (uint32)spi_n)), CY_SYSCLK_DIV_24_5_BIT, 1ul, ((divSetting_fp5 & 0x1FFFFFE0ul) >> 5ul), (divSetting_fp5 & 0x0000001Ful));
-    Cy_SysClk_PeriphEnableDivider(Cy_SysClk_GetClockGroup((en_clk_dst_t)((uint32)PCLK_SCB7_CLOCK + (uint32)spi_n)), CY_SYSCLK_DIV_24_5_BIT, 1ul);
+    Cy_SysClk_PeriphAssignDivider((en_clk_dst_t)((uint32)PCLK_SCB6_CLOCK + ((uint32)spi_n < 3 ? (uint32)spi_n + 1 : 0)), CY_SYSCLK_DIV_24_5_BIT, ((uint8)spi_n + 4));
+    Cy_SysClk_PeriphSetFracDivider(Cy_SysClk_GetClockGroup((en_clk_dst_t)((uint32)PCLK_SCB6_CLOCK + ((uint32)spi_n < 3 ? (uint32)spi_n + 1 : 0))), CY_SYSCLK_DIV_24_5_BIT, ((uint8)spi_n + 4), ((divSetting_fp5 & 0x1FFFFFE0ul) >> 5ul), (divSetting_fp5 & 0x0000001Ful));
+    Cy_SysClk_PeriphEnableDivider(Cy_SysClk_GetClockGroup((en_clk_dst_t)((uint32)PCLK_SCB6_CLOCK + ((uint32)spi_n < 3 ? (uint32)spi_n + 1 : 0))), CY_SYSCLK_DIV_24_5_BIT, ((uint8)spi_n + 4));
+    
+    switch(mode)
+    {
+        case SPI_MODE0:spi_config.sclkMode = CY_SCB_SPI_CPHA0_CPOL0;      break;
+        case SPI_MODE1:spi_config.sclkMode = CY_SCB_SPI_CPHA0_CPOL1;      break;
+        case SPI_MODE2:spi_config.sclkMode = CY_SCB_SPI_CPHA1_CPOL0;      break;
+        case SPI_MODE3:spi_config.sclkMode = CY_SCB_SPI_CPHA1_CPOL1;      break;
+    }
     
     spi_config.spiMode                    = CY_SCB_SPI_MASTER     ;
     spi_config.subMode                    = CY_SCB_SPI_MOTOROLA   ;
-    spi_config.sclkMode                   = spi_mode_enum_to_scb[mode];
     spi_config.oversample                 = 4                     ;
     spi_config.rxDataWidth                = 8                     ;
     spi_config.txDataWidth                = 8                     ;

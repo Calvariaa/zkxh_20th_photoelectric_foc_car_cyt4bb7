@@ -1116,6 +1116,21 @@
     <group>
         <name>code</name>
         <group>
+            <name>car_control</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\gyro.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\gyro.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\pid.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\pid.h</name>
+            </file>
+        </group>
+        <group>
             <name>debug</name>
             <file>
                 <name>$PROJ_DIR$\..\..\code\debug\vofaplus.c</name>

@@ -18,11 +18,14 @@
 #define CLARK_ONEbySQRT3 (double)0.57735026918963f /* 1/sqrt(3) */
 #define CLARK_ONEbyTHREE (double)0.33333333333333f /* 1/3 */
 
+#define _180_PI 57.29577951308232
+#define _PI_180 0.017453292519943
+
 #ifndef ANGLE_TO_RAD
-#define ANGLE_TO_RAD(x) ((x) * PI / 180.0) // 角度转换为弧度
+#define ANGLE_TO_RAD(x) ((x) * _PI_180) // 角度转换为弧度
 #endif
 #ifndef RAD_TO_ANGLE
-#define RAD_TO_ANGLE(x) ((x) * 180.0 / PI) // 弧度转换为角度
+#define RAD_TO_ANGLE(x) ((x) * _180_PI) // 弧度转换为角度
 #endif
 
 // #define degrees_0   (double)0

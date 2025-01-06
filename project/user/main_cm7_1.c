@@ -106,43 +106,40 @@ int main(void)
 
     // play_music();
 
-    /*
-        buzz_keep_ms(100, 0, &buzz_left);
-        buzz_keep_ms(140, NOTE_C6, &buzz_left);
-        buzz_keep_ms(10, 0, &buzz_left);
+    buzz_keep_ms(100, 0, &buzz_left);
+    buzz_keep_ms(140, NOTE_C6, &buzz_left);
+    buzz_keep_ms(10, 0, &buzz_left);
 
-        buzz_keep_ms(140, NOTE_G6, &buzz_left);
-        buzz_keep_ms(10, 0, &buzz_left);
+    buzz_keep_ms(140, NOTE_G6, &buzz_left);
+    buzz_keep_ms(10, 0, &buzz_left);
 
-        buzz_keep_ms(140, NOTE_C7, &buzz_left);
-        buzz_keep_ms(10, 0, &buzz_left);
+    buzz_keep_ms(140, NOTE_C7, &buzz_left);
+    buzz_keep_ms(10, 0, &buzz_left);
 
-        buzz_ease_ms(180, NOTE_E6, NOTE_F6, &buzz_left);
-        buzz_ease_ms(100, NOTE_F6, NOTE_A6, &buzz_left);
-        buzz_keep_ms(10, 0, &buzz_left);
+    buzz_ease_ms(180, NOTE_E6, NOTE_F6, &buzz_left);
+    buzz_ease_ms(100, NOTE_F6, NOTE_A6, &buzz_left);
+    buzz_keep_ms(10, 0, &buzz_left);
 
-        buzz_keep_ms(140, NOTE_G6, &buzz_left);
-        buzz_keep_ms(10, 0, &buzz_left);
+    buzz_keep_ms(140, NOTE_G6, &buzz_left);
+    buzz_keep_ms(10, 0, &buzz_left);
 
+    buzz_keep_ms(100, 0, &buzz_right);
+    buzz_keep_ms(140, NOTE_C6, &buzz_right);
+    buzz_keep_ms(10, 0, &buzz_right);
 
+    buzz_keep_ms(140, NOTE_G6, &buzz_right);
+    buzz_keep_ms(10, 0, &buzz_right);
 
-        buzz_keep_ms(100, 0, &buzz_right);
-        buzz_keep_ms(140, NOTE_C6, &buzz_right);
-        buzz_keep_ms(10, 0, &buzz_right);
+    buzz_keep_ms(140, NOTE_C7, &buzz_right);
+    buzz_keep_ms(10, 0, &buzz_right);
 
-        buzz_keep_ms(140, NOTE_G6, &buzz_right);
-        buzz_keep_ms(10, 0, &buzz_right);
+    buzz_ease_ms(180, NOTE_E6, NOTE_F6, &buzz_right);
+    buzz_ease_ms(100, NOTE_F6, NOTE_A6, &buzz_right);
+    buzz_keep_ms(10, 0, &buzz_right);
 
-        buzz_keep_ms(140, NOTE_C7, &buzz_right);
-        buzz_keep_ms(10, 0, &buzz_right);
+    buzz_keep_ms(140, NOTE_G6, &buzz_right);
+    buzz_keep_ms(10, 0, &buzz_right);
 
-        buzz_ease_ms(180, NOTE_E6, NOTE_F6, &buzz_right);
-        buzz_ease_ms(100, NOTE_F6, NOTE_A6, &buzz_right);
-        buzz_keep_ms(10, 0, &buzz_right);
-
-        buzz_keep_ms(140, NOTE_G6, &buzz_right);
-        buzz_keep_ms(10, 0, &buzz_right);
-    */
     //
     // buzz_keep_ms(240, NOTE_C6, &buzz_left);
     // buzz_keep_ms(240, NOTE_E6, &buzz_right);
@@ -157,7 +154,7 @@ int main(void)
     // buzz_keep_ms(240, NOTE_G6, &buzz_left);
     // buzz_keep_ms(240, NOTE_C7, &buzz_right);
     // buzz_keep_ms(10, 0, &buzz_left);
-    buzz_keep_ms(10, 0, &buzz_right);
+    // buzz_keep_ms(10, 0, &buzz_right);
 
     // 此处编写用户代码 例如外设初始化代码等
     while (true)
@@ -166,13 +163,13 @@ int main(void)
         // send_vofaplus_queue();
         // continue;
 
-        data_send(1, (float)foc_left.Period.AH);
-        data_send(2, (float)foc_left.Period.BH);
-        data_send(3, (float)foc_left.Period.CH);
+        data_send(4, (float)foc_left.Period.AH);
+        data_send(5, (float)foc_left.Period.BH);
+        data_send(6, (float)foc_left.Period.CH);
 
-        data_send(4, (float)foc_right.Period.AH);
-        data_send(5, (float)foc_right.Period.BH);
-        data_send(6, (float)foc_right.Period.CH);
+        data_send(7, (float)foc_right.Period.AH);
+        data_send(8, (float)foc_right.Period.BH);
+        data_send(9, (float)foc_right.Period.CH);
 
         data_send(10, (float)encoder_left.theta_val);
         data_send(11, (float)encoder_right.theta_val);
