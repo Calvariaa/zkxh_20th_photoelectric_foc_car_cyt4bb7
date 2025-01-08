@@ -18,17 +18,17 @@
 
 "--jet_probe=cmsisdap" 
 
-"--jet_standard_reset=4,0,0" 
+"--jet_standard_reset=2,300,200" 
 
 "--reset_style=\"0,-,0,Disabled__no_reset_\"" 
 
 "--reset_style=\"1,-,0,Software\"" 
 
-"--reset_style=\"2,-,0,Hardware\"" 
+"--reset_style=\"2,-,1,Hardware\"" 
 
 "--reset_style=\"3,-,0,Core\"" 
 
-"--reset_style=\"4,Traveo2_CM7_SystemReset,1,System\"" 
+"--reset_style=\"4,Traveo2_CM7_SystemReset,0,System\"" 
 
 "--reset_style=\"7,Traveo2_CM7_ResetAndAcquireDevice,0,Reset_and_halt_after_bootloader\"" 
 

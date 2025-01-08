@@ -21,26 +21,13 @@ int16_t data_send_list[DATA_SEND_QUEUE_SIZE][4] = {0};
 
 void send_vofaplus()
 {
-    if (_data_send[0] == 1)
-    {
 #if (!CY_CPU_CORTEX_M0P)
-        SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
+    SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
 #endif
-        for (int8_t i = 0; i <= DATA_SEND_SIZE; i++)
-            printf("%f,", _data_send[i]);
-        printf("-1.0\r\n");
-        _data_send[0] = 0;
-    }
-    else
-    {
-#if (!CY_CPU_CORTEX_M0P)
-        SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
-#endif
-        for (int8_t i = 0; i <= DATA_SEND_SIZE; i++)
-            printf("%f,", _data_send[i]);
-        printf("-1.0\r\n");
-        _data_send[0] = 0;
-    }
+    for (int8_t i = 0; i <= DATA_SEND_SIZE; i++)
+        (int)_data_send[i] == _data_send[i] ? printf("%d,", (int)_data_send[i]) : printf("%.2f,", _data_send[i]);
+    printf("-1.0\r\n");
+    _data_send[0] = 0;
 }
 
 uint32_t data_send_number = 0;

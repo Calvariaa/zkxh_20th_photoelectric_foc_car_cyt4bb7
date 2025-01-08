@@ -43,19 +43,26 @@ int main(void)
     debug_info_init();             // 调试串口信息初始化
                                    // 此处编写用户代码 例如外设初始化代码等
 
+    ips114_init();
+
     interrupt_global_disable();
 
     gyro_init();
 
-    pit_us_init(PIT_CH0, 100); // 0.1ms
+    pit_us_init(PIT_CH3, 100); // 0.1ms
     interrupt_global_enable(0);
+    ips114_clear();
     while (true)
     {
         data_send(1, (float)imu_data.gyro_x);
         data_send(2, (float)imu_data.gyro_y);
-        data_send(3, (float)imu_data.gyro_z);
+        data_send(3, (float)eulerAngle.pitch);
 
         data_send_clear();
+
+        ips114_show_float(0, 0, imu_data.gyro_x, 8, 4);
+        ips114_show_float(0, 1, imu_data.gyro_y, 8, 4);
+        ips114_show_float(0, 2, imu_data.gyro_z, 8, 4);
     }
 }
 

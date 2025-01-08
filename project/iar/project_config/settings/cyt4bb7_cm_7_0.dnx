@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <settings>
     <Jet>
-        <JetConnSerialNo>SEEKFREE CMSIS-DAP V2:SF-3077534613209</JetConnSerialNo>
-        <JetConnFoundProbes>SEEKFREE CMSIS-DAP V1:SF-3077534613209:SEEKFREE CMSIS-DAP V2:SF-3077534613209:</JetConnFoundProbes>
+        <JetConnSerialNo>CMSIS-DAP_JX:0001A0000000</JetConnSerialNo>
+        <JetConnFoundProbes />
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
@@ -39,8 +39,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>4995127642704335939</CpuClock>
-        <SwoClock>4847373230410779457</SwoClock>
+        <CpuClock>6223767192158101315</CpuClock>
+        <SwoClock>2329285990285984833</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>

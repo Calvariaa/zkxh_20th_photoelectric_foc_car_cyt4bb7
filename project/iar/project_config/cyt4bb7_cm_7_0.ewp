@@ -1139,6 +1139,15 @@
                 <name>$PROJ_DIR$\..\..\code\debug\vofaplus.h</name>
             </file>
         </group>
+        <group>
+            <name>fastmath</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\fastmath\cos_sin.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\fastmath\cos_sin.h</name>
+            </file>
+        </group>
     </group>
     <group>
         <name>doc</name>

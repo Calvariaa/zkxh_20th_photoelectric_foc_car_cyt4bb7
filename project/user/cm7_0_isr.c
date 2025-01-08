@@ -41,9 +41,6 @@
 void pit0_ch0_isr()
 {
     pit_isr_flag_clear(PIT_CH0);
-
-    gyro_offset_init();
-    gyro_get_values();
 }
 
 void pit0_ch1_isr()
@@ -59,6 +56,10 @@ void pit0_ch2_isr()
 void pit0_ch3_isr()
 {
     pit_isr_flag_clear(PIT_CH3);
+
+    gyro_offset_init();
+    // gyro_get_values();
+    gyro_get_euler_angles();
 }
 
 void pit0_ch4_isr()
