@@ -42,7 +42,7 @@
 // #define FPWM (uint16_t)(20000)          // PWM频率
 #define PWM_PRIOD_LOAD (uint16_t)(3000) // PWM周期装载值
 // #define PWM_PRIOD_LOAD (uint16_t)(80000000UL / FPWM / 2) // PWM周期装载值
-#define DEADTIME_LOAD (10) // 死区装载值
+#define DEADTIME_LOAD (30) // 死区装载值
 
 #define TCPWM_COUNT_USE_ISR CPUIntIdx4_IRQn
 // foc left
