@@ -1,3 +1,11 @@
+/*
+ * @Author: Calvariaa 17198186+Calvariaa@users.noreply.github.com
+ * @Date: 2024-12-29 18:40:50
+ * @LastEditors: Calvariaa 17198186+Calvariaa@users.noreply.github.com
+ * @LastEditTime: 2025-03-17 20:33:10
+ * @FilePath: \zkxh_20th_photoelectric_foc_car_cyt4bb7\project\code\brushless\adc.c
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 #include "brushless/adc.h"
 
 #include "sysclk/cy_sysclk.h"
@@ -24,9 +32,9 @@ void motor_bldc_adc_init()
     adc_init(ADC_BBMF, ADC_12BIT);
     adc_init(ADC_CBMF, ADC_12BIT);
     
-    adc_init(ADC0_CH24_P08_1, ADC_12BIT);
-    adc_init(ADC0_CH25_P08_2, ADC_12BIT);
-    adc_init(ADC0_CH26_P08_3, ADC_12BIT);
+    // adc_init(ADC0_CH24_P08_1, ADC_12BIT);
+    // adc_init(ADC0_CH25_P08_2, ADC_12BIT);
+    // adc_init(ADC0_CH26_P08_3, ADC_12BIT);
     // adc_init(ADC_MID, ADC_12BIT);
 }
 

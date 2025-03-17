@@ -5,7 +5,7 @@
 #define ADC_ABMF ADC1_CH28_P15_0
 #define ADC_BBMF ADC1_CH29_P15_1
 #define ADC_CBMF ADC1_CH30_P15_2
-#define ADC_MID ADC1_CH31_P15_3
+// #define ADC_MID ADC1_CH31_P15_3
 
 #include "zf_common_typedef.h"
 #include "brushless/motor.h"
