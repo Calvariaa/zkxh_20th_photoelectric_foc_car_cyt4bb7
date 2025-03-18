@@ -51,21 +51,37 @@
 // #define R_CS_HSIOM (NULL)
 // #define R_CS_GPIO (P02_3)
 
+// // L
+// #define L_SPI_TYPE (SCB3)
+// #define L_SPI_CLOCK (PCLK_SCB3_CLOCK)
+
+// #define L_CLK_HSIOM (P18_3_SCB3_SPI_CLK)
+// #define L_CLK_GPIO (P18_3)
+
+// #define L_MOSI_HSIOM (P18_2_SCB3_SPI_MOSI)
+// #define L_MOSI_GPIO (P18_2)
+
+// #define L_MISO_HSIOM (P18_1_SCB3_SPI_MISO)
+// #define L_MISO_GPIO (P18_1)
+
+// #define L_CS_HSIOM (NULL)
+// #define L_CS_GPIO (P18_4)
+
 // L
-#define L_SPI_TYPE (SCB3)
-#define L_SPI_CLOCK (PCLK_SCB3_CLOCK)
+#define L_SPI_TYPE (SCB6)
+#define L_SPI_CLOCK (PCLK_SCB6_CLOCK)
 
-#define L_CLK_HSIOM (P18_3_SCB3_SPI_CLK)
-#define L_CLK_GPIO (P18_3)
+#define L_CLK_HSIOM (P3_2_SCB6_SPI_CLK)
+#define L_CLK_GPIO (P03_2)
 
-#define L_MOSI_HSIOM (P18_2_SCB3_SPI_MOSI)
-#define L_MOSI_GPIO (P18_2)
+#define L_MOSI_HSIOM (P3_1_SCB6_SPI_MOSI)
+#define L_MOSI_GPIO (P03_1)
 
-#define L_MISO_HSIOM (P18_1_SCB3_SPI_MISO)
-#define L_MISO_GPIO (P18_1)
+#define L_MISO_HSIOM (P3_0_SCB6_SPI_MISO)
+#define L_MISO_GPIO (P03_0)
 
 #define L_CS_HSIOM (NULL)
-#define L_CS_GPIO (P18_4)
+#define L_CS_GPIO (P03_3)
 
 // R
 #define R_SPI_TYPE (SCB4)
