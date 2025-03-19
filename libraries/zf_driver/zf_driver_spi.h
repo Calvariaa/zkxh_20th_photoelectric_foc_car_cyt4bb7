@@ -126,10 +126,7 @@ void        spi_read_16bit_array            (spi_index_enum spi_n, uint16 *data,
 
 uint8       spi_read_8bit_register          (spi_index_enum spi_n, const uint8 register_name);
 void        spi_read_8bit_registers         (spi_index_enum spi_n, const uint8 register_name, uint8 *data, uint32 len);
-
-uint16      spi_read_16bit_register         (spi_index_enum spi_n, const uint16 register_name);
-void        spi_read_16bit_registers        (spi_index_enum spi_n, const uint16 register_name, uint16 *data, uint32 len);
-
+spi_index_enum
 void        spi_transfer_8bit               (spi_index_enum spi_n, const uint8 *write_buffer, uint8 *read_buffer, uint32 len);
 void        spi_transfer_16bit              (spi_index_enum spi_n, const uint16 *write_buffer, uint16 *read_buffer, uint32 len);
 
