@@ -61,8 +61,8 @@ int main(void)
         data_send_clear();
 
         ips114_show_float(0, 0, imu_data.gyro_x, 8, 4);
-        ips114_show_float(0, 1, imu_data.gyro_y, 8, 4);
-        ips114_show_float(0, 2, imu_data.gyro_z, 8, 4);
+        ips114_show_float(0, 16, imu_data.gyro_y, 8, 4);
+        ips114_show_float(0, 32, imu_data.gyro_z, 8, 4);
     }
 }
 

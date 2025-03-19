@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <settings>
     <Jet>
+        <CpuHaltOnBreakpointSet>0</CpuHaltOnBreakpointSet>
         <JetConnSerialNo>CMSIS-DAP_JX:0001A0000000</JetConnSerialNo>
         <JetConnFoundProbes />
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
-        <CpuHaltOnBreakpointSet>0</CpuHaltOnBreakpointSet>
     </Jet>
     <PlDriver>
         <FirstRun>0</FirstRun>
@@ -39,8 +39,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>6223767192158101315</CpuClock>
-        <SwoClock>2329285990285984833</SwoClock>
+        <CpuClock>1398101057</CpuClock>
+        <SwoClock>1381319470</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
