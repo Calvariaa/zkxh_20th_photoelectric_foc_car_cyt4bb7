@@ -132,7 +132,7 @@ void pit0_ch0_isr()
     {
         buzz_exec(&buzz_left);
         buzz_exec(&buzz_right);
-        buzz_exec(&buzz_middle);
+        // buzz_exec(&buzz_middle);
     }
     if (timer_1ms == 50)
     {

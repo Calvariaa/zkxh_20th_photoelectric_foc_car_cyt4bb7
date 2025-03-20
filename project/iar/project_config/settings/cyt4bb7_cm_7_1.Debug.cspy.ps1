@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "C:\Users\Calvaria\Documents\Code\Iar\zkxh_20th_photoelectric_foc_car_cyt4bb7\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.general.xcl" --backend -f "C:\Users\Calvaria\Documents\Code\Iar\zkxh_20th_photoelectric_foc_car_cyt4bb7\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.general.xcl" --backend -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "C:\Users\Calvaria\Documents\Code\Iar\zkxh_20th_photoelectric_foc_car_cyt4bb7\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\Calvaria\Documents\Code\Iar\zkxh_20th_photoelectric_foc_car_cyt4bb7\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.2\common\bin\cspybat" -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.general.xcl" --debug_file=$debugfile --backend -f "D:\iar\cyt4bb7_foc\project\iar\project_config\settings\cyt4bb7_cm_7_1.Debug.driver.xcl" 
 }

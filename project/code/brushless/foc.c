@@ -437,9 +437,9 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
     __foc_->V_Clark = iPark_Calc(__foc_->Park_in, -__foc_->set_angle);
 #else
 
-    // __foc_->Park_in.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, 1.0);
+    __foc_->Park_in.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, 1.0);
 
-    __foc_->Park_in.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, __foc_->foc_ud_amp);
+    // __foc_->Park_in.u_d = get_ud_freq(__foc_, __foc_->foc_ud_freq, __foc_->foc_ud_amp);
 
     // if (j++ % 50)
     // {
