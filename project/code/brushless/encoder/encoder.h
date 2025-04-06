@@ -8,7 +8,7 @@
 #include "brushless/encoder/mt6701ct.h"
 
 //====================================================硬件 SPI 驱动====================================================
-#define ENC_SPI_SPEED (10 * 1000 * 1000) // 硬件 SPI 速率
+#define ENC_SPI_SPEED (10 * 1000 * 1000)     // 硬件 SPI 速率
 #define SPI_FREQ CY_INITIAL_TARGET_PERI_FREQ // 串口模块时钟 默认80M
 
 /* Master Settings */
@@ -81,7 +81,7 @@
 #define L_MISO_GPIO (P03_0)
 
 #define L_CS_HSIOM (NULL)
-#define L_CS_GPIO (P03_3)
+#define L_CS_GPIO (P03_4)
 
 // R
 #define R_SPI_TYPE (SCB4)
