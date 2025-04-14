@@ -416,7 +416,7 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
     // data_send(7,  __foc_->Park_in.u_d * 1000);
 #elif defined TESTMODE
     // test
-    // __foc_->set_angle += ANGLE_TO_RAD(0.4);
+    // __foc_->set_angle += ANGLE_TO_RAD(0.1);
     if (__foc_->set_angle >= pi_2)
     {
         __foc_->expect_rotations++;
@@ -428,7 +428,7 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
         __foc_->set_angle += pi_2;
     }
 
-    __foc_->Park_in.u_d = get_ud_freq(foc_ud_freq);
+    __foc_->Park_in.u_d = 1;
     __foc_->Park_in.u_q = 0;
 
     // data_send(13, __encoder_->theta_elec - __foc_->set_angle);
@@ -448,7 +448,7 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
 
     // test
     if (fabsf(__foc_->Park_in.u_q) < FOC_UQ_MAX)
-        __foc_->set_angle += ANGLE_TO_RAD(0.01);
+        __foc_->set_angle += ANGLE_TO_RAD(0.0);
 
     // if (ierror_count < 20)
     // {
@@ -478,6 +478,8 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
         __foc_->Park_in.u_q = pid_solve(__pid_, (__foc_->set_angle + __foc_->expect_rotations * pi_2) * __encoder_->turn_dir - (__encoder_->theta_magnet + __encoder_->full_rotations * pi_2)) * __encoder_->polarity;
     else
         __foc_->Park_in.u_q = 0;
+
+    //test
 
     __foc_->V_Clark = iPark_Calc(__foc_->Park_in, __encoder_->theta_elec);
 

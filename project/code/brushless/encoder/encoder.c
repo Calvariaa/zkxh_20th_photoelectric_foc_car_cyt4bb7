@@ -25,7 +25,7 @@ encoder_t encoder_left = {
     // 这个需要改
     .polarity = 1,
     .turn_dir = 1,
-    .zero_reval = 4.527115,
+    .zero_reval = 4.613,
     .zero_angle = 0,
 };
 encoder_t encoder_right = {
@@ -45,9 +45,9 @@ encoder_t encoder_right = {
     .__get_magnet_val_ = get_magnet_val_right,
 
     // 这个需要改
-    .polarity = -1,
+    .polarity = 1,
     .turn_dir = -1,
-    .zero_reval = 2.626049,
+    .zero_reval = 4.7741,
     .zero_angle = 0,
 };
 
