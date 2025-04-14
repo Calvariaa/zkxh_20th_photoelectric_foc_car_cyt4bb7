@@ -70,7 +70,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>9.40.2.67586</state>
+                    <state>9.40.1.63870</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -1117,6 +1117,12 @@
         <name>code</name>
         <group>
             <name>car_control</name>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\adc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\adc.h</name>
+            </file>
             <file>
                 <name>$PROJ_DIR$\..\..\code\car_control\gyro.c</name>
             </file>

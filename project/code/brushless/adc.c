@@ -26,16 +26,12 @@ int16_t adc_test_mid[3] = {0};
 int16_t adc_global_value_last = 0;
 int16_t adc_global_value = 0;
 
-adc_channel_enum adc_tube[1] = {ADC2_CH06_P18_6};
-
-uint16_t adc_tube_read_raw[20] = {0};
-
 void motor_bldc_adc_init()
 {
     adc_init(ADC_ABMF, ADC_12BIT);
     adc_init(ADC_BBMF, ADC_12BIT);
     adc_init(ADC_CBMF, ADC_12BIT);
-
+    
     // adc_init(ADC0_CH24_P08_1, ADC_12BIT);
     // adc_init(ADC0_CH25_P08_2, ADC_12BIT);
     // adc_init(ADC0_CH26_P08_3, ADC_12BIT);
@@ -47,24 +43,8 @@ void bldc_adc_convert()
     // adc_abmf_value = adc_convert(ADC_ABMF);
     // adc_bbmf_value = adc_convert(ADC_BBMF);
     // adc_cbmf_value = adc_convert(ADC_CBMF);
-    adc_abmf_value = adc_mean_filter_convert(ADC_ABMF, 5);
-    adc_bbmf_value = adc_mean_filter_convert(ADC_BBMF, 5);
-    adc_cbmf_value = adc_mean_filter_convert(ADC_CBMF, 5);
+    adc_abmf_value = adc_mean_filter_convert(ADC_ABMF,5);
+    adc_bbmf_value = adc_mean_filter_convert(ADC_BBMF,5);
+    adc_cbmf_value = adc_mean_filter_convert(ADC_CBMF,5);
     // adc_mid_value = adc_mean_filter_convert(ADC_MID, 1) / 2;
-}
-
-void tube_adc_init()
-{
-    for (uint8_t i = 0; i < sizeof(adc_tube) / sizeof(adc_tube[0]); i++)
-    {
-        adc_init(adc_tube[i], ADC_12BIT);
-    }
-}
-
-void tube_adc_convert()
-{
-    for (uint8_t i = 0; i < sizeof(adc_tube) / sizeof(adc_tube[0]); i++)
-    {
-        adc_tube_read_raw[i] = adc_mean_filter_convert(adc_tube[i], 5);
-    }
 }

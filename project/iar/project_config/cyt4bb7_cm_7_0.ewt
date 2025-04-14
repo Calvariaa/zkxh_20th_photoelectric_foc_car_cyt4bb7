@@ -1431,6 +1431,12 @@
         <group>
             <name>car_control</name>
             <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\adc.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\adc.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\..\..\code\car_control\gyro.c</name>
             </file>
             <file>

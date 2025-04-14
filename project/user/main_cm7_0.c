@@ -36,7 +36,7 @@
 #include "zf_common_headfile.h"
 #include "debug/vofaplus.h"
 #include "car_control/gyro.h"
-#include "brushless/adc.h"
+#include "car_control/adc.h"
 
 
 int main(void)
