@@ -174,7 +174,7 @@ int main(void)
         data_send(10, (float)encoder_left.theta_elec*100);
         data_send(11, (float)encoder_right.theta_elec*100);
 
-        data_send(12, (float)fast_sin(encoder_left.theta_elec));
+        // data_send(12, (float)fast_sin(encoder_left.theta_elec));
         // data_send(13, (float)arm_sin_f32(encoder_left.theta_elec));
         // data_send(12, encoder_left.theta_elec;
         // data_send(13, encoder_right.theta_elec;

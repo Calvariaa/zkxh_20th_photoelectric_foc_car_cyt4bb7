@@ -40,7 +40,7 @@
 #include "system_cyt4bb.h"
 
 // #define FPWM (uint16_t)(20000)          // PWM频率
-#define PWM_PRIOD_LOAD (uint16_t)(4000) // PWM周期装载值
+#define PWM_PRIOD_LOAD (uint16_t)(3600) // PWM周期装载值
 // #define PWM_PRIOD_LOAD (uint16_t)(80000000UL / FPWM / 2) // PWM周期装载值
 #define DEADTIME_LOAD (30) // 死区装载值
 

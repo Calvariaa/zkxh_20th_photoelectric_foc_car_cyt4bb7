@@ -17,8 +17,12 @@ extern int16_t adc_global_value_last;
 extern int16_t adc_global_value;
 
 extern int16_t adc_test_mid[3];
+uint16_t adc_tube_read_raw[20];
 
 void motor_bldc_adc_init();
 void bldc_adc_convert();
+
+void tube_adc_init();
+void tube_adc_convert();
 
 #endif /* _ADC_H */

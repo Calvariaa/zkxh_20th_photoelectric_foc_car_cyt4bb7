@@ -36,6 +36,8 @@
 #include "zf_common_headfile.h"
 #include "debug/vofaplus.h"
 #include "car_control/gyro.h"
+#include "brushless/adc.h"
+
 
 int main(void)
 {
@@ -49,14 +51,20 @@ int main(void)
 
     gyro_init();
 
+    tube_adc_init();
+
     pit_us_init(PIT_CH3, 100); // 0.1ms
     interrupt_global_enable(0);
     ips114_clear();
     while (true)
     {
-        data_send(1, (float)imu_data.gyro_x);
-        data_send(2, (float)imu_data.gyro_y);
-        data_send(3, (float)eulerAngle.pitch);
+        tube_adc_convert();
+        // data_send(1, (float)imu_data.gyro_x);
+        // data_send(2, (float)imu_data.gyro_y);
+        // data_send(3, (float)eulerAngle.pitch);
+        data_send(1, (float)adc_tube_read_raw[0]);
+        data_send(2, (float)adc_tube_read_raw[1]);
+        data_send(3, (float)adc_tube_read_raw[2]);
 
         data_send_clear();
 
