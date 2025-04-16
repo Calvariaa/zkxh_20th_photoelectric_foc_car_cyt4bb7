@@ -590,8 +590,7 @@ void motor_parameter_init()
 
     motor_pwm_counter_init(L_COUNTER_IRQn, L_COUNTER_PHASE_CLK_DST, L_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_left, L_tcpwm_irq);
     motor_pwm_counter_init(R_COUNTER_IRQn, R_COUNTER_PHASE_CLK_DST, R_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_right, R_tcpwm_irq);
-    motor_pwm_counter_init(M_COUNTER_IRQn, M_COUNTER_PHASE_CLK_DST, M_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_middle, M_tcpwm_irq);
-    // motor_pwm_counter_init(M2_COUNTER_IRQn, M2_COUNTER_PHASE_CLK_DST, M2_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_middle2, M2_tcpwm_irq);
+    // motor_pwm_counter_init(M_COUNTER_IRQn, M_COUNTER_PHASE_CLK_DST, M_COUNTER_PHASE_GRP_CNT, &tcpwm_counter_config_middle, M_tcpwm_irq);
 
     /* Synchronize all counters */
     Cy_TrigMux_SwTrigger(L_TRIG_OUT_MUX, TRIGGER_TYPE_EDGE, 1ul);

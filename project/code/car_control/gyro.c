@@ -62,7 +62,7 @@ void gyro_init()
 {
     if (imu_init())
     {
-        ips200_show_string(0, 0, "gyro init failed");
+        // ips114_show_string(0, 0, "gyro init failed");
         system_delay_ms(1000);
     }
 }

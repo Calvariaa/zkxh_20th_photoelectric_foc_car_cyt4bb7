@@ -47,7 +47,7 @@ encoder_t encoder_right = {
     // 这个需要改
     .polarity = 1,
     .turn_dir = -1,
-    .zero_reval = 4.7741,
+    .zero_reval = 4.2,
     .zero_angle = 0,
 };
 

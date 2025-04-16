@@ -38,7 +38,6 @@
 #include "car_control/gyro.h"
 #include "car_control/adc.h"
 
-
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
@@ -59,18 +58,17 @@ int main(void)
     while (true)
     {
         tube_adc_convert();
-        // data_send(1, (float)imu_data.gyro_x);
-        // data_send(2, (float)imu_data.gyro_y);
-        // data_send(3, (float)eulerAngle.pitch);
-        data_send(1, (float)adc_tube_read_raw[0]);
-        data_send(2, (float)adc_tube_read_raw[1]);
-        data_send(3, (float)adc_tube_read_raw[2]);
+        data_send(21, (float)imu_data.gyro_x);
+        data_send(22, (float)imu_data.gyro_y);
+        data_send(23, (float)eulerAngle.pitch);
+        for (uint8_t i = 0; i < 20; i++)
+            data_send(i + 1, (float)adc_tube_read_raw[i]);
 
         data_send_clear();
 
-        ips114_show_float(0, 0, imu_data.gyro_x, 8, 4);
-        ips114_show_float(0, 16, imu_data.gyro_y, 8, 4);
-        ips114_show_float(0, 32, imu_data.gyro_z, 8, 4);
+        // ips114_show_float(0, 0, imu_data.gyro_x, 8, 4);
+        // ips114_show_float(0, 16, imu_data.gyro_y, 8, 4);
+        // ips114_show_float(0, 32, imu_data.gyro_z, 8, 4);
     }
 }
 
