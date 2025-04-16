@@ -528,7 +528,7 @@ void mos_c_bn_open_middle(uint16_t duty)
 // 使用示例     mos_close();
 // 备注信息
 //-------------------------------------------------------------------------------------------------------------------
-void mos_close_left(void)
+void mos_close_left()
 {
     motor_channel_set(0, L_A_PHASE_GRP_CNT,
                       0, L_B_PHASE_GRP_CNT,
@@ -539,7 +539,7 @@ void mos_close_left(void)
                    L_TRIG_OUT_MUX);
 }
 
-void mos_close_right(void)
+void mos_close_right()
 {
     motor_channel_set(0, R_A_PHASE_GRP_CNT,
                       0, R_B_PHASE_GRP_CNT,
@@ -550,7 +550,7 @@ void mos_close_right(void)
                    R_TRIG_OUT_MUX);
 }
 
-void mos_close_middle(void)
+void mos_close_middle()
 {
     motor_channel_set(0, M_A_PHASE_GRP_CNT,
                       0, M_B_PHASE_GRP_CNT,

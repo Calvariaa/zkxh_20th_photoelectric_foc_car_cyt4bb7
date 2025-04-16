@@ -136,8 +136,8 @@ typedef struct
 {
         // BLmotor_Typedef BLmotor;        //电机参数
         // ADC_Typedef Adc;                //adc采集
-        out_variable V_Clark; // Alpha、Beta输入
-        clark_variable I_Clrak;          //Alpha、Beta反馈
+        out_variable V_Clark;      // Alpha、Beta输入
+        clark_variable I_Clrak;    // Alpha、Beta反馈
         ipark_variable Ref_Park;   // d、q目标值
         park_variable I_Park;      // d、q返回值
         ipark_variable Park_in;    // d、q输入值
@@ -159,6 +159,9 @@ typedef struct
 
         uint16_t foc_ud_freq;
         uint8_t foc_ud_amp;
+        
+        float foc_start;
+        float foc_speed; // 注意了是弧度，要用ANGLE_TO_RAD()
 } FOC_Parm_Typedef;
 
 #ifdef CURRENTLOOP
@@ -173,7 +176,7 @@ uint8 Electrical_Sector_Judge(Instrument_Typedef tool);
 Instrument_Typedef Tool_Calc(out_variable clark2);
 
 float get_ud_freq(FOC_Parm_Typedef *__foc_, uint16_t _frequency, float _amplitude);
-void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder, pid_param_t *__pid_, void (*__mos_all_open_)(uint16_t , uint16_t , uint16_t ));
+void foc_commutation(FOC_Parm_Typedef *__FOC_, encoder_t *__encoder, pid_param_t *__pid_, void (*__mos_all_open_)(uint16_t, uint16_t, uint16_t));
 
 // extern int slow_startup_count;
 extern uint16 ierror_count;

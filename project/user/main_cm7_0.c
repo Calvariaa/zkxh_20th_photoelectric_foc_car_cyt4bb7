@@ -38,13 +38,27 @@
 #include "car_control/gyro.h"
 #include "car_control/adc.h"
 
+#pragma location = 0x280010C8
+float memory_from_cm70_to_cm71[7];
+// foc开关，左轮速度，右轮速度，涵道开关，涵道速度，高频注入频率
+#define FOC_LEFT_START memory_from_cm70_to_cm71[0]  // foc左开关
+#define FOC_LEFT_SPEED memory_from_cm70_to_cm71[1]  // 左轮速度
+#define FOC_RIGHT_START memory_from_cm70_to_cm71[2] // foc右开关
+#define FOC_RIGHT_SPEED memory_from_cm70_to_cm71[3] // 右轮速度
+#define BLDC_START memory_from_cm70_to_cm71[4]      // 涵道开关
+#define BLDC_SPEED memory_from_cm70_to_cm71[5]      // 涵道速度
+#define UQ_FREQ memory_from_cm70_to_cm71[6]         // 高频注入频率
+
+#pragma location = 0x280010C8 + sizeof(memory_from_cm70_to_cm71)
+__no_init float memory_from_cm71_to_cm70[4];
+
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_250M); // 时钟配置及系统初始化<务必保留>
     debug_info_init();             // 调试串口信息初始化
                                    // 此处编写用户代码 例如外设初始化代码等
 
-    ips114_init();
+    // ips114_init();
 
     interrupt_global_disable();
 
@@ -52,19 +66,30 @@ int main(void)
 
     tube_adc_init();
 
-    pit_us_init(PIT_CH3, 100); // 0.1ms
+    pit_us_init(PIT_CH1, 200); // 0.2ms
     interrupt_global_enable(0);
-    ips114_clear();
+    // ips114_clear();
     while (true)
     {
         tube_adc_convert();
-        data_send(21, (float)imu_data.gyro_x);
-        data_send(22, (float)imu_data.gyro_y);
-        data_send(23, (float)eulerAngle.pitch);
-        for (uint8_t i = 0; i < 20; i++)
-            data_send(i + 1, (float)adc_tube_read_raw[i]);
+
+        data_send(21, (float)imu_data.gyro_z);
+        // for (uint8_t i = 0; i < 20; i++)
+        //     data_send(i + 1, (float)adc_tube_read_raw[i]);
 
         data_send_clear();
+
+        FOC_LEFT_START = 1;    // foc左开关
+        FOC_LEFT_SPEED = ANGLE_TO_RAD(imu_data.gyro_z * 0.0004); // 左轮速度
+        FOC_RIGHT_START = 1;    // foc右开关
+        FOC_RIGHT_SPEED = ANGLE_TO_RAD(imu_data.gyro_z * -0.0004); // 右轮速度
+        BLDC_START = -1;   // 涵道开关
+        BLDC_SPEED = 0;    // 涵道速度
+        UQ_FREQ = 0;    // 高频注入频率
+
+        SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm70_to_cm71, sizeof(memory_from_cm70_to_cm71));
+        SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm71_to_cm70, sizeof(memory_from_cm71_to_cm70));
+        // read some shit
 
         // ips114_show_float(0, 0, imu_data.gyro_x, 8, 4);
         // ips114_show_float(0, 16, imu_data.gyro_y, 8, 4);

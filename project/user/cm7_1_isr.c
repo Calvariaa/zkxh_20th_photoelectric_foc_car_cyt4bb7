@@ -76,7 +76,15 @@ void L_tcpwm_irq()
     // //         i++;
     // //     j = 1;
     // // }
-    foc_commutation(&foc_left, &encoder_left, &foc_left_pid, mos_all_open_left);
+
+    if (foc_left.foc_start > 0)
+        foc_commutation(&foc_left, &encoder_left, &foc_left_pid, mos_all_open_left);
+    else
+    {
+        // TO DO
+
+        mos_close_left();
+    }
 }
 
 void R_tcpwm_irq()
@@ -98,7 +106,15 @@ void R_tcpwm_irq()
     // //         i++;
     // //     j = 1;
     // // }
-    foc_commutation(&foc_right, &encoder_right, &foc_right_pid, mos_all_open_right);
+
+    if (foc_right.foc_start > 0)
+        foc_commutation(&foc_right, &encoder_right, &foc_right_pid, mos_all_open_right);
+    else
+    {
+        // TO DO
+
+        mos_close_right();
+    }
 }
 
 void M_tcpwm_irq()
@@ -108,20 +124,28 @@ void M_tcpwm_irq()
     if (START_DELAY_FLAG)
         return;
 
-    bldc_commutation();
+    // if (BLDC_START > 0)
+    if (0)
+        bldc_commutation();
+    else
+    {
+        // TO DO
+
+        mos_close_middle();
+    }
 }
 
-void M2_tcpwm_irq()
-{
-    Cy_Tcpwm_Counter_ClearTC_Intr(M2_COUNTER_PHASE_GRP_CNT);
+// void M2_tcpwm_irq()
+// {
+//     Cy_Tcpwm_Counter_ClearTC_Intr(M2_COUNTER_PHASE_GRP_CNT);
 
-    if (START_DELAY_FLAG)
-        return;
+//     if (START_DELAY_FLAG)
+//         return;
 
-    adc_test_mid[0] = adc_mean_filter_convert(ADC0_CH24_P08_1, 1);
-    adc_test_mid[1] = adc_mean_filter_convert(ADC0_CH25_P08_2, 1);
-    adc_test_mid[2] = adc_mean_filter_convert(ADC0_CH26_P08_3, 1);
-}
+//     adc_test_mid[0] = adc_mean_filter_convert(ADC0_CH24_P08_1, 1);
+//     adc_test_mid[1] = adc_mean_filter_convert(ADC0_CH25_P08_2, 1);
+//     adc_test_mid[2] = adc_mean_filter_convert(ADC0_CH26_P08_3, 1);
+// }
 
 void pit0_ch0_isr()
 {

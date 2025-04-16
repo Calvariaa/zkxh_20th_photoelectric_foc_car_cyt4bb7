@@ -145,9 +145,9 @@ void mos_b_cn_open_middle(uint16_t duty);
 void mos_c_an_open_middle(uint16_t duty);
 void mos_c_bn_open_middle(uint16_t duty);
 
-void mos_close_left(void);
-void mos_close_right(void);
-void mos_close_middle(void);
+void mos_close_left();
+void mos_close_right();
+void mos_close_middle();
 
 void L_tcpwm_irq();
 void R_tcpwm_irq();

@@ -45,8 +45,25 @@
 #include "fastmath/cos_sin.h"
 #include "arm_math.h"
 
+#pragma location = 0x280010C8
+__no_init float memory_from_cm70_to_cm71[7];
+#define FOC_LEFT_START memory_from_cm70_to_cm71[0]  // foc左开关
+#define FOC_LEFT_SPEED memory_from_cm70_to_cm71[1]  // 左轮速度
+#define FOC_RIGHT_START memory_from_cm70_to_cm71[2] // foc右开关
+#define FOC_RIGHT_SPEED memory_from_cm70_to_cm71[3] // 右轮速度
+#define BLDC_START memory_from_cm70_to_cm71[4]      // 涵道开关
+#define BLDC_SPEED memory_from_cm70_to_cm71[5]      // 涵道速度
+#define UQ_FREQ memory_from_cm70_to_cm71[6]         // 高频注入频率
+
+#pragma location = 0x280010C8 + sizeof(memory_from_cm70_to_cm71)
+float memory_from_cm71_to_cm70[4];
+// 左轮编码器圈数，左轮编码器位置，右轮编码器圈数，右轮编码器位置
+#define LEFT_ENCODER_FULLROTATION memory_from_cm71_to_cm70[0]
+#define LEFT_ENCODER_POSITION memory_from_cm71_to_cm70[1]
+#define RIGHT_ENCODER_FULLROTATION memory_from_cm71_to_cm70[2]
+#define RIGHT_ENCODER_POSITION memory_from_cm71_to_cm70[3]
+
 bool protect_flag = 0;
-#define TESTPIN (P20_1)
 
 extern FOC_Parm_Typedef foc_left;
 extern FOC_Parm_Typedef foc_right;
@@ -62,8 +79,6 @@ int main(void)
     debug_info_init();             // 调试串口信息初始化
 
     // 此处编写用户代码 例如外设初始化代码等
-
-    gpio_init(TESTPIN, GPO, GPIO_LOW, GPO_PUSH_PULL); // 初始化 LED1 输出 默认高电平 推挽输出模式
 
     buzzer_init(1);
 
@@ -90,11 +105,11 @@ int main(void)
     adc_init(ADC_BBMF, ADC_12BIT);
     adc_init(ADC_CBMF, ADC_12BIT);
 
-    cy_stc_gpio_pin_config_t gpio_pin_config = {0};
-    gpio_pin_config.driveMode = CY_GPIO_DM_PULLUP;
-    Cy_GPIO_Pin_Init(get_port(P20_1), (P20_1 % 8), &gpio_pin_config);
-    Cy_GPIO_Pin_Init(get_port(P20_3), (P20_3 % 8), &gpio_pin_config);
-    Cy_GPIO_Pin_Init(get_port(P21_6), (P21_6 % 8), &gpio_pin_config);
+    // cy_stc_gpio_pin_config_t gpio_pin_config = {0};
+    // gpio_pin_config.driveMode = CY_GPIO_DM_PULLUP;
+    // Cy_GPIO_Pin_Init(get_port(P20_1), (P20_1 % 8), &gpio_pin_config);
+    // Cy_GPIO_Pin_Init(get_port(P20_3), (P20_3 % 8), &gpio_pin_config);
+    // Cy_GPIO_Pin_Init(get_port(P21_6), (P21_6 % 8), &gpio_pin_config);
 
     // pit_us_init(PIT_CH0, 50); // 20khz
     // pit_us_init(PIT_CH1, 50);
@@ -159,7 +174,6 @@ int main(void)
     // 此处编写用户代码 例如外设初始化代码等
     while (true)
     {
-
         // data_send(4, (float)foc_left.Period.AH);
         // data_send(5, (float)foc_left.Period.BH);
         // data_send(6, (float)foc_left.Period.CH);
@@ -203,7 +217,25 @@ int main(void)
         // data_send(32, (float)adc_test_mid[2]);
         // data_send(33, (adc_test_mid[0] + adc_test_mid[1] + adc_test_mid[2] - 2048 * 3));
 
-        // data_send_clear();
+        LEFT_ENCODER_FULLROTATION = encoder_left.full_rotations;
+        LEFT_ENCODER_POSITION = encoder_left.theta_magnet;
+        RIGHT_ENCODER_FULLROTATION = encoder_right.full_rotations;
+        RIGHT_ENCODER_POSITION = encoder_right.theta_magnet;
+
+        SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm71_to_cm70, sizeof(memory_from_cm71_to_cm70));
+        SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm70_to_cm71, sizeof(memory_from_cm70_to_cm71));
+        foc_left.foc_start = FOC_LEFT_START;
+        foc_left.foc_speed = FOC_LEFT_SPEED;
+        foc_right.foc_start = FOC_RIGHT_START;
+        foc_right.foc_speed = FOC_RIGHT_SPEED;
+
+        data_send(1, (float)FOC_LEFT_SPEED);
+        data_send(2, (float)FOC_RIGHT_SPEED);
+        data_send(3, (float)encoder_left.full_rotations);
+        data_send(4, (float)encoder_left.theta_magnet);
+        data_send(5, (float)encoder_right.full_rotations);
+        data_send(6, (float)encoder_right.theta_magnet);
+        data_send_clear();
     }
 }
 

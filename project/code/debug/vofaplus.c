@@ -17,8 +17,6 @@ __no_init float _data_send[DATA_SEND_SIZE];
 #endif
 #endif
 
-int16_t data_send_list[DATA_SEND_QUEUE_SIZE][4] = {0};
-
 void send_vofaplus()
 {
 #if (!CY_CPU_CORTEX_M0P)
@@ -30,6 +28,8 @@ void send_vofaplus()
     _data_send[0] = 0;
 }
 
+#if DATA_SEND_QUEUE_SIZE
+int16_t data_send_list[DATA_SEND_QUEUE_SIZE][4] = {0};
 uint32_t data_send_number = 0;
 uint32_t data_send_head = 0;
 uint32_t data_send_tail = 0;
@@ -47,6 +47,17 @@ void send_vofaplus_queue()
     }
 }
 
+void data_send_add(int16_t _data1, int16_t _data2, int16_t _data3, int16_t _data4)
+{
+    data_send_list[data_send_tail][0] = _data1;
+    data_send_list[data_send_tail][1] = _data2;
+    data_send_list[data_send_tail][2] = _data3;
+    data_send_list[data_send_tail][3] = _data4;
+    data_send_tail = (data_send_tail + 1) % DATA_SEND_QUEUE_SIZE;
+    data_send_number++;
+}
+#endif
+
 void data_send_clear()
 {
 #if (!CY_CPU_CORTEX_M0P)
@@ -61,14 +72,4 @@ void data_send(uint16_t num, float data)
 #if (!CY_CPU_CORTEX_M0P)
 // SCB_CleanInvalidateDCache_by_Addr(&_data_send, sizeof(_data_send));
 #endif
-}
-
-void data_send_add(int16_t _data1, int16_t _data2, int16_t _data3, int16_t _data4)
-{
-    data_send_list[data_send_tail][0] = _data1;
-    data_send_list[data_send_tail][1] = _data2;
-    data_send_list[data_send_tail][2] = _data3;
-    data_send_list[data_send_tail][3] = _data4;
-    data_send_tail = (data_send_tail + 1) % DATA_SEND_QUEUE_SIZE;
-    data_send_number++;
 }
