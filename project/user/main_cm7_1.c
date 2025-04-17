@@ -45,7 +45,7 @@
 #include "fastmath/cos_sin.h"
 #include "arm_math.h"
 
-#pragma location = 0x280010C8
+#pragma location = 0x28026024
 __no_init float memory_from_cm70_to_cm71[7];
 #define FOC_LEFT_START memory_from_cm70_to_cm71[0]  // foc×ó¿ª¹Ø
 #define FOC_LEFT_SPEED memory_from_cm70_to_cm71[1]  // ×óÂÖËÙ¶È
@@ -55,7 +55,7 @@ __no_init float memory_from_cm70_to_cm71[7];
 #define BLDC_SPEED memory_from_cm70_to_cm71[5]      // º­µÀËÙ¶È
 #define UQ_FREQ memory_from_cm70_to_cm71[6]         // ¸ßÆµ×¢ÈëÆµÂÊ
 
-#pragma location = 0x280010C8 + sizeof(memory_from_cm70_to_cm71)
+#pragma location = 0x28026024 + sizeof(memory_from_cm70_to_cm71)
 float memory_from_cm71_to_cm70[4];
 // ×óÂÖ±àÂëÆ÷È¦Êý£¬×óÂÖ±àÂëÆ÷Î»ÖÃ£¬ÓÒÂÖ±àÂëÆ÷È¦Êý£¬ÓÒÂÖ±àÂëÆ÷Î»ÖÃ
 #define LEFT_ENCODER_FULLROTATION memory_from_cm71_to_cm70[0]
@@ -217,10 +217,10 @@ int main(void)
         // data_send(32, (float)adc_test_mid[2]);
         // data_send(33, (adc_test_mid[0] + adc_test_mid[1] + adc_test_mid[2] - 2048 * 3));
 
-        LEFT_ENCODER_FULLROTATION = encoder_left.full_rotations;
-        LEFT_ENCODER_POSITION = encoder_left.theta_magnet;
-        RIGHT_ENCODER_FULLROTATION = encoder_right.full_rotations;
-        RIGHT_ENCODER_POSITION = encoder_right.theta_magnet;
+        LEFT_ENCODER_FULLROTATION = (float)encoder_left.full_rotations + 1e-6;
+        LEFT_ENCODER_POSITION = (float)encoder_left.theta_magnet;
+        RIGHT_ENCODER_FULLROTATION = (float)encoder_right.full_rotations + 1e-6;
+        RIGHT_ENCODER_POSITION = (float)encoder_right.theta_magnet;
 
         SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm71_to_cm70, sizeof(memory_from_cm71_to_cm70));
         SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm70_to_cm71, sizeof(memory_from_cm70_to_cm71));
@@ -229,13 +229,17 @@ int main(void)
         foc_right.foc_start = FOC_RIGHT_START;
         foc_right.foc_speed = FOC_RIGHT_SPEED;
 
-        data_send(1, (float)FOC_LEFT_SPEED);
-        data_send(2, (float)FOC_RIGHT_SPEED);
-        data_send(3, (float)encoder_left.full_rotations);
-        data_send(4, (float)encoder_left.theta_magnet);
-        data_send(5, (float)encoder_right.full_rotations);
-        data_send(6, (float)encoder_right.theta_magnet);
-        data_send_clear();
+        // data_send(1, (float)FOC_LEFT_SPEED);
+        // data_send(2, (float)FOC_RIGHT_SPEED);
+        // data_send(3, (float)encoder_left.full_rotations);
+        // data_send(4, (float)encoder_left.theta_magnet);
+        // data_send(5, (float)encoder_right.full_rotations);
+        // data_send(6, (float)encoder_right.theta_magnet);
+        // data_send(7, (float)foc_left.set_angle);
+        // data_send(8, (float)foc_left.expect_rotations);
+        // data_send(9, (float)foc_right.set_angle);
+        // data_send(10, (float)foc_right.expect_rotations);
+        // data_send_clear();
     }
 }
 

@@ -1448,6 +1448,12 @@
             <file>
                 <name>$PROJ_DIR$\..\..\code\car_control\pid.h</name>
             </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\turn_error.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\..\code\car_control\turn_error.h</name>
+            </file>
         </group>
         <group>
             <name>debug</name>

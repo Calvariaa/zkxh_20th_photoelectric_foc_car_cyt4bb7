@@ -150,7 +150,7 @@ typedef struct
                                // Current_CL_Typedef Current_CL;  //电流环PID参数
 
         double set_angle;
-        uint32_t expect_rotations;
+        int32_t expect_rotations;
 
         float error_sum_d;
         float error_sum_q;

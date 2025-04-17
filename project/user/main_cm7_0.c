@@ -37,10 +37,12 @@
 #include "debug/vofaplus.h"
 #include "car_control/gyro.h"
 #include "car_control/adc.h"
+#include "car_control/turn_error.h"
 
-#pragma location = 0x280010C8
+#pragma location = 0x28026024
 float memory_from_cm70_to_cm71[7];
 // foc开关，左轮速度，右轮速度，涵道开关，涵道速度，高频注入频率
+
 #define FOC_LEFT_START memory_from_cm70_to_cm71[0]  // foc左开关
 #define FOC_LEFT_SPEED memory_from_cm70_to_cm71[1]  // 左轮速度
 #define FOC_RIGHT_START memory_from_cm70_to_cm71[2] // foc右开关
@@ -49,7 +51,7 @@ float memory_from_cm70_to_cm71[7];
 #define BLDC_SPEED memory_from_cm70_to_cm71[5]      // 涵道速度
 #define UQ_FREQ memory_from_cm70_to_cm71[6]         // 高频注入频率
 
-#pragma location = 0x280010C8 + sizeof(memory_from_cm70_to_cm71)
+#pragma location = 0x28026024 + sizeof(memory_from_cm70_to_cm71)
 __no_init float memory_from_cm71_to_cm70[4];
 
 int main(void)
@@ -71,18 +73,17 @@ int main(void)
     // ips114_clear();
     while (true)
     {
-        tube_adc_convert();
-
-        data_send(21, (float)imu_data.gyro_z);
+        data_send(1, (float)imu_data.gyro_z);
+        data_send(2, (float)turn_error);
         // for (uint8_t i = 0; i < 20; i++)
         //     data_send(i + 1, (float)adc_tube_read_raw[i]);
 
         data_send_clear();
 
         FOC_LEFT_START = 1;    // foc左开关
-        FOC_LEFT_SPEED = ANGLE_TO_RAD(imu_data.gyro_z * 0.0004); // 左轮速度
+        FOC_LEFT_SPEED = imu_data.gyro_z * 0.0002 + (float)turn_error * -0.003; // 左轮速度
         FOC_RIGHT_START = 1;    // foc右开关
-        FOC_RIGHT_SPEED = ANGLE_TO_RAD(imu_data.gyro_z * -0.0004); // 右轮速度
+        FOC_RIGHT_SPEED = imu_data.gyro_z * -0.0002 + (float)turn_error * 0.003; // 右轮速度
         BLDC_START = -1;   // 涵道开关
         BLDC_SPEED = 0;    // 涵道速度
         UQ_FREQ = 0;    // 高频注入频率

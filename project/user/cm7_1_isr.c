@@ -63,7 +63,7 @@ void L_tcpwm_irq()
 
     if (START_DELAY_FLAG)
         return;
-
+    
     foc_left.foc_ud_freq = buzz_left.buzzer_freq;
 
     // static uint16_t i = 0;

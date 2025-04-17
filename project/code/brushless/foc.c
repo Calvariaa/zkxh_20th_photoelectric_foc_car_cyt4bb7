@@ -448,7 +448,7 @@ void foc_commutation(FOC_Parm_Typedef *__foc_, encoder_t *__encoder_, pid_param_
 
     // test
     if (fabsf(__foc_->Park_in.u_q) < FOC_UQ_MAX)
-        __foc_->set_angle += __foc_->foc_speed;
+        __foc_->set_angle += ANGLE_TO_RAD(__foc_->foc_speed);
 
     // if (ierror_count < 20)
     // {

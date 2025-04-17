@@ -36,6 +36,7 @@
 #include "zf_common_headfile.h"
 
 #include "car_control/gyro.h"
+#include "car_control/turn_error.h"
 
 // **************************** PITÖÐ¶Ïº¯Êý ****************************
 void pit0_ch0_isr()
@@ -50,6 +51,8 @@ void pit0_ch1_isr()
     gyro_offset_init();
     // gyro_get_values();
     gyro_get_euler_angles();
+
+    get_turn_angle();
 }
 
 void pit0_ch2_isr()
