@@ -43,8 +43,8 @@ void bldc_adc_convert()
     // adc_abmf_value = adc_convert(ADC_ABMF);
     // adc_bbmf_value = adc_convert(ADC_BBMF);
     // adc_cbmf_value = adc_convert(ADC_CBMF);
-    adc_abmf_value = adc_mean_filter_convert(ADC_ABMF,5);
-    adc_bbmf_value = adc_mean_filter_convert(ADC_BBMF,5);
-    adc_cbmf_value = adc_mean_filter_convert(ADC_CBMF,5);
+    adc_abmf_value = adc_mean_filter_convert(ADC_ABMF,1);
+    adc_bbmf_value = adc_mean_filter_convert(ADC_BBMF,1);
+    adc_cbmf_value = adc_mean_filter_convert(ADC_CBMF,1);
     // adc_mid_value = adc_mean_filter_convert(ADC_MID, 1) / 2;
 }

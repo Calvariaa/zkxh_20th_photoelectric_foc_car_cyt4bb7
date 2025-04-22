@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <settings>
     <Jet>
-        <JetConnSerialNo>CMSIS-DAP_JX:0001A0000000</JetConnSerialNo>
-        <JetConnFoundProbes />
+        <JetConnSerialNo>SEEKFREE CMSIS-DAP V2:SF-3078506413209</JetConnSerialNo>
+        <JetConnFoundProbes>SEEKFREE CMSIS-DAP V1:SF-3078506413209:SEEKFREE CMSIS-DAP V2:SF-3078506413209:</JetConnFoundProbes>
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>

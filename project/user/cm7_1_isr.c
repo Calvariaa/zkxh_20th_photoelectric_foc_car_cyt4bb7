@@ -46,6 +46,7 @@
 
 extern FOC_Parm_Typedef foc_left;
 extern FOC_Parm_Typedef foc_right;
+extern motor_t motor;
 
 extern buzz_t buzz_left;
 extern buzz_t buzz_right;
@@ -63,7 +64,7 @@ void L_tcpwm_irq()
 
     if (START_DELAY_FLAG)
         return;
-    
+
     foc_left.foc_ud_freq = buzz_left.buzzer_freq;
 
     // static uint16_t i = 0;
@@ -124,15 +125,14 @@ void M_tcpwm_irq()
     if (START_DELAY_FLAG)
         return;
 
-    // if (BLDC_START > 0)
-    if (0)
-        bldc_commutation();
-    else
-    {
-        // TO DO
+    // if (motor.start > 0)
+        bldc_commutation(&motor);
+    // else
+    // {
+    //     // TO DO
 
-        mos_close_middle();
-    }
+    //     mos_close_middle();
+    // }
 }
 
 // void M2_tcpwm_irq()

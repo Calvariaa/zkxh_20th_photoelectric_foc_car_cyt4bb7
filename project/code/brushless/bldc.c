@@ -3,28 +3,10 @@
 #include "brushless/foc.h"
 #include "brushless/buzzer.h"
 #include "zf_driver_adc.h"
+#include "brushless/pid.h"
 
 uint64_t bldc_timer_50ns = 0;
 
-typedef enum
-{
-    // MOTOR_PRESTART,
-    // MOTOR_BUZZ,
-    MOTOR_START,
-    MOTOR_STOP
-} motor_state_t;
-
-typedef struct
-{
-    uint8_t rotor_n;
-    uint16_t time_div;
-    uint16_t duty;
-    int32_t speed_buf;
-    int32_t speed;
-    int32_t speed_diff;
-    int32_t speed_list[32];
-    motor_state_t state;
-} motor_t;
 
 motor_t motor = {
     .rotor_n = 1,
@@ -72,66 +54,71 @@ void bldc_output(uint8_t hall_now, uint16_t output_duty)
     }
 }
 
-void bldc_commutation()
+void bldc_commutation(motor_t *__motor)
 {
     bldc_timer_50ns++;
     // adc_global_value_last = adc_global_value;
     bldc_adc_convert();
 
-    switch (motor.state)
+    if (__motor->start < 0)
+    {
+        __motor->state = MOTOR_STOP;
+    }
+
+    switch (__motor->state)
     {
     case MOTOR_START:
 
-        if (bldc_timer_50ns % motor.time_div == 0)
+        if (bldc_timer_50ns % __motor->time_div == 0)
         {
-            bldc_output(motor.rotor_n, motor.duty);
+            bldc_output(__motor->rotor_n, __motor->duty);
             // if ((adc_global_value_last < 0 && adc_global_value >= 0) || (adc_global_value_last > 0 && adc_global_value <= 0))
             if (adc_global_value < 0)
             {
-                motor.speed_buf++;
-                motor.rotor_n++;
+                __motor->speed_buf++;
+                __motor->rotor_n++;
                 // gpio_toggle_level(P20_1);
             }
-            if (motor.rotor_n == 7)
-                motor.rotor_n = 1;
+            if (__motor->rotor_n == 7)
+                __motor->rotor_n = 1;
         }
 
         // speed measure
         if (bldc_timer_50ns % 256 == 0)
         {
-            // motor.speed_last = motor.speed;
+            // __motor->speed_last = __motor->speed;
             for (uint8_t i = 0; i < 31; i++)
             {
-                motor.speed_list[i] = motor.speed_list[i + 1];
+                __motor->speed_list[i] = __motor->speed_list[i + 1];
             }
-            motor.speed_list[31] = motor.speed;
-            motor.speed = motor.speed_buf;
-            motor.speed_buf = 0;
+            __motor->speed_list[31] = __motor->speed;
+            __motor->speed = __motor->speed_buf;
+            __motor->speed_buf = 0;
 
-            motor.speed_diff = 0;
+            __motor->speed_diff = 0;
             for (uint8_t i = 0; i < 31; i++)
             {
-                motor.speed_diff += motor.speed_list[i + 1] - motor.speed_list[i];
+                __motor->speed_diff += __motor->speed_list[i + 1] - __motor->speed_list[i];
             }
         }
 
-        if (bldc_timer_50ns % 32 == 0 && motor.time_div > 1)
+        if (bldc_timer_50ns % 32 == 0 && __motor->time_div > 1)
         {
-            motor.time_div--;
+            __motor->time_div--;
         }
-        if (motor.time_div == 1 && bldc_timer_50ns % 16 == 0 && motor.duty < PWM_PRIOD_LOAD / 1.5)
-            motor.duty++;
+        if (__motor->time_div == 1 && bldc_timer_50ns % 16 == 0 && __motor->duty < MINMAX((uint16_t)__motor->set_duty, 0, PWM_PRIOD_LOAD / 1.5))
+            __motor->duty++;
 
         if (bldc_timer_50ns >= 65536)
         {
             bldc_timer_50ns = 0;
         }
 
-        if (motor.speed_diff < -10)
+        if (__motor->speed_diff < -10)
         {
             bldc_timer_50ns = 0;
-            motor.duty = 0;
-            motor.state = MOTOR_STOP;
+            __motor->duty = 0;
+            __motor->state = MOTOR_STOP;
         }
         else
             break;
@@ -142,14 +129,14 @@ void bldc_commutation()
 
         if (bldc_timer_50ns > 20 * 1000 * 2) // 2s
         {
-            motor.rotor_n = 1;
-            motor.time_div = 48;
-            motor.duty = PWM_PRIOD_LOAD / 8;
-            motor.speed_buf = 0;
-            motor.speed = 0;
-            motor.speed_diff = 0;
-            memset(motor.speed_list, 0, sizeof(motor.speed_list));
-            motor.state = MOTOR_START;
+            __motor->rotor_n = 1;
+            __motor->time_div = 48;
+            __motor->duty = PWM_PRIOD_LOAD / 8;
+            __motor->speed_buf = 0;
+            __motor->speed = 0;
+            __motor->speed_diff = 0;
+            memset(__motor->speed_list, 0, sizeof(__motor->speed_list));
+            __motor->state = MOTOR_START;
         }
 
         break;
@@ -158,18 +145,18 @@ void bldc_commutation()
         break;
     }
 
-    data_send(19, motor.time_div);
-    data_send(21, motor.duty);
+    data_send(19, __motor->time_div);
+    data_send(21, __motor->duty);
 
     data_send(22, adc_global_value);
 
-    data_send(24, motor.speed);
-    data_send(25, motor.speed_diff);
+    data_send(24, __motor->speed);
+    data_send(25, __motor->speed_diff);
 
     // data_send(20, bldc_timer_50ns);
 
     // data_send_add(adc_abmf_value, adc_global_value, bldc_test1);
-    // data_send_add(adc_abmf_value, adc_bbmf_value, adc_cbmf_value, motor.rotor_n);
+    // data_send_add(adc_abmf_value, adc_bbmf_value, adc_cbmf_value, __motor->rotor_n);
 }
 /*
 

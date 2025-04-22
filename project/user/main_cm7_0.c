@@ -66,11 +66,18 @@ int main(void)
 
     gyro_init();
 
+    key_init(1);
+
     tube_adc_init();
 
     pit_us_init(PIT_CH1, 200); // 0.2ms
+    pit_ms_init(PIT_CH2, 1);   // 1ms
+
     interrupt_global_enable(0);
     // ips114_clear();
+
+    bool start_foc = false;
+    bool start_bldc = false;
     while (true)
     {
         data_send(1, (float)imu_data.gyro_z);
@@ -79,14 +86,56 @@ int main(void)
         //     data_send(i + 1, (float)adc_tube_read_raw[i]);
 
         data_send_clear();
+        UQ_FREQ = 0; // 高频注入频率
 
-        FOC_LEFT_START = 1;    // foc左开关
-        FOC_LEFT_SPEED = imu_data.gyro_z * 0.0002 + (float)turn_error * -0.003; // 左轮速度
-        FOC_RIGHT_START = 1;    // foc右开关
-        FOC_RIGHT_SPEED = imu_data.gyro_z * -0.0002 + (float)turn_error * 0.003; // 右轮速度
-        BLDC_START = -1;   // 涵道开关
-        BLDC_SPEED = 0;    // 涵道速度
-        UQ_FREQ = 0;    // 高频注入频率
+        if (key_get_state(KEY_LEFT) == KEY_SHORT_PRESS)
+        {
+            key_clear_state(KEY_LEFT);
+            start_foc = false;
+        }
+        if (key_get_state(KEY_RIGHT) == KEY_SHORT_PRESS)
+        {
+            key_clear_state(KEY_RIGHT);
+            start_foc = true;
+        }
+        if (key_get_state(KEY_UP) == KEY_SHORT_PRESS)
+        {
+            key_clear_state(KEY_UP);
+            start_bldc = false;
+        }
+        if (key_get_state(KEY_DOWN) == KEY_SHORT_PRESS)
+        {
+            key_clear_state(KEY_DOWN);
+            start_bldc = true;
+        }
+
+        if (start_foc)
+        {
+            FOC_LEFT_START = 1;                                                      // foc左开关
+            FOC_LEFT_SPEED = imu_data.gyro_z * 0.0002 + (float)turn_error * -0.003;  // 左轮速度
+            FOC_RIGHT_START = 1;                                                     // foc右开关
+            FOC_RIGHT_SPEED = imu_data.gyro_z * -0.0002 + (float)turn_error * 0.003; // 右轮速度
+        }
+        else
+        {
+            FOC_LEFT_START = 1;  // foc左开关
+            FOC_LEFT_SPEED = 0;   // 左轮速度
+            FOC_RIGHT_START = 1; // foc右开关
+            FOC_RIGHT_SPEED = 0;  // 右轮速度
+        }
+
+
+        if (start_bldc)
+        {
+
+            BLDC_START = 1;    // 涵道开关
+            BLDC_SPEED = 3000; // 涵道速度
+        }
+        else
+        {
+            BLDC_START = -1; // 涵道开关
+            BLDC_SPEED = 0;  // 涵道速度
+        }
 
         SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm70_to_cm71, sizeof(memory_from_cm70_to_cm71));
         SCB_CleanInvalidateDCache_by_Addr(&memory_from_cm71_to_cm70, sizeof(memory_from_cm71_to_cm70));

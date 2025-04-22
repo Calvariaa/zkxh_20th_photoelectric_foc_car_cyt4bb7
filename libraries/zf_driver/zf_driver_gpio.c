@@ -135,7 +135,7 @@ void gpio_init (gpio_pin_enum pin, gpio_dir_enum dir, uint8 dat, gpio_mode_enum 
         switch(pinmode)
         {
             case GPI_FLOATING_IN:gpio_pin_config.driveMode = CY_GPIO_DM_PULLUP_DOWN;	break; // 浮空输入
-            case GPI_PULL_DOWN  :gpio_pin_config.driveMode = CY_GPIO_DM_HIGHZ;       break; // 下拉输入
+            case GPI_PULL_DOWN  :gpio_pin_config.driveMode = CY_GPIO_DM_PULLUP;       break; // 下拉输入
             default:             gpio_pin_config.driveMode = CY_GPIO_DM_HIGHZ;       	break; // 默认为上拉输入
         }
     }

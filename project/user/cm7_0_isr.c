@@ -58,6 +58,8 @@ void pit0_ch1_isr()
 void pit0_ch2_isr()
 {
     pit_isr_flag_clear(PIT_CH2);
+
+    key_scanner();
 }
 
 void pit0_ch3_isr()

@@ -37,6 +37,7 @@
 #include "brushless/move_filter.h"
 #include "brushless/motor.h"
 #include "brushless/foc.h"
+#include "brushless/bldc.h"
 #include "debug/vofaplus.h"
 #include "brushless/encoder/encoder.h"
 #include "brushless/move_filter.h"
@@ -67,6 +68,7 @@ bool protect_flag = 0;
 
 extern FOC_Parm_Typedef foc_left;
 extern FOC_Parm_Typedef foc_right;
+extern motor_t motor;
 
 extern encoder_t encoder_left;
 extern encoder_t encoder_right;
@@ -228,6 +230,9 @@ int main(void)
         foc_left.foc_speed = FOC_LEFT_SPEED;
         foc_right.foc_start = FOC_RIGHT_START;
         foc_right.foc_speed = FOC_RIGHT_SPEED;
+
+        motor.start = BLDC_START;
+        motor.set_duty = BLDC_SPEED;
 
         // data_send(1, (float)FOC_LEFT_SPEED);
         // data_send(2, (float)FOC_RIGHT_SPEED);
