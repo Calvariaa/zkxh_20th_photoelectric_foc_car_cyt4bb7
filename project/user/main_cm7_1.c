@@ -232,7 +232,7 @@ int main(void)
         foc_right.foc_speed = FOC_RIGHT_SPEED;
 
         motor.start = BLDC_START;
-        motor.set_duty = BLDC_SPEED;
+        motor.set_duty = PWM_PRIOD_LOAD * 0.3;
 
         // data_send(1, (float)FOC_LEFT_SPEED);
         // data_send(2, (float)FOC_RIGHT_SPEED);

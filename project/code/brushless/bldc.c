@@ -7,17 +7,21 @@
 
 uint64_t bldc_timer_50ns = 0;
 
+#define BLDC_SET_DIV_MIN 1
+#define BLDC_SET_DIV_MAX 48
+#define BLDC_SET_DUTY_START PWM_PRIOD_LOAD * 0.04
 
 motor_t motor = {
     .rotor_n = 1,
-    .time_div = 48,
-    .duty = PWM_PRIOD_LOAD / 8,
+    .time_div = BLDC_SET_DIV_MAX,
+    .duty = BLDC_SET_DUTY_START,
     .speed_buf = 0,
     .speed = 0,
     .speed_diff = 0,
     .speed_list = {0},
-    .state = MOTOR_START,
-};
+    .state = MOTOR_STOP,
+    .start = -1,
+    .set_duty = 0};
 
 void bldc_output(uint8_t hall_now, uint16_t output_duty)
 {
@@ -54,6 +58,7 @@ void bldc_output(uint8_t hall_now, uint16_t output_duty)
     }
 }
 
+// #define BLDC_TEST
 void bldc_commutation(motor_t *__motor)
 {
     bldc_timer_50ns++;
@@ -69,6 +74,17 @@ void bldc_commutation(motor_t *__motor)
     {
     case MOTOR_START:
 
+#ifdef BLDC_TEST
+        if (bldc_timer_50ns % 128 == 0)
+        {
+            bldc_output(__motor->rotor_n, 500);
+            // if ((adc_global_value_last < 0 && adc_global_value >= 0) || (adc_global_value_last > 0 && adc_global_value <= 0))
+
+            __motor->rotor_n++;
+            if (__motor->rotor_n == 7)
+                __motor->rotor_n = 1;
+        }
+#else
         if (bldc_timer_50ns % __motor->time_div == 0)
         {
             bldc_output(__motor->rotor_n, __motor->duty);
@@ -82,6 +98,7 @@ void bldc_commutation(motor_t *__motor)
             if (__motor->rotor_n == 7)
                 __motor->rotor_n = 1;
         }
+#endif
 
         // speed measure
         if (bldc_timer_50ns % 256 == 0)
@@ -102,26 +119,28 @@ void bldc_commutation(motor_t *__motor)
             }
         }
 
-        if (bldc_timer_50ns % 32 == 0 && __motor->time_div > 1)
+        if (bldc_timer_50ns % 32 == 0 && __motor->time_div > BLDC_SET_DIV_MIN)
         {
             __motor->time_div--;
         }
-        if (__motor->time_div == 1 && bldc_timer_50ns % 16 == 0 && __motor->duty < MINMAX((uint16_t)__motor->set_duty, 0, PWM_PRIOD_LOAD / 1.5))
+        if (__motor->time_div == BLDC_SET_DIV_MIN && bldc_timer_50ns % 16 == 0 && __motor->duty < MINMAX((uint16_t)__motor->set_duty, 0, PWM_PRIOD_LOAD / 1.5))
             __motor->duty++;
 
-        if (bldc_timer_50ns >= 65536)
+        if (bldc_timer_50ns >= 2147483647)
         {
             bldc_timer_50ns = 0;
         }
 
-        if (__motor->speed_diff < -10)
+#ifndef BLDC_TEST
+        if ((__motor->time_div == BLDC_SET_DIV_MAX && bldc_timer_50ns >= 20 * 1000 * 2 && __motor->speed < 2) || (__motor->time_div == BLDC_SET_DIV_MIN && bldc_timer_50ns >= 20 * 1000 * 10 && __motor->speed < 2))
         {
             bldc_timer_50ns = 0;
             __motor->duty = 0;
             __motor->state = MOTOR_STOP;
         }
         else
-            break;
+#endif
+        break;
 
     case MOTOR_STOP:
         bldc_timer_50ns++;
@@ -130,13 +149,15 @@ void bldc_commutation(motor_t *__motor)
         if (bldc_timer_50ns > 20 * 1000 * 2) // 2s
         {
             __motor->rotor_n = 1;
-            __motor->time_div = 48;
-            __motor->duty = PWM_PRIOD_LOAD / 8;
+            __motor->time_div = BLDC_SET_DIV_MAX;
+            __motor->duty = BLDC_SET_DUTY_START;
             __motor->speed_buf = 0;
             __motor->speed = 0;
             __motor->speed_diff = 0;
             memset(__motor->speed_list, 0, sizeof(__motor->speed_list));
             __motor->state = MOTOR_START;
+
+            bldc_timer_50ns = 0;
         }
 
         break;

@@ -16,8 +16,8 @@
         <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.2\arm\config\debugger\Infineon\CYT4BB_M7.ddf</MemConfigValue>
     </PlDriver>
     <Jet>
-        <JetConnSerialNo>SEEKFREE CMSIS-DAP V2:SF-3078506413209</JetConnSerialNo>
-        <JetConnFoundProbes>SEEKFREE CMSIS-DAP V1:SF-3078506413209:SEEKFREE CMSIS-DAP V2:SF-3078506413209:</JetConnFoundProbes>
+        <JetConnSerialNo>CMSIS-DAP_JX:0001A0000000</JetConnSerialNo>
+        <JetConnFoundProbes />
         <DisableInterrupts>0</DisableInterrupts>
         <LeaveRunning>0</LeaveRunning>
         <MultiCoreRunAll>0</MultiCoreRunAll>
@@ -33,8 +33,8 @@
     <SWOManager>
         <SamplingDivider>8192</SamplingDivider>
         <OverrideClock>0</OverrideClock>
-        <CpuClock>172052037</CpuClock>
-        <SwoClock>1684104530</SwoClock>
+        <CpuClock>1431585108</CpuClock>
+        <SwoClock>1430466131</SwoClock>
         <DataLogMode>0</DataLogMode>
         <ItmPortsEnabled>63</ItmPortsEnabled>
         <ItmTermIOPorts>1</ItmTermIOPorts>
